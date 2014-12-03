@@ -1,0 +1,75 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="scenario">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="information">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element type="xs:string" name="name"/>
+              <xs:element type="xs:byte" name="id"/>
+              <xs:element type="xs:duration" name="duration"/>
+              <xs:element name="esb">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="name"/>
+                    <xs:element type="xs:string" name="version"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element type="xs:string" name="date"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="consumers">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="consumer" maxOccurs="unbounded" minOccurs="1">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="name"/>
+                    <xs:element type="xs:byte" name="id"/>
+                    <xs:element name="requests">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="request" maxOccurs="unbounded" minOccurs="1">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element type="xs:byte" name="providerId"/>
+                                <xs:element type="xs:short" name="size"/>
+                                <xs:element type="xs:short" name="sendingTime"/>
+                                <xs:element type="xs:string" name="periodic"/>
+                                <xs:element type="xs:short" name="period" minOccurs="0"/>
+                                <xs:element type="xs:byte" name="numberRequests" minOccurs="0"/>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="producers">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="producer" maxOccurs="unbounded" minOccurs="1">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="name"/>
+                    <xs:element type="xs:byte" name="id"/>
+                    <xs:element type="xs:byte" name="processingTime"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
+
+
