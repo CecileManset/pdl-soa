@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions targetNamespace="CompositeApp1" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:ns="http://proto/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="CompositeApp1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+  <import namespace="http://proto/" location="http://pdlsoa-VirtualBox:9080/CompositeApp1-sun-http-binding/localhost_8080/ProtoProvider/ProtoWebServiceService.wsdl">
+    </import>
+  <portType name="dummyCasaPortType">
+  </portType>
+  <binding name="casaBinding1" type="ns:ProtoWebService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="ping">
+      <soap:operation/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+  <service name="CompositeApp1Service1">
+    <port name="casaPort1" binding="tns:casaBinding1">
+      <soap:address location="http://pdlsoa-VirtualBox:9080/CompositeApp1Service1/casaPort1"/>
+    </port>
+  </service>
+</definitions>
