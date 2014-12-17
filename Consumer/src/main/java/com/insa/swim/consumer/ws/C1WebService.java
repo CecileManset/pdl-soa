@@ -6,10 +6,13 @@
 package com.insa.swim.consumer.ws;
 
 import compositeapp1.CompositeApp1Service1;
+import cons.Scenario;
 import javax.jws.WebService;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.xml.ws.WebServiceRef;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -17,6 +20,7 @@ import javax.xml.ws.WebServiceRef;
  */
 @WebService(serviceName = "C1WebService")
 public class C1WebService {
+    private static final Logger logger = LogManager.getLogger("Consumer");
 
     @WebServiceRef(wsdlLocation = "WEB-INF/wsdl/localhost_9080/CompositeApp1Service1/casaPort1.wsdl")
     private CompositeApp1Service1 service;
@@ -29,6 +33,7 @@ public class C1WebService {
             java.lang.String ping = txt;
             // TODO process result here
             java.lang.String result = port.pingpong(ping);
+            logger.debug("message received : " + ping);
             System.out.println("Result = " + result);
             return result;
         } catch (Exception ex) {
@@ -36,6 +41,12 @@ public class C1WebService {
             ex.printStackTrace();
             return "Gros fail!'";
         }
+    }
+
+        @WebMethod(operationName = "configConsumer")
+    public String configConsumer(@WebParam(name = "conf") String conf) {
+            Scenario.getInstance().init(conf);
+            return "done";
     }
 }
 
