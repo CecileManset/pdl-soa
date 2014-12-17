@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
-    <system systemId="http://localhost:9080/CompositeApp1Service1/casaPort1?WSDL" uri="wsdl/localhost_9080/CompositeApp1Service1/casaPort1.wsdl"/>
     <system systemId="http://pdlsoa-VirtualBox:9080/CompositeApp1-sun-http-binding/localhost_8080/ProtoProvider/ProtoWebServiceService.wsdl" uri="wsdl/pdlsoa-VirtualBox_9080/CompositeApp1-sun-http-binding/localhost_8080/ProtoProvider/ProtoWebServiceService.wsdl"/>
     <system systemId="http://localhost:8080/ProtoProvider/ProtoWebServiceService?xsd=1" uri="wsdl/localhost_8080/ProtoProvider/ProtoWebServiceService.xsd_1.xsd"/>
+    <system systemId="http://localhost:9080/CompositeApp1Service1/casaPort1?WSDL" uri="wsdl/localhost_9080/CompositeApp1Service1/casaPort1.wsdl"/>
+    <system systemId="http://pdlsoa-VirtualBox:9080/CompositeApp1-sun-http-binding/localhost_8080/Provider-1/P1WebService.wsdl" uri="wsdl/pdlsoa-VirtualBox_9080/CompositeApp1-sun-http-binding/localhost_8080/Provider-1/P1WebService.wsdl"/>
+    <system systemId="http://localhost:8080/Provider-1/P1WebService?xsd=1" uri="wsdl/localhost_8080/Provider-1/P1WebService.xsd_1.xsd"/>
 </catalog>
+
+

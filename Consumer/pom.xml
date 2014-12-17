@@ -75,7 +75,18 @@
                         </resource>
                     </webResources>
                     -->
+                    <webResources>
+                        <resource>
+                            <directory>src</directory>
+                            <targetPath>WEB-INF</targetPath>
+                            <includes>
+                                <include>jax-ws-catalog.xml</include>
+                                <include>wsdl/**</include>
+                            </includes>
+                        </resource>
+                    </webResources>
                 </configuration>
+  <!--              <version>2.0.2</version>  -->
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -200,4 +211,5 @@
     </build>
 
 </project>
+
 

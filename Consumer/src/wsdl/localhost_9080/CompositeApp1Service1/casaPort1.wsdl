@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<definitions targetNamespace="CompositeApp1" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:ns="http://proto/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="CompositeApp1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
-  <import namespace="http://proto/" location="http://pdlsoa-VirtualBox:9080/CompositeApp1-sun-http-binding/localhost_8080/ProtoProvider/ProtoWebServiceService.wsdl">
+<definitions targetNamespace="CompositeApp1" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:ns="http://ws.provider.swim.insa.com/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="CompositeApp1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+  <import namespace="http://ws.provider.swim.insa.com/" location="http://pdlsoa-VirtualBox:9080/CompositeApp1-sun-http-binding/localhost_8080/Provider-1/P1WebService.wsdl">
     </import>
   <portType name="dummyCasaPortType">
   </portType>
-  <binding name="casaBinding1" type="ns:ProtoWebService">
+  <binding name="casaBinding1" type="ns:P1WebService">
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
-    <operation name="ping">
+    <operation name="pingpong">
       <soap:operation/>
       <input>
         <soap:body use="literal"/>
