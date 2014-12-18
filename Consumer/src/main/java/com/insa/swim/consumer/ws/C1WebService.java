@@ -34,17 +34,17 @@ public class C1WebService {
             // TODO process result here
             java.lang.String result = port.pingpong(ping);
             logger.debug("message received : " + ping);
-            System.out.println("Result = " + result);
             return result;
         } catch (Exception ex) {
             // TODO handle custom exceptions here
             ex.printStackTrace();
-            return "Gros fail!'";
+            return "Gros fail!";
         }
     }
 
         @WebMethod(operationName = "configConsumer")
     public String configConsumer(@WebParam(name = "conf") String conf) {
+            logger.debug("message received : " + conf);
             Scenario.getInstance().init(conf);
             return "done";
     }
