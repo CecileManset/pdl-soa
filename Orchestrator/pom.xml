@@ -8,6 +8,8 @@
     </parent>
     <artifactId>Orchestrator</artifactId>
     <packaging>jar</packaging>
+    <name>Orchestrator</name>
+
     <dependencies>
         
     </dependencies>
