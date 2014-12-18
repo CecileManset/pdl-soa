@@ -48,5 +48,16 @@ public class C1WebService {
             Scenario.getInstance().init(conf);
             return "done";
     }
+
+    @WebMethod(operationName = "startSendingRequests")
+    public String startSendingRequests() {
+            String startMsg = "ping";
+            String startResponse;
+
+            logger.debug("Consumer 1 starts sending requests");
+            startResponse = sendPing(startMsg);
+            logger.debug("Response from consumer 1 : " + startResponse);
+            return startResponse;
+    }
 }
 
