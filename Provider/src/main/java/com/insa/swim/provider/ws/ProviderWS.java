@@ -18,7 +18,7 @@ public class ProviderWS {
 
         @WebMethod(operationName = "pingpong")
     public String pingpong(@WebParam(name = "ping") String txt) {
-        if (txt.equals("ping")) {
+        if (txt != null && txt.equals("ping")) {
             return "pong";
         }
         else return "error";
