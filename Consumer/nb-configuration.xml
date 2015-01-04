@@ -17,5 +17,6 @@ Any value defined here will override the pom.xml file value but is only applicab
         <org-netbeans-modules-maven-j2ee.netbeans_2e_hint_2e_deploy_2e_server>gfv3ee6</org-netbeans-modules-maven-j2ee.netbeans_2e_hint_2e_deploy_2e_server>
         <org-netbeans-modules-maven-jaxws._5f_C_5f_casaPort1>http://localhost:9080/CompositeApp1Service1/casaPort1?wsdl</org-netbeans-modules-maven-jaxws._5f_C_5f_casaPort1>
         <org-netbeans-modules-maven-jaxws._5f_C_5f_casaPort2>http://localhost:9080/CompositeApp1Service2/casaPort2?wsdl</org-netbeans-modules-maven-jaxws._5f_C_5f_casaPort2>
+        <org-netbeans-modules-maven-jaxws._5f_C_5f_casaPort3>http://localhost:9080/CompositeApp1Service3/casaPort3?wsdl</org-netbeans-modules-maven-jaxws._5f_C_5f_casaPort3>
     </properties>
 </project-shared-configuration>

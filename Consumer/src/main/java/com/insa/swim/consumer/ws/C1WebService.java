@@ -21,7 +21,7 @@ import org.apache.logging.log4j.Logger;
  */
 @WebService(serviceName = "C1WebService")
 public class C1WebService {
-    @WebServiceRef(wsdlLocation = "WEB-INF/wsdl/localhost_9080/CompositeApp1Service1/casaPort1.wsdl")
+    @WebServiceRef(wsdlLocation = "WEB-INF/wsdl/localhost_9080/CompositeApp1Service2/casaPort2.wsdl")
     private CompositeApp1Service2 service_1;
 
     private static final Logger logger = LogManager.getLogger("Consumer");

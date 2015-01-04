@@ -8,6 +8,8 @@ package com.insa.swim.provider.ws;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -16,8 +18,11 @@ import javax.jws.WebService;
 @WebService()
 public class ProviderWS {
 
-        @WebMethod(operationName = "pingpong")
+    private static final Logger logger = LogManager.getLogger("Provider");
+
+    @WebMethod(operationName = "pingpong")
     public String pingpong(@WebParam(name = "ping") String txt) {
+        logger.debug("message received by" + this.getClass() + ": " + txt);
         if (txt != null && txt.equals("ping")) {
             return "pong";
         }
