@@ -14,38 +14,40 @@ import java.util.logging.Logger;
  * @author Alex
  */
 public class WebServicesConfiguration {
+
     private final int BUFF_SIZE = 300;
     private AMQPHandler amqp;
-    
+
     public WebServicesConfiguration(AMQPHandler amqp) {
         this.amqp = amqp;
     }
-    
+
     public void configure(Scenario scenario) {
         ArrayList<String> list = scenarioToString(scenario);
         for (String s : list) {
             System.out.println(s);
         }
         try {
-            // XXX Test
-            amqp.sendConf("C1", list.get(0));
+            for (int i = 0; i < list.size(); i++) {
+                amqp.sendConf("C" + (i+1), list.get(i));
+            }
         } catch (IOException ex) {
             LOGGER.error(Controller.class.getName() + " " + ex.getMessage());
         }
     }
-    
+
     private ArrayList<String> scenarioToString(Scenario scenario) {
         ArrayList<String> result = new ArrayList<String>();
-        
+
         StringBuilder buffinf = new StringBuilder(BUFF_SIZE);
         Scenario.Information inf = scenario.getInformation();
-        
+
         buffinf.append("INFORMATION|");
         buffinf.append(inf.getId()).append("|");
         buffinf.append(inf.getName()).append("|");
         buffinf.append(inf.getDate()).append("|");
         buffinf.append(inf.getDuration()).append("|");
-        
+
         for (Scenario.Consumers.Consumer c : scenario.getConsumers().getConsumer()) {
             StringBuilder buff = new StringBuilder(BUFF_SIZE);
             buff.append("CONSUMER|");
@@ -60,10 +62,9 @@ public class WebServicesConfiguration {
                 buff.append(r.getPeriod()).append("|");
                 buff.append(r.getNumberRequests()).append("|");
             }
-            
-            result.add(buffinf.toString() + buff.toString());
+            result.add(c.getId() - 1, buffinf.toString() + buff.toString());
         }
-        
+
         return result;
     }
 }
