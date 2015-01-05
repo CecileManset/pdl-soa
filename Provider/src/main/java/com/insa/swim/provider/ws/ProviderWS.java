@@ -22,7 +22,7 @@ public class ProviderWS {
 
     @WebMethod(operationName = "pingpong")
     public String pingpong(@WebParam(name = "ping") String txt) {
-        logger.debug("message received by" + this.getClass() + ": " + txt);
+        logger.debug("message received by " + this.getClass() + ": " + txt);
         if (txt != null && txt.equals("ping")) {
             return "pong";
         }

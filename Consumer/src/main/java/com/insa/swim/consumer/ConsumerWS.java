@@ -35,6 +35,7 @@ public class ConsumerWS {
     private static final Logger logger = LogManager.getLogger("Consumer");
     private Scenario scenario = null;
 
+
     @WebMethod(operationName = "sendPing")
     public String sendPing(@WebParam(name = "start") String txt) {
         try { // Call Web Service Operation
@@ -79,7 +80,6 @@ public class ConsumerWS {
         } catch (Exception ex) {
             logger.error("message received : " + result);
             ex.printStackTrace();
-            // TODO handle custom exceptions here
         }
         logger.debug("message received : " + result);
 
