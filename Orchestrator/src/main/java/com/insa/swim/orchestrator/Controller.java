@@ -1,9 +1,12 @@
 package com.insa.swim.orchestrator;
 
+import com.insa.swim.orchestrator.amqp.AMQPHandler;
 import com.insa.swim.orchestrator.configuration.WebServicesConfiguration;
 import com.insa.swim.orchestrator.xml.IXmlReader;
 import com.insa.swim.orchestrator.xml.Scenario;
 import com.insa.swim.orchestrator.xml.XmlParser;
+import java.io.IOException;
+import java.util.logging.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,13 +20,13 @@ public class Controller {
         return scenario;
     }
 
-    private void configureWebServices(Scenario scenario) {
-        WebServicesConfiguration config = new WebServicesConfiguration();
+    private void configureWebServices(Scenario scenario, AMQPHandler amqp) {
+        WebServicesConfiguration config = new WebServicesConfiguration(amqp);
         config.configure(scenario);
     }
 
     private void launchEsbTest() {
-		// TODO Auto-generated method stub
+        // TODO Auto-generated method stub
 
     }
 
@@ -36,13 +39,19 @@ public class Controller {
     public void start() {
         LOGGER.trace("Controller starts");
 
-        Scenario scenario = parseXml();
+        try {
+            Scenario scenario = parseXml();
+            AMQPHandler amqp = new AMQPHandler();
 
-        configureWebServices(scenario);
+            configureWebServices(scenario, amqp);
 
-        Listener listener = startListener();
-        launchEsbTest();
-        listener.stop();
+            Listener listener = startListener();
+            launchEsbTest();
+            listener.stop();
+
+        } catch (IOException ex) {
+            LOGGER.error(Controller.class.getName() + " " + ex.getMessage());
+        }
 
     }
 }

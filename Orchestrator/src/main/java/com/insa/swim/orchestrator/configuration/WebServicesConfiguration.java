@@ -1,7 +1,13 @@
 package com.insa.swim.orchestrator.configuration;
 
+import com.insa.swim.orchestrator.Controller;
+import static com.insa.swim.orchestrator.Controller.LOGGER;
+import com.insa.swim.orchestrator.amqp.AMQPHandler;
 import com.insa.swim.orchestrator.xml.Scenario;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -9,15 +15,22 @@ import java.util.ArrayList;
  */
 public class WebServicesConfiguration {
     private final int BUFF_SIZE = 300;
+    private AMQPHandler amqp;
     
-    public WebServicesConfiguration() {
-        
+    public WebServicesConfiguration(AMQPHandler amqp) {
+        this.amqp = amqp;
     }
     
     public void configure(Scenario scenario) {
         ArrayList<String> list = scenarioToString(scenario);
         for (String s : list) {
             System.out.println(s);
+        }
+        try {
+            // XXX Test
+            amqp.sendConf("C1", list.get(0));
+        } catch (IOException ex) {
+            LOGGER.error(Controller.class.getName() + " " + ex.getMessage());
         }
     }
     
