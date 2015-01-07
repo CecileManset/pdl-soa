@@ -66,15 +66,16 @@ public class ConsumerWSTest {
         assertEquals(expResult, result);
     }
 
-    @Test
-    public void testStartSendingRequests() {
-        System.out.println("startSendingRequests");
-        String expResult = "pong";
-
-        ConsumerWS instance = mock(ConsumerWS.class);
-        when(instance.startSendingRequests()).thenReturn("pong");
-        
-        String result = instance.startSendingRequests();
-        assertEquals(expResult, result);
-    }
+    // Deprecated : startSendingRequests doesn't return anything
+//    @Test
+//    public void testStartSendingRequests() {
+//        System.out.println("startSendingRequests");
+//        String expResult = "pong";
+//
+//        ConsumerWS instance = mock(ConsumerWS.class);
+//        when(instance.startSendingRequests()).thenReturn("pong");
+//
+//        String result = instance.startSendingRequests();
+//        assertEquals(expResult, result);
+//    }
 }
