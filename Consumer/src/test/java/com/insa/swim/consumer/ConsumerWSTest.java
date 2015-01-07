@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 /**
  *
@@ -38,40 +39,42 @@ public class ConsumerWSTest {
     public void tearDown() {
     }
 
-/*
     @Test
     public void testSendPing() {
 
         System.out.println("sendPing");
         String txt = "ping";
-        ConsumerWS instance = new ConsumerWS();
         String expResult = "pong";
+
+        ConsumerWS instance = mock(ConsumerWS.class);
+        when(instance.sendPing("ping")).thenReturn("pong");
+
         String result = instance.sendPing(txt);
         assertEquals(expResult, result);
     }
- */
 
-/*
     @Test
     public void testConfigConsumer() {
         System.out.println("configConsumer");
         String conf = "INFORMATION|1|scenario1|15/11/14|PT0.500S|CONSUMER|1|consumer1|REQUEST|2|400|256|true|200|10|REQUEST|1|100|50|false|null|null|REQUEST|3|0|25|true|100|10|";
-        ConsumerWS instance = new ConsumerWS();
         String expResult = "done";
+
+        ConsumerWS instance = mock(ConsumerWS.class);
+        when(instance.configConsumer("INFORMATION|1|scenario1|15/11/14|PT0.500S|CONSUMER|1|consumer1|REQUEST|2|400|256|true|200|10|REQUEST|1|100|50|false|null|null|REQUEST|3|0|25|true|100|10|")).thenReturn("done");
+
         String result = instance.configConsumer(conf);
         assertEquals(expResult, result);
     }
- * */
 
-/*
     @Test
     public void testStartSendingRequests() {
         System.out.println("startSendingRequests");
-        ConsumerWS instance = new ConsumerWS();
         String expResult = "pong";
+
+        ConsumerWS instance = mock(ConsumerWS.class);
+        when(instance.startSendingRequests()).thenReturn("pong");
+        
         String result = instance.startSendingRequests();
         assertEquals(expResult, result);
     }
-*/
-
 }
