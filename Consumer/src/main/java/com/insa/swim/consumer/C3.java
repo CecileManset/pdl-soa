@@ -15,9 +15,11 @@ import java.util.logging.Logger;
 public class C3 extends SuperConsumer {
     private final static String name = "C3";
 
+    /*
     public static void main(String[] args) {
         C3 c3 = new C3();
     }
+     */
 
     private C3() {
         super(name);

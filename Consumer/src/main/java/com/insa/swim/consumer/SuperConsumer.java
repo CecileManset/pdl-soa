@@ -43,8 +43,7 @@ public class SuperConsumer {
             amqp.closeConnection();
 
         } catch (Exception ex) {
-            System.out.println("error, use logger instead");
-            ex.printStackTrace();
+            logger.error("error starting" + ex.toString());
         }
     }
 

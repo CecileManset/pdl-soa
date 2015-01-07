@@ -22,8 +22,13 @@ import org.apache.logging.log4j.Logger;
  */
 @WebService()
 public class ConsumerWS {
-    public static final int NB_PROVIDERS = 4;
 
+    public static final int NB_PROVIDERS = 4;
+    static protected ConsumerAMQPHandler amqp;
+
+    /*
+     * These are the referenes of the services provided by the bus to join the controller
+     * */
     @WebServiceRef(wsdlLocation = "WEB-INF/wsdl/localhost_9080/CompositeApp1Service1/casaPort1.wsdl")
     private CompositeApp1Service4 service4;
     @WebServiceRef(wsdlLocation = "WEB-INF/wsdl/localhost_9080/CompositeApp1Service1/casaPort1.wsdl")
@@ -35,7 +40,12 @@ public class ConsumerWS {
     private static final Logger logger = LogManager.getLogger("Consumer");
     private Scenario scenario = null;
 
-
+    /**
+     * Deprecated
+     * This method tests the communication with the providers P1 throurgh the bus
+     * @param txt (ping)
+     * @return pong if param = ping, else erro, Gros fail if exception
+     */
     @WebMethod(operationName = "sendPing")
     public String sendPing(@WebParam(name = "start") String txt) {
         try { // Call Web Service Operation
@@ -53,8 +63,13 @@ public class ConsumerWS {
         }
     }
 
+    /**
+     * This method tests the communication with a specifit provider throurgh the bus
+     * @param txt : ping
+     * @param provider : number of the provider
+     * @return pong if param = ping, else erro, Gros fail if exception
+     */
     public String sendPing(String txt, int provider) {
-
         java.lang.String result = "BigFail";
         try {
             switch (provider) {
@@ -86,6 +101,11 @@ public class ConsumerWS {
         return result;
     }
 
+    /**
+     * Obsolete method to configure the consumer : use AMQP instead
+     * @param conf
+     * @return
+     */
     @WebMethod(operationName = "configConsumer")
     public String configConsumer(
             @WebParam(name = "conf") String conf) {
@@ -94,6 +114,10 @@ public class ConsumerWS {
         return "done";
     }
 
+    /**
+     * Test all the consumers with a ping request
+     * @return should return as many pong as providers
+     */
     @WebMethod(operationName = "startSendingRequests")
     public String startSendingRequests() {
         String startMsg = "ping";
@@ -108,6 +132,43 @@ public class ConsumerWS {
             logger.debug("Response from P" + i + " to " + this.getClass() + " : " + pingResponse);
         }
         return startResponse;
+    }
+
+    /**
+     * Must be invoked at the begining
+     * @param name used to be identified by AMQP (e.g "C2")
+     * @return "done"
+     */
+    @WebMethod(operationName = "initialiseConsumer")
+    public String initialiseConsumer(String name) {
+        try {
+            amqp = new ConsumerAMQPHandler(name);
+            logger.debug("wait configuration...");
+            String received = amqp.receiveConfigurationMessage();
+            logger.debug("message config : " + received);
+            logger.debug("wait start message...");
+            String start = amqp.receiveStartMessage();
+
+            logger.debug("message start : " + start);
+            sendRequests();
+
+            amqp.closeConnection();
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            logger.error("error initialisation" + this.getClass());
+        }
+        return "done";
+    }
+
+    // TODO use multirhead
+    protected void sendRequests() {
+        try {
+            // STEP 3 : Send requests to providers and results to application
+            amqp.sendResult("this is a result from " + this.getClass());
+            System.out.println("end");
+        } catch (Exception ex) {
+            logger.debug("exception sendRequest");
+        }
     }
 
     public Scenario getScenario() {
