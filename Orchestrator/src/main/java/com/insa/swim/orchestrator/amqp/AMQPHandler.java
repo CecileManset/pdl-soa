@@ -5,6 +5,7 @@
  */
 package com.insa.swim.orchestrator.amqp;
 
+import com.insa.swim.orchestrator.Application;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -12,17 +13,22 @@ import com.rabbitmq.client.ConsumerCancelledException;
 import com.rabbitmq.client.QueueingConsumer;
 import com.rabbitmq.client.ShutdownSignalException;
 import java.io.IOException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
  * @author Alex
  */
 public class AMQPHandler {
+    
+    private static final Logger logger = LogManager.getLogger(AMQPHandler.class);
 
     // Variables
-    private static final String host = "localhost";
+    private static final String host = "127.0.0.1";
     private Channel channel;
     private String[] consumers = {"C1", "C2"};
+    private Connection connection = null;
     // Configuration settings
     private final String CONFIG_EXCHANGE_NAME = "confExchange";
     private final String CONFIG_EXCHANGE_TYPE = "direct";
@@ -40,9 +46,18 @@ public class AMQPHandler {
     public AMQPHandler() throws IOException {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(host);
-        Connection connection = factory.newConnection();
-        this.channel = connection.createChannel();
+        this.connection = factory.newConnection();
+        this.channel = this.connection.createChannel();
         this.configureChannel();
+    }
+    
+    public void closeConnection() {
+        try {
+        this.channel.close();
+        this.connection.close();
+        } catch (Exception e) {
+            logger.error("Unable to close AMQP connection");
+        }
     }
     
     /**
@@ -84,7 +99,7 @@ public class AMQPHandler {
      * @throws ConsumerCancelledException
      * @throws InterruptedException
      */
-    private String receiveResultMessage() throws ShutdownSignalException, ConsumerCancelledException, InterruptedException {
+    public String receiveResultMessage() throws ShutdownSignalException, ConsumerCancelledException, InterruptedException {
         QueueingConsumer.Delivery delivery = this.resultsConsumer.nextDelivery();
         String message = new String(delivery.getBody());
         System.out.println("Message received : " + message);
