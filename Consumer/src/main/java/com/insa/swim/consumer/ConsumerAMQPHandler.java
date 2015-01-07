@@ -12,12 +12,19 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConsumerCancelledException;
 import com.rabbitmq.client.QueueingConsumer;
 import com.rabbitmq.client.ShutdownSignalException;
+import java.util.logging.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
  * @author pdlsoa
  */
 public class ConsumerAMQPHandler {
+
+    public static final Logger logger = LogManager.getLogger("ConsumerAMQP");
+
+    private Connection connection;
     protected final String consumerName;
     private Channel channel;
     private String host;
@@ -36,19 +43,24 @@ public class ConsumerAMQPHandler {
     private final String RESULT_EXCHANGE_TYPE = "direct";
 
     public ConsumerAMQPHandler(String consumerName) throws IOException {
-        SuperConsumer.logger.debug("configuration AMQP of " +consumerName +  "....");
+        logger.debug("configuration AMQP of " +consumerName +  "....");
 
         host = "localhost";
         this.consumerName = consumerName;
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(host);
-        Connection connection = factory.newConnection();
+        connection = factory.newConnection();
         this.channel = connection.createChannel();
         this.configureChannel();
 
-        SuperConsumer.logger.debug("configuration AMQP  " +consumerName + " done");
+        logger.debug("configuration AMQP  " +consumerName + " done");
 
 
+    }
+
+    public void closeConnection() throws IOException {
+            channel.close();
+            connection.close();
     }
 
     /**

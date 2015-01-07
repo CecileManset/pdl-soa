@@ -6,12 +6,6 @@ package com.insa.swim.consumer;
 
 import java.io.IOException;
 
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.ConsumerCancelledException;
-import com.rabbitmq.client.QueueingConsumer;
-import com.rabbitmq.client.ShutdownSignalException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,14 +15,14 @@ import org.apache.logging.log4j.Logger;
  */
 public class SuperConsumer {
 
-    public static final Logger logger = LogManager.getLogger("Consumer");
+    protected static final Logger logger = LogManager.getLogger("Consumer");
 
     static protected ConsumerAMQPHandler amqp;
 
     protected void sendRequests() {
         try {
             // STEP 3 : Send requests to providers and results to application
-            amqp.sendResult("this is a result from ??");
+            amqp.sendResult("this is a result from " + this.getClass());
             System.out.println("end");
         } catch (IOException ex) {
             logger.debug("exception sendRequest");
@@ -38,12 +32,16 @@ public class SuperConsumer {
     protected void start() {
         try {
             logger.debug("wait configuration...");
-            amqp.receiveConfigurationMessage();
+            String received = amqp.receiveConfigurationMessage();
+            logger.debug("message config : " + received);
             logger.debug("wait start message...");
             String start = amqp.receiveStartMessage();
 
             logger.debug("message start : " + start);
             sendRequests();
+
+            amqp.closeConnection();
+
         } catch (Exception ex) {
             System.out.println("error, use logger instead");
             ex.printStackTrace();
