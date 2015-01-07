@@ -44,12 +44,18 @@ public class Controller {
             AMQPHandler amqp = new AMQPHandler();
 
             configureWebServices(scenario, amqp);
-
-            Listener listener = startListener();
+            
+            amqp.sendStart();
+            
+            LOGGER.debug("Received : " + amqp.receiveResultMessage());
+            LOGGER.debug("Received : " + amqp.receiveResultMessage());
+            /*Listener listener = startListener();
             launchEsbTest();
-            listener.stop();
+            listener.stop();*/
+            
+            amqp.closeConnection();
 
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             LOGGER.error(Controller.class.getName() + " " + ex.getMessage());
         }
 

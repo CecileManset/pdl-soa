@@ -30,6 +30,7 @@ public class WebServicesConfiguration {
         try {
             for (int i = 0; i < list.size(); i++) {
                 amqp.sendConf("C" + (i+1), list.get(i));
+                LOGGER.debug("Configuration message sent to C" + (i+1) );
             }
         } catch (IOException ex) {
             LOGGER.error(Controller.class.getName() + " " + ex.getMessage());
