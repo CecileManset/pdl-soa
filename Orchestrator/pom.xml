@@ -9,6 +9,11 @@
     <artifactId>Orchestrator</artifactId>
     <packaging>jar</packaging>
     <dependencies>
+        <dependency>
+        <groupId>com.rabbitmq</groupId>
+        <artifactId>amqp-client</artifactId>
+        <version>3.4.2</version>
+        </dependency>
         
     </dependencies>
     <properties>

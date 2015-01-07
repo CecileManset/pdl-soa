@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?><!-- Published by JAX-WS RI at http://jax-ws.dev.java.net. RI's version is JAX-WS RI 2.1.3.3-hudson-757-SNAPSHOT. --><xs:schema xmlns:tns="http://p4.ws.provider.swim.insa.com/" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://p4.ws.provider.swim.insa.com/">
+
+<xs:element name="pingpong" type="tns:pingpong"></xs:element>
+
+<xs:element name="pingpongResponse" type="tns:pingpongResponse"></xs:element>
+
+<xs:complexType name="pingpong">
+<xs:sequence>
+<xs:element name="ping" type="xs:string" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="pingpongResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:string" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+</xs:schema>
