@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions targetNamespace="CompositeApp1" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://p2.ws.provider.swim.insa.com/" xmlns:ns="http://ws.provider.swim.insa.com/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="CompositeApp1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+  <import namespace="http://p2.ws.provider.swim.insa.com/" location="http://pdlsoa-VirtualBox:9080/CompositeApp1-sun-http-binding/localhost_8080/Provider-1/P2WebService.wsdl">
+    </import>
+  <import namespace="http://ws.provider.swim.insa.com/" location="http://pdlsoa-VirtualBox:9080/CompositeApp1-sun-http-binding/localhost_8080/Provider-1/P1WebService.wsdl">
+    </import>
+  <portType name="dummyCasaPortType">
+  </portType>
+  <binding name="casaBinding1" type="ns:P1WebService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="pingpong">
+      <soap:operation/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+  <binding name="casaBinding2" type="ns1:P2WebService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="pingpong">
+      <soap:operation/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+  <service name="CompositeApp1Service1">
+    <port name="casaPort1" binding="tns:casaBinding1">
+      <soap:address location="http://pdlsoa-VirtualBox:9080/CompositeApp1Service1/casaPort1"/>
+    </port>
+  </service>
+  <service name="CompositeApp1Service2">
+    <port name="casaPort2" binding="tns:casaBinding2">
+      <soap:address location="http://pdlsoa-VirtualBox:9080/CompositeApp1Service2/casaPort2"/>
+    </port>
+  </service>
+</definitions>
