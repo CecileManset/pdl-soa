@@ -119,7 +119,7 @@ public class ConsumerWS {
             pingResponse = sendPing(startMsg, providerNumber);
             logger.debug("Response from P" + providerNumber + " to " + Thread.currentThread().getName() + " : " + pingResponse);
 
-            //TODO attendre la réponse et envoyer les résultats à l'application par AMQP
+            //TODO envoyer les résultats à l'application par AMQP
         }
     }
 
