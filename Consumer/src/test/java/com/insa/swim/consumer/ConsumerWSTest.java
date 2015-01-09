@@ -73,6 +73,8 @@ public class ConsumerWSTest {
 
         ConsumerWS instance = spy(new ConsumerWS());
         instance.startSendingRequests();
-        verify(instance, times(1)).sendPing("ping", 1);
+        for (int i = 1; i <= ConsumerWS.NB_PROVIDERS; i++) {
+            verify(instance, times(1)).sendPing("ping", i);
+        }
     }
 }
