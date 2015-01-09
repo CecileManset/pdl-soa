@@ -67,15 +67,12 @@ public class ConsumerWSTest {
     }
 
     // Deprecated : startSendingRequests doesn't return anything
-//    @Test
-//    public void testStartSendingRequests() {
-//        System.out.println("startSendingRequests");
-//        String expResult = "pong";
-//
-//        ConsumerWS instance = mock(ConsumerWS.class);
-//        when(instance.startSendingRequests()).thenReturn("pong");
-//
-//        String result = instance.startSendingRequests();
-//        assertEquals(expResult, result);
-//    }
+    @Test
+    public void testStartSendingRequests() {
+        System.out.println("startSendingRequests");
+
+        ConsumerWS instance = spy(new ConsumerWS());
+        instance.startSendingRequests();
+        verify(instance, times(1)).sendPing("ping", 1);
+    }
 }
