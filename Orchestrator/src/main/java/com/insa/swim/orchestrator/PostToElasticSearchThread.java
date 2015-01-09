@@ -42,6 +42,7 @@ public class PostToElasticSearchThread extends Thread {
             StringEntity input = new StringEntity(result.toString());
             input.setContentType("application/json");
             postRequest.setEntity(input);
+            LOGGER.trace("Sending result: [" + result.toString());
             HttpResponse response = httpClient.execute(postRequest);
 
             if (response.getStatusLine().getStatusCode() != 201) {

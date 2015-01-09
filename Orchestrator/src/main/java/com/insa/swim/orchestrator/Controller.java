@@ -41,7 +41,7 @@ public class Controller {
     public void start() {
         LOGGER.trace("Controller starts");
 
-                try {
+        try {
             Scenario scenario = parseXml();
             AMQPHandler amqp = new AMQPHandler();
 
@@ -53,51 +53,53 @@ public class Controller {
 //            LOGGER.debug("Received : " + amqp.receiveResultMessage());
 
             // creating the httpClient which will be used by the threads
-        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
-        connectionManager.setMaxTotal(100);
+            PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+            connectionManager.setMaxTotal(100);
 
-        CloseableHttpClient httpClient = HttpClients.custom().setConnectionManager(connectionManager).build();
+            CloseableHttpClient httpClient = HttpClients.custom().setConnectionManager(connectionManager).build();
 
-        try {
+            try {
 
-            // create a thread for each URI
-//            PostToElasticSearchThread[] threads = new PostToElasticSearchThread[10];
-            for (int i = 0; i < 2; i++) {
-                LOGGER.debug("Waiting for results...");
-                Result result = new Result(amqp.receiveResultMessage());
-                LOGGER.debug("Received a result: " + result.toString());
-//                PostToElasticSearchThread thread = new PostToElasticSearchThread(httpClient, result);
-//                thread.start();
-                LOGGER.debug("Result sent to ElasticSearch");
+                boolean stopCondition = false;
+                while (!stopCondition) {
+                    PostToElasticSearchThread[] threads = new PostToElasticSearchThread[10];
+                    for (int i = 0; i < threads.length; i++) {
+                        LOGGER.error("Waiting for results...");
+                        Result result = new Result(amqp.receiveResultMessage());
+                        LOGGER.error("Received a result: " + result.toString());
+                        threads[i] = new PostToElasticSearchThread(httpClient, result);
+                        threads[i].start();
+                        LOGGER.error("Result sent to ElasticSearch");
 //                Result result = new Result();
 //                result.setConsumer("consumer" + i);
 //                result.setProvider("provider" + i);
 //                result.setC2PTime(i*i*12);
 //                result.setP2CTime(15478);
 //                threads[i] = new PostToElasticSearchThread(httpClient, result);
-            }
+                    }
 
-            // start the threads
+                    // start the threads
 //            for (int j = 0; j < threads.length; j++) {
 //                threads[j].start();
 //            }
 
-            // join the threads
-//            for (int j = 0; j < threads.length; j++) {
-//                try {
-//                    threads[j].join();
-//                } catch (InterruptedException ex) {
-//                    ex.printStackTrace();
-//                }
-//            }
+                    // join the threads
+                    for (int j = 0; j < threads.length; j++) {
+                        try {
+                            threads[j].join();
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
 
-        } finally {
-            try {
-                httpClient.close();
-            } catch (IOException ex) {
-                ex.printStackTrace();
+            } finally {
+                try {
+                    httpClient.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             }
-        }
 
             amqp.closeConnection();
 
