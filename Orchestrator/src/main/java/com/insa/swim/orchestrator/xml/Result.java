@@ -34,6 +34,17 @@ public class Result {
     @XmlAttribute(name ="P2CTime", required = true)
     private int P2CTime;
 
+    public Result(String resultString) {
+        int min = 1;
+        int max = 5;
+        int consumerId = min + (int) (Math.random() * (max - min) + 1);
+        this.consumer = "consumer" + consumerId;
+        int providerId = min + (int) (Math.random() * (max - min) + 1);
+        this.provider = "provider" + providerId;
+        this.C2PTime = providerId * consumerId * 12;
+        this.P2CTime = consumerId * 27;
+    }
+
     public int getC2PTime() {
         return C2PTime;
     }
