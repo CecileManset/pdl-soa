@@ -98,8 +98,7 @@ public class ConsumerWS {
     public void startSendingRequests() {
         logger.debug("Consumer " + this.getClass() + " starts sending requests");
         for (int i = 1; i <= NB_PROVIDERS; i++) {
-            // Create a thread that handles the request sending to provider i
-            //TODO retrieve name/number of consumer
+            // Create a thread that handles the request sending to provider i (send, wait for response and send it to app)
             Thread thread = new Thread(new ConsumerThread(i), this.getClass().toString());
             thread.start();         
         }
@@ -118,10 +117,9 @@ public class ConsumerWS {
             String pingResponse = "";
 
             pingResponse = sendPing(startMsg, providerNumber);
-            //TODO retrieve number of consumer
-            logger.debug("Response from P" + providerNumber + " to " + super.getClass() + " : " + pingResponse);
+            logger.debug("Response from P" + providerNumber + " to " + Thread.currentThread().getName() + " : " + pingResponse);
 
-            //TODO envoyer les résultats à l'application par AMQP
+            //TODO attendre la réponse et envoyer les résultats à l'application par AMQP
         }
     }
 
