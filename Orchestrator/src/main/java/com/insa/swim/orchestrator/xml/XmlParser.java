@@ -70,11 +70,14 @@ public class XmlParser implements IXmlReader, IXmlWriter {
 			// creating the schema corresponding to the unmarshaller
 			Schema schema = sf.newSchema(new File(path));
 			unmarshaller.setSchema(schema);
-		} catch (SAXException | JAXBException ex) {
+		} catch (SAXException ex) {
 			isValid = false;
 			LOGGER.error("An error occured while validating the XML file describing the scenario");
 			LOGGER.debug(ex);
-
+		} catch (JAXBException ex) {
+			isValid = false;
+			LOGGER.error("An error occured while validating the XML file describing the scenario");
+			LOGGER.debug(ex);
 		}
 		return true;
 	}
