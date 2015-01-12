@@ -119,19 +119,32 @@ public class ConsumerWS {
      * @return should return as many pong as providers
      */
     @WebMethod(operationName = "startSendingRequests")
-    public String startSendingRequests() {
-        String startMsg = "ping";
-        String startResponse = "";
-        String pingResponse;
-
+    public void startSendingRequests() {
         logger.debug("Consumer " + this.getClass() + " starts sending requests");
         for (int i = 1; i <= NB_PROVIDERS; i++) {
-            //startResponse = sendPing(startMsg);
-            pingResponse = sendPing(startMsg, i);
-            startResponse += pingResponse + " ";
-            logger.debug("Response from P" + i + " to " + this.getClass() + " : " + pingResponse);
+            // Create a thread that handles the request sending to provider i (send, wait for response and send it to app)
+            Thread thread = new Thread(new ConsumerThread(i), this.getClass().toString());
+            thread.start();         
         }
-        return startResponse;
+    }
+
+    // Thread class to handle sending requests in parallel
+    private class ConsumerThread implements Runnable {
+        int providerNumber; // Provider to send requests to
+
+        public ConsumerThread(int providerNumber) {
+            this.providerNumber = providerNumber;
+        }
+
+        public void run() {
+            String startMsg = "ping";
+            String pingResponse = "";
+
+            pingResponse = sendPing(startMsg, providerNumber);
+            logger.debug("Response from P" + providerNumber + " to " + Thread.currentThread().getName() + " : " + pingResponse);
+
+            //TODO envoyer les résultats à l'application par AMQP
+        }
     }
 
     /**
