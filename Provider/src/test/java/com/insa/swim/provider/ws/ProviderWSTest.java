@@ -23,18 +23,34 @@ public class ProviderWSTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
+        /* We do not need anything to be done in here, 
+           but if you need to do something, please, feel free to delete
+           this comment! It's only here for Sonarqube to be happy!
+        */
     }
 
     @AfterClass
     public static void tearDownClass() throws Exception {
+        /* We do not need anything to be done in here, 
+           but if you need to do something, please, feel free to delete
+           this comment! It's only here for Sonarqube to be happy!
+        */
     }
 
     @Before
     public void setUp() {
+        /* We do not need anything to be done in here, 
+           but if you need to do something, please, feel free to delete
+           this comment! It's only here for Sonarqube to be happy!
+        */
     }
 
     @After
     public void tearDown() {
+        /* We do not need anything to be done in here, 
+           but if you need to do something, please, feel free to delete
+           this comment! It's only here for Sonarqube to be happy!
+        */
     }
 
     /**
