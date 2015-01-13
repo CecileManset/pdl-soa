@@ -37,7 +37,7 @@ public class ConsumerWS {
     private CompositeApp1Service2 service2;
     @WebServiceRef(wsdlLocation = "WEB-INF/wsdl/localhost_9080/CompositeApp1Service1/casaPort1.wsdl")
     private CompositeApp1Service1 service1;
-    private static final Logger logger = LogManager.getLogger("Consumer");
+    private static final Logger LOGGER = LogManager.getLogger("Consumer");
     private Scenario scenario = null;
 
     /**
@@ -54,11 +54,11 @@ public class ConsumerWS {
             java.lang.String ping = txt;
             // TODO process result here
             java.lang.String result = port.pingpong(ping);
-            logger.debug("message received : " + result);
+            LOGGER.debug("message received : " + result);
             return result;
         } catch (Exception ex) {
             // TODO handle custom exceptions here
-            logger.error("Could not send ping properly: " + ex.getMessage());
+            LOGGER.error("Could not send ping properly: " + ex.getMessage());
             return "Gros fail!";
         }
     }
@@ -93,9 +93,9 @@ public class ConsumerWS {
                     ;
             }
         } catch (Exception ex) {
-            logger.error("message received : " + result);
+            LOGGER.error("message received : " + result);
         }
-        logger.debug("message received : " + result);
+        LOGGER.debug("message received : " + result);
 
         return result;
     }
@@ -108,7 +108,7 @@ public class ConsumerWS {
     @WebMethod(operationName = "configConsumer")
     public String configConsumer(
             @WebParam(name = "conf") String conf) {
-        logger.debug("message received : " + conf);
+        LOGGER.debug("message received : " + conf);
         scenario = new Scenario(conf);
         return "done";
     }
@@ -119,7 +119,7 @@ public class ConsumerWS {
      */
     @WebMethod(operationName = "startSendingRequests")
     public void startSendingRequests() {
-        logger.debug("Consumer " + this.getClass() + " starts sending requests");
+        LOGGER.debug("Consumer " + this.getClass() + " starts sending requests");
         for (int i = 1; i <= NB_PROVIDERS; i++) {
             // Create a thread that handles the request sending to provider i (send, wait for response and send it to app)
             Thread thread = new Thread(new ConsumerThread(i), this.getClass().toString());
@@ -140,7 +140,7 @@ public class ConsumerWS {
             String pingResponse = "";
 
             pingResponse = sendPing(startMsg, providerNumber);
-            logger.debug("Response from P" + providerNumber + " to " + Thread.currentThread().getName() + " : " + pingResponse);
+            LOGGER.debug("Response from P" + providerNumber + " to " + Thread.currentThread().getName() + " : " + pingResponse);
 
             //TODO envoyer les résultats à l'application par AMQP
         }
@@ -155,18 +155,18 @@ public class ConsumerWS {
     public String initialiseConsumer(String name) {
         try {
             amqp = new ConsumerAMQPHandler(name);
-            logger.debug("wait configuration...");
+            LOGGER.debug("wait configuration...");
             String received = amqp.receiveConfigurationMessage();
-            logger.debug("message config : " + received);
-            logger.debug("wait start message...");
+            LOGGER.debug("message config : " + received);
+            LOGGER.debug("wait start message...");
             String start = amqp.receiveStartMessage();
 
-            logger.debug("message start : " + start);
+            LOGGER.debug("message start : " + start);
             sendRequests();
 
             amqp.closeConnection();
         } catch (Exception ex) {
-            logger.error("Consumer initialisation failed: " + ex.getMessage());
+            LOGGER.error("Consumer initialisation failed: " + ex.getMessage());
         }
         return "done";
     }
@@ -178,7 +178,7 @@ public class ConsumerWS {
             amqp.sendResult("this is a result from " + this.getClass());
             System.out.println("end");
         } catch (Exception ex) {
-            logger.debug("exception sendRequest");
+            LOGGER.debug("exception sendRequest");
         }
     }
 
