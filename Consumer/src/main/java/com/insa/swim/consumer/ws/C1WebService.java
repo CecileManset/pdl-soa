@@ -22,9 +22,9 @@ import org.apache.logging.log4j.Logger;
 @WebService(serviceName = "C1WebService")
 public class C1WebService {
     @WebServiceRef(wsdlLocation = "WEB-INF/wsdl/localhost_9080/CompositeApp1Service2/casaPort2.wsdl")
-    private CompositeApp1Service2 service_1;
+    private CompositeApp1Service2 service1;
 
-    private static final Logger logger = LogManager.getLogger("Consumer");
+    private static final Logger LOGGER = LogManager.getLogger("Consumer");
 
     @WebServiceRef(wsdlLocation = "WEB-INF/wsdl/localhost_9080/CompositeApp1Service1/casaPort1.wsdl")
     private CompositeApp1Service1 service;
@@ -37,14 +37,14 @@ public class C1WebService {
 
         // Envoi de ttt au casa2 (qui va ensuite au provider 2)
         try { // Call Web Service Operation
-            compositeapp1.P2WebService port = service_1.getCasaPort2();
+            compositeapp1.P2WebService port = service1.getCasaPort2();
             // TODO initialize WS operation arguments here
             java.lang.String ping = "ttt";
             // TODO process result here
             java.lang.String result = port.pingpong(ping);
-            logger.debug("message received : " + result);
+            LOGGER.debug("message received : " + result);
         } catch (Exception ex) {
-            // TODO handle custom exceptions here
+            LOGGER.error("Failed to call casa on port 2: " + ex.getMessage());
         }
 
         // Envoi du message au casa1
@@ -54,18 +54,17 @@ public class C1WebService {
             java.lang.String ping = txt;
             // TODO process result here
             java.lang.String result = port.pingpong(ping);
-            logger.debug("message received : " + result);
+            LOGGER.debug("message received : " + result);
             return result;
         } catch (Exception ex) {
-            // TODO handle custom exceptions here
-            logger.error("Failed to call casa: " + ex.getMessage());
+            LOGGER.error("Failed to call casa: " + ex.getMessage());
             return "Gros fail!";
         }
     }
 
     @WebMethod(operationName = "configConsumer")
     public String configConsumer(@WebParam(name = "conf") String conf) {
-        logger.debug("message received : " + conf);
+        LOGGER.debug("message received : " + conf);
         scenario = new Scenario(conf);
         return "done";
     }
@@ -75,9 +74,9 @@ public class C1WebService {
         String startMsg = "ping";
         String startResponse;
 
-        logger.debug("Consumer 1 starts sending requests");
+        LOGGER.debug("Consumer 1 starts sending requests");
         startResponse = sendPing(startMsg);
-        logger.debug("Response from consumer 1 : " + startResponse);
+        LOGGER.debug("Response from consumer 1 : " + startResponse);
         return startResponse;
     }
 }
