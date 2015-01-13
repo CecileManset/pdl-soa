@@ -22,30 +22,30 @@ import org.apache.logging.log4j.Logger;
  */
 public class AMQPHandler {
     
-    private static final Logger logger = LogManager.getLogger(AMQPHandler.class);
+    private static final Logger LOGGER = LogManager.getLogger(AMQPHandler.class);
 
     // Variables
-    private static final String host = "127.0.0.1";
+    private static final String HOST = "127.0.0.1";
     private Channel channel;
     private String[] consumers = {"C1", "C2"};
     private Connection connection = null;
     // Configuration settings
-    private final String CONFIG_EXCHANGE_NAME = "confExchange";
-    private final String CONFIG_EXCHANGE_TYPE = "direct";
+    private static final String CONFIG_EXCHANGE_NAME = "confExchange";
+    private static final String CONFIG_EXCHANGE_TYPE = "direct";
 
     // Start settings
-    private final String START_EXCHANGE_NAME = "startExchange";
-    private final String START_EXCHANGE_TYPE = "fanout";
+    private static final String START_EXCHANGE_NAME = "startExchange";
+    private static final String START_EXCHANGE_TYPE = "fanout";
 
     // Results settings
-    private final String RESULT_EXCHANGE_NAME = "resExchange";
-    private final String RESULT_EXCHANGE_TYPE = "direct";
-    private String RESULT_QUEUE;
+    private static final String RESULT_EXCHANGE_NAME = "resExchange";
+    private static final String RESULT_EXCHANGE_TYPE = "direct";
+    private String resultQueue;
     private QueueingConsumer resultsConsumer;
 
     public AMQPHandler() throws IOException {
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost(host);
+        factory.setHost(HOST);
         this.connection = factory.newConnection();
         this.channel = this.connection.createChannel();
         this.configureChannel();
@@ -56,7 +56,7 @@ public class AMQPHandler {
         this.channel.close();
         this.connection.close();
         } catch (Exception e) {
-            logger.error("Unable to close AMQP connection");
+            LOGGER.error("Unable to close AMQP connection: " + e.getMessage());
         }
     }
     
@@ -71,11 +71,11 @@ public class AMQPHandler {
         this.channel.exchangeDeclare(this.CONFIG_EXCHANGE_NAME, this.CONFIG_EXCHANGE_TYPE);
         this.channel.exchangeDeclare(this.START_EXCHANGE_NAME, this.START_EXCHANGE_TYPE);
         this.channel.exchangeDeclare(this.RESULT_EXCHANGE_NAME, this.RESULT_EXCHANGE_TYPE);
-        this.RESULT_QUEUE = this.channel.queueDeclare().getQueue();
-        this.channel.queueBind(this.RESULT_QUEUE, this.RESULT_EXCHANGE_NAME, "");
+        this.resultQueue = this.channel.queueDeclare().getQueue();
+        this.channel.queueBind(this.resultQueue, this.RESULT_EXCHANGE_NAME, "");
 
         this.resultsConsumer = new QueueingConsumer(this.channel);
-        this.channel.basicConsume(this.RESULT_QUEUE, true, resultsConsumer);
+        this.channel.basicConsume(this.resultQueue, true, resultsConsumer);
     }
     
     /**
@@ -88,7 +88,7 @@ public class AMQPHandler {
     private void sendMessage(String exchange, String routingKey, String message) throws IOException {
         // By default there is no routing key or property
         this.channel.basicPublish(exchange, routingKey, null, message.getBytes());
-        System.out.println("Message sent : " + message);
+        LOGGER.info("Message sent : " + message);
     }
 
     /**
@@ -102,7 +102,7 @@ public class AMQPHandler {
     public String receiveResultMessage() throws ShutdownSignalException, ConsumerCancelledException, InterruptedException {
         QueueingConsumer.Delivery delivery = this.resultsConsumer.nextDelivery();
         String message = new String(delivery.getBody());
-        System.out.println("Message received : " + message);
+        LOGGER.info("Message received : " + message);
         return message;
     }
 
