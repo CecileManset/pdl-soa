@@ -124,7 +124,7 @@ public class ConsumerWS {
         for (int i = 1; i <= NB_PROVIDERS; i++) {
             // Create a thread that handles the request sending to provider i (send, wait for response and send it to app)
             Thread thread = new Thread(new ConsumerThread(i), this.getClass().toString());
-            thread.start();         
+            thread.start();
         }
     }
 
@@ -143,6 +143,7 @@ public class ConsumerWS {
             pingResponse = sendPing(startMsg, providerNumber);
             logger.debug("Response from P" + providerNumber + " to " + Thread.currentThread().getName() + " : " + pingResponse);
 
+            //TODO timeout
             //TODO envoyer les résultats à l'application par AMQP
         }
     }

@@ -23,6 +23,12 @@ public class P1WebService {
      */
     @WebMethod(operationName = "pingpong")
     public String pingpong(@WebParam(name = "ping") String txt) {
+        try {
+            Thread.sleep(120000);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         if (txt.equals("ping")) {
             return "pong";
         }
