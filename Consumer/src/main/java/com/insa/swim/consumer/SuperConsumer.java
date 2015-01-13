@@ -51,7 +51,6 @@ public class SuperConsumer {
         try {
             amqp = new ConsumerAMQPHandler(name);
         } catch (IOException ex) {
-            ex.printStackTrace();
             //TODO logger
             logger.error("error constructor");
         }
@@ -69,7 +68,7 @@ public class SuperConsumer {
             System.out.println("Result = "+result);
             return result;
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error("exception raised while sending a ping: " + ex.getMessage());
             return "fail";
             // TODO handle custom exceptions here
         }
