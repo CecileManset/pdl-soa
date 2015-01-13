@@ -6,8 +6,9 @@ import com.insa.swim.orchestrator.amqp.AMQPHandler;
 import com.insa.swim.orchestrator.xml.Scenario;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -15,7 +16,8 @@ import java.util.logging.Logger;
  */
 public class WebServicesConfiguration {
 
-    private final int BUFF_SIZE = 300;
+    private static final Logger LOGGER = LogManager.getLogger(WebServicesConfiguration.class);
+    private static final int BUFF_SIZE = 300;
     private AMQPHandler amqp;
 
     public WebServicesConfiguration(AMQPHandler amqp) {
@@ -23,9 +25,10 @@ public class WebServicesConfiguration {
     }
 
     public void configure(Scenario scenario) {
-        ArrayList<String> list = scenarioToString(scenario);
+        List<String> list = scenarioToString(scenario);
+        LOGGER.info("Printing a scenario...");
         for (String s : list) {
-            System.out.println(s);
+            LOGGER.info(s);
         }
         try {
             for (int i = 0; i < list.size(); i++) {
@@ -33,7 +36,7 @@ public class WebServicesConfiguration {
                 LOGGER.debug("Configuration message sent to C" + (i+1) );
             }
         } catch (IOException ex) {
-            LOGGER.error(Controller.class.getName() + " " + ex.getMessage());
+            LOGGER.error("Error while sending the configuration: " + ex.getMessage());
         }
     }
 
@@ -56,7 +59,7 @@ public class WebServicesConfiguration {
             buff.append(c.getName()).append("|");
             for (Scenario.Consumers.Consumer.Requests.Request r : c.getRequests().getRequest()) {
                 buff.append("REQUEST|");
-                buff.append(r.getProviderId()).append("|");
+                buff.append(r.getProviderSettings().getProviderId()).append("|");
                 buff.append(r.getSendingTime()).append("|");
                 buff.append(r.getSize()).append("|");
                 buff.append(r.getPeriodic()).append("|");
