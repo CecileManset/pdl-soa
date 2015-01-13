@@ -8,7 +8,6 @@ package com.insa.swim.orchestrator.xml;
 import com.insa.swim.orchestrator.xml.Scenario.Consumers.Consumer;
 import com.insa.swim.orchestrator.xml.Scenario.Consumers.Consumer.Requests.Request;
 import com.insa.swim.orchestrator.xml.Scenario.Information;
-//import com.insa.swim.orchestrator.xml.Scenario.Producers.Producer;
 import java.io.File;
 import java.util.List;
 
@@ -86,15 +85,8 @@ public class XmlParser implements IXmlReader, IXmlWriter {
 	public List<Consumer> parseConsumer() {
 		List<Consumer> consumers = scenario.consumers.getConsumer();
 		return  consumers;
+	}
 
-	}
-/*
-        @Override
-	public List<Producer> parseProvider() {
-		List<Producer> producers = scenario.producers.getProducer();
-		return producers;
-	}
-*/
         @Override
 	public void write(Result result) {
 		try {
@@ -119,24 +111,17 @@ public class XmlParser implements IXmlReader, IXmlWriter {
 	public static void printScenario(Scenario scenario) {
 
 		List<Consumer> consumers = scenario.consumers.getConsumer();
-		//List <Producer> producers = scenario.producers.getProducer();
-
-		//List<Producer> producers = scenario.producers.getProducer();
 
 		for (Consumer consumer1 : consumers) {
 			Consumer consumer = (Consumer) consumer1;
 			List<Request> req = consumer.requests.getRequest();
-			System.out.print("consumer name : " + consumer.getName());
-			for (Request r : req) {
-				//System.out.print("\t nb req  : " + r.getProviderId());
-			}
-			System.out.print("\n");
+			LOGGER.info("consumer name : " + consumer.getName());
 		}
 
 	}
 
 	public static void main(String[] args) {
 		XmlParser x = new XmlParser();
-		System.out.println("bool = " + x.validateXML("res/scenario.xml"));
+		LOGGER.info("bool = " + x.validateXML("res/scenario.xml"));
 	}
 }
