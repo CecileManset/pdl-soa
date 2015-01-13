@@ -7,7 +7,6 @@ package com.insa.swim.orchestrator.xml;
 
 import com.insa.swim.orchestrator.xml.Scenario.Consumers.Consumer;
 import com.insa.swim.orchestrator.xml.Scenario.Information;
-import com.insa.swim.orchestrator.xml.Scenario.Producers.Producer;
 import java.util.List;
 
 /**
@@ -25,7 +24,7 @@ public interface IXmlReader {
 	public boolean validateXML(String path);
 	public Information parseInformation();
 	public  List<Consumer> parseConsumer();
-	public List<Producer> parseProvider();
+	//public List<Producer> parseProvider();
 	public Scenario parseXml();
    
 }
