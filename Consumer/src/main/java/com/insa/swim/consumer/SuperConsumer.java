@@ -15,7 +15,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class SuperConsumer {
 
-    protected static final Logger logger = LogManager.getLogger("Consumer");
+    protected static final Logger LOGGER = LogManager.getLogger("Consumer");
 
     static protected ConsumerAMQPHandler amqp;
 
@@ -23,27 +23,27 @@ public class SuperConsumer {
         try {
             // STEP 3 : Send requests to providers and results to application
             amqp.sendResult("this is a result from " + this.getClass());
-            System.out.println("end");
+            LOGGER.info("Finished sending requests");
         } catch (IOException ex) {
-            logger.debug("exception sendRequest");
+            LOGGER.error("exception sendRequest: " + ex.getMessage());
         }
     }
 
     protected void start() {
         try {
-            logger.debug("wait configuration...");
+            LOGGER.debug("wait configuration...");
             String received = amqp.receiveConfigurationMessage();
-            logger.debug("message config : " + received);
-            logger.debug("wait start message...");
+            LOGGER.debug("message config : " + received);
+            LOGGER.debug("wait start message...");
             String start = amqp.receiveStartMessage();
 
-            logger.debug("message start : " + start);
+            LOGGER.debug("message start : " + start);
             sendRequests();
 
             amqp.closeConnection();
 
         } catch (Exception ex) {
-            logger.error("error starting" + ex.toString());
+            LOGGER.error("error starting: " + ex.getMessage());
         }
     }
 
@@ -51,8 +51,7 @@ public class SuperConsumer {
         try {
             amqp = new ConsumerAMQPHandler(name);
         } catch (IOException ex) {
-            //TODO logger
-            logger.error("error constructor");
+            LOGGER.error("error constructor: " + ex.getMessage());
         }
     }
 
@@ -65,10 +64,10 @@ public class SuperConsumer {
             java.lang.String ping = "ping";
             // TODO process result here
             java.lang.String result = port.pingpong(ping);
-            System.out.println("Result = "+result);
+            LOGGER.info("Received result = "+result+ " from casa");
             return result;
         } catch (Exception ex) {
-            logger.error("exception raised while sending a ping: " + ex.getMessage());
+            LOGGER.error("exception raised while sending a ping: " + ex.getMessage());
             return "fail";
             // TODO handle custom exceptions here
         }
