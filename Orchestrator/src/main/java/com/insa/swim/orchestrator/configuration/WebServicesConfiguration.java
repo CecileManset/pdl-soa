@@ -40,8 +40,8 @@ public class WebServicesConfiguration {
         }
     }
 
-    private ArrayList<String> scenarioToString(Scenario scenario) {
-        ArrayList<String> result = new ArrayList<String>();
+    private List<String> scenarioToString(Scenario scenario) {
+        List<String> result = new ArrayList<String>();
 
         StringBuilder buffinf = new StringBuilder(BUFF_SIZE);
         Scenario.Information inf = scenario.getInformation();
