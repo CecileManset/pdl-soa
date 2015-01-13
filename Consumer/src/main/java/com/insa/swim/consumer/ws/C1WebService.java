@@ -58,7 +58,7 @@ public class C1WebService {
             return result;
         } catch (Exception ex) {
             // TODO handle custom exceptions here
-            ex.printStackTrace();
+            logger.error("Failed to call casa: " + ex.getMessage());
             return "Gros fail!";
         }
     }
