@@ -6,6 +6,8 @@
 package com.insa.swim.consumer;
 
 import com.insa.swim.consumer.scenario.Scenario;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -19,30 +21,48 @@ import static org.mockito.Mockito.*;
  * @author pdlsoa
  */
 public class ConsumerWSTest {
+    
+    private static final Logger LOGGER = LogManager.getLogger(ConsumerWSTest.class);
 
     public ConsumerWSTest() {
     }
 
     @BeforeClass
     public static void setUpClass() throws Exception {
+        /* We do not need anything to be done in here, 
+           but if you need to do something, please, feel free to delete
+           this comment! It's only here for Sonarqube to be happy!
+        */
     }
 
     @AfterClass
     public static void tearDownClass() throws Exception {
+        /* We do not need anything to be done in here, 
+           but if you need to do something, please, feel free to delete
+           this comment! It's only here for Sonarqube to be happy!
+        */
     }
 
     @Before
     public void setUp() {
+        /* We do not need anything to be done in here, 
+           but if you need to do something, please, feel free to delete
+           this comment! It's only here for Sonarqube to be happy!
+        */
     }
 
     @After
     public void tearDown() {
+        /* We do not need anything to be done in here, 
+           but if you need to do something, please, feel free to delete
+           this comment! It's only here for Sonarqube to be happy!
+        */
     }
 
     @Test
     public void testSendPing() {
 
-        System.out.println("sendPing");
+        LOGGER.info("Testing sendPing");
         String txt = "ping";
         String expResult = "pong";
 
@@ -55,7 +75,7 @@ public class ConsumerWSTest {
 
     @Test
     public void testConfigConsumer() {
-        System.out.println("configConsumer");
+        LOGGER.info("Testing configConsumer");
         String conf = "INFORMATION|1|scenario1|15/11/14|PT0.500S|CONSUMER|1|consumer1|REQUEST|2|400|256|true|200|10|REQUEST|1|100|50|false|null|null|REQUEST|3|0|25|true|100|10|";
         String expResult = "done";
 
@@ -69,7 +89,7 @@ public class ConsumerWSTest {
     // Deprecated : startSendingRequests doesn't return anything
     @Test
     public void testStartSendingRequests() {
-        System.out.println("startSendingRequests");
+        LOGGER.info("Testing startSendingRequests");
 
         ConsumerWS instance = spy(new ConsumerWS());
         instance.startSendingRequests();
