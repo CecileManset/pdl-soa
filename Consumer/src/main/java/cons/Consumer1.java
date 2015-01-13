@@ -4,11 +4,16 @@
  */
 package cons;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  *
  * @author pdlsoa
  */
 public class Consumer1 {
+    
+    private static final Logger LOGGER = LogManager.getLogger(Consumer1.class);
 
     public static void main(String args[]) {
 
@@ -22,7 +27,7 @@ public class Consumer1 {
             java.lang.String result = port.pingpong(ping);
             System.out.println("Result = "+result);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            LOGGER.error("Failed to call casa: " + ex.getMessage());
         }
 
 
