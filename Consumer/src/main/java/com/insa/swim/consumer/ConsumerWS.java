@@ -58,7 +58,7 @@ public class ConsumerWS {
             return result;
         } catch (Exception ex) {
             // TODO handle custom exceptions here
-            ex.printStackTrace();
+            logger.error("Could not send ping properly: " + ex.getMessage());
             return "Gros fail!";
         }
     }
@@ -94,7 +94,6 @@ public class ConsumerWS {
             }
         } catch (Exception ex) {
             logger.error("message received : " + result);
-            ex.printStackTrace();
         }
         logger.debug("message received : " + result);
 
@@ -167,8 +166,7 @@ public class ConsumerWS {
 
             amqp.closeConnection();
         } catch (Exception ex) {
-            logger.error(ex.toString());
-            logger.error("error initialisation" + this.getClass());
+            logger.error("Consumer initialisation failed: " + ex.getMessage());
         }
         return "done";
     }
