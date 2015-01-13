@@ -22,28 +22,28 @@ import org.apache.logging.log4j.Logger;
  */
 public class ConsumerAMQPHandler {
 
-    public static final Logger logger = LogManager.getLogger("ConsumerAMQP");
+    public static final Logger LOGGER = LogManager.getLogger("ConsumerAMQP");
 
     private Connection connection;
     protected final String consumerName;
     private Channel channel;
     private String host;
     // Configuration settings
-    private final String CONFIG_EXCHANGE_NAME = "confExchange";
-    private final String CONFIG_EXCHANGE_TYPE = "direct";
-    private String CONFIG_QUEUE = "configuration";
+    private static final String CONFIG_EXCHANGE_NAME = "confExchange";
+    private static final String CONFIG_EXCHANGE_TYPE = "direct";
+    private static final String CONFIG_QUEUE = "configuration";
     private QueueingConsumer configurationConsumer;
     // Start settings
-    private final String START_EXCHANGE_NAME = "startExchange";
-    private final String START_EXCHANGE_TYPE = "fanout";
-    private String START_QUEUE;
+    private static final String START_EXCHANGE_NAME = "startExchange";
+    private static final String START_EXCHANGE_TYPE = "fanout";
+    private String startQueue;
     private QueueingConsumer startConsumer;
     // Results settings
-    private final String RESULT_EXCHANGE_NAME = "resExchange";
-    private final String RESULT_EXCHANGE_TYPE = "direct";
+    private static final String RESULT_EXCHANGE_NAME = "resExchange";
+    private static final String RESULT_EXCHANGE_TYPE = "direct";
 
     public ConsumerAMQPHandler(String consumerName) throws IOException {
-        logger.debug("configuration AMQP of " +consumerName +  "....");
+        LOGGER.debug("configuration AMQP of " +consumerName +  "....");
 
         host = "localhost";
         this.consumerName = consumerName;
@@ -53,7 +53,7 @@ public class ConsumerAMQPHandler {
         this.channel = connection.createChannel();
         this.configureChannel();
 
-        logger.debug("configuration AMQP  " +consumerName + " done");
+        LOGGER.debug("configuration AMQP  " +consumerName + " done");
 
 
     }
@@ -77,10 +77,10 @@ public class ConsumerAMQPHandler {
 
         // Configure channel for receiving start messages
         this.channel.exchangeDeclare(this.START_EXCHANGE_NAME, this.START_EXCHANGE_TYPE);
-        this.START_QUEUE = this.channel.queueDeclare().getQueue();
-        this.channel.queueBind(this.START_QUEUE, this.START_EXCHANGE_NAME, "");
+        this.startQueue = this.channel.queueDeclare().getQueue();
+        this.channel.queueBind(this.startQueue, this.START_EXCHANGE_NAME, "");
         this.startConsumer = new QueueingConsumer(this.channel);
-        this.channel.basicConsume(this.START_QUEUE, true, this.startConsumer);
+        this.channel.basicConsume(this.startQueue, true, this.startConsumer);
 
         // Configure channel for sending result messages
         this.channel.exchangeDeclare(this.RESULT_EXCHANGE_NAME, this.RESULT_EXCHANGE_TYPE);
@@ -95,7 +95,7 @@ public class ConsumerAMQPHandler {
     public void sendMessage(String exchange, String message) throws IOException {
         // By default there is no routing key or property
         this.channel.basicPublish(exchange, "", null, message.getBytes());
-        System.out.println("Message sent : " + message);
+        LOGGER.info("Message sent : " + message);
     }
 
     /**
@@ -108,7 +108,7 @@ public class ConsumerAMQPHandler {
     public String receiveStartMessage() throws ShutdownSignalException, ConsumerCancelledException, InterruptedException {
         QueueingConsumer.Delivery delivery = this.startConsumer.nextDelivery();
         String message = new String(delivery.getBody());
-        System.out.println("Message received : " + message);
+        LOGGER.info("Message received : " + message);
         return message;
     }
 
@@ -133,6 +133,6 @@ public class ConsumerAMQPHandler {
     public void sendResult(String message) throws IOException {
         // By default there is no routing key or property
         this.channel.basicPublish(this.RESULT_EXCHANGE_NAME, "", null, message.getBytes());
-        System.out.println("Message sent : " + message);
+        LOGGER.info("Message sent : " + message);
     }
 }
