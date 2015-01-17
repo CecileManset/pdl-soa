@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 /**
  *
@@ -48,5 +49,41 @@ public class ProviderWSTest {
         assertEquals("error", instance.pingpong(""));
         assertEquals("error", instance.pingpong(null));
     }
+
+    @Test
+    public void testProcessRequestNullEntry() {
+        ProviderWS instance = new ProviderWS();
+        assertEquals("null request", instance.processRequest(null));
+    }
+
+
+    // TODO verify receivingDate
+    // TODO verify that response = request + date + payload
+    @Test
+    public void testProcessRequestGoodResponse() {
+//        String receivingDate;
+//
+//        ProviderWS instance = mock(ProviderWS.class);
+//        when()
+//
+//        assertEquals("1|1|6000|4|SendingTimeConsumer|payload|" + receivingDate + "|", instance.processRequest("1|1|6000|4|SendingTimeConsumer|payload"));
+
+        ProviderWS instance = new ProviderWS();
+        String request = "1|1|3|4|6000|SendingDateConsumer|payloadConsumer";
+        String response = instance.processRequest(request);
+
+        assertNotNull(response.split("\\|")[6]); // To change to a real assertion
+        assertEquals("----", response.split("\\|")[7]);
+
+    }
+
+    // TODO verify that Thread.sleep(6000) was called and executed
+//    @Test
+//    public void testProcessRequestGoodProcessingTime() {
+//        ProviderWS instance = spy(new ProviderWS());
+//
+//        instance.processRequest("1|1|6000|4|SendingTimeConsumer|payload");
+//        verify(Thread, times(1)).sleep(6000);
+//    }
 
 }

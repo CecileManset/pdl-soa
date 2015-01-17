@@ -25,6 +25,8 @@ public class ConsumerWS {
 
     public static final int NB_PROVIDERS = 4;
     static protected ConsumerAMQPHandler amqp;
+    // req format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|PayloadCons
+    private String request = "1|1|3|4|6000|SendingDateConsumer|payloadConsumer";
 
     /*
      * These are the referenes of the services provided by the bus to join the controller
