@@ -4,6 +4,12 @@
 <xsd:import namespace="http://p2.ws.provider.swim.insa.com/" schemaLocation="http://localhost:8080/Provider-1/P2WebService?xsd=1"></xsd:import>
 </xsd:schema>
 </types>
+<message name="processRequest">
+<part name="parameters" element="tns:processRequest"></part>
+</message>
+<message name="processRequestResponse">
+<part name="parameters" element="tns:processRequestResponse"></part>
+</message>
 <message name="pingpong">
 <part name="parameters" element="tns:pingpong"></part>
 </message>
@@ -11,6 +17,10 @@
 <part name="parameters" element="tns:pingpongResponse"></part>
 </message>
 <portType name="P2WebService">
+<operation name="processRequest">
+<input message="tns:processRequest"></input>
+<output message="tns:processRequestResponse"></output>
+</operation>
 <operation name="pingpong">
 <input message="tns:pingpong"></input>
 <output message="tns:pingpongResponse"></output>
@@ -18,6 +28,15 @@
 </portType>
 <binding name="P2WebServicePortBinding" type="tns:P2WebService">
 <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"></soap:binding>
+<operation name="processRequest">
+<soap:operation soapAction=""></soap:operation>
+<input>
+<soap:body use="literal"></soap:body>
+</input>
+<output>
+<soap:body use="literal"></soap:body>
+</output>
+</operation>
 <operation name="pingpong">
 <soap:operation soapAction=""></soap:operation>
 <input>

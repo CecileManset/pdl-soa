@@ -4,6 +4,22 @@
 
 <xs:element name="pingpongResponse" type="tns:pingpongResponse"></xs:element>
 
+<xs:element name="processRequest" type="tns:processRequest"></xs:element>
+
+<xs:element name="processRequestResponse" type="tns:processRequestResponse"></xs:element>
+
+<xs:complexType name="processRequest">
+<xs:sequence>
+<xs:element name="request" type="xs:string" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="processRequestResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:string" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
 <xs:complexType name="pingpong">
 <xs:sequence>
 <xs:element name="ping" type="xs:string" minOccurs="0"></xs:element>
