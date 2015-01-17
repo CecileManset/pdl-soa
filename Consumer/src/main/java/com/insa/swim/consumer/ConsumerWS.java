@@ -26,7 +26,7 @@ public class ConsumerWS {
     public static final int NB_PROVIDERS = 4;
     static protected ConsumerAMQPHandler amqp;
     // req format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|PayloadCons
-    private String request = "1|1|3|4|6000|SendingDateConsumer|payloadConsumer";
+    private String request = "1A1A1A1A|1|3|4|6000|SendingDateConsumer|payloadConsumer";
 
     /*
      * These are the referenes of the services provided by the bus to join the controller
@@ -103,6 +103,46 @@ public class ConsumerWS {
         return result;
     }
 
+     /**
+     * This method tests the communication with a specifit provider throurgh the bus
+     * @param request format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|PayloadCons
+     * @param provider : id of the provider
+     * @return response format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|ReceptionDateProv|PayloadProv
+     */
+    @WebMethod(operationName = "sendRequest")
+    public String sendRequest(String request, int provider) {
+        String response = "No response from provider " + provider;
+
+        try {
+             switch (provider) {
+                case 1:
+                    compositeapp1.P1WebService port1 = service1.getCasaPort1();
+                    response = port1.processRequest(request);
+                    break;
+                case 2:
+                    compositeapp1.P2WebService port2 = service2.getCasaPort2();
+                    response = port2.processRequest(request);
+                    break;
+                case 3:
+                    compositeapp1.P3WebService port3 = service3.getCasaPort3();
+                    response = port3.processRequest(request);
+                    break;
+                case 4:
+                    compositeapp1.P4WebService port4 = service4.getCasaPort4();
+                    response = port4.processRequest(request);
+                    break;
+                default:
+                    ;
+            }
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            logger.debug(ex.getStackTrace());
+        }
+        logger.debug("message received : " + response);
+
+        return response;
+    }
+
     /**
      * Obsolete method to configure the consumer : use AMQP instead
      * @param conf
@@ -139,11 +179,9 @@ public class ConsumerWS {
         }
 
         public void run() {
-            String startMsg = "ping";
-            String pingResponse = "";
-
-            pingResponse = sendPing(startMsg, providerNumber);
-            logger.debug("Response from P" + providerNumber + " to " + Thread.currentThread().getName() + " : " + pingResponse);
+            System.out.println("-------------------------------------------------------------------Request sent : " + request);
+            String response = sendRequest(request.toString(), providerNumber);
+            logger.debug("Response from P" + providerNumber + " to " + Thread.currentThread().getName() + " : " + response);
 
             //TODO envoyer les résultats à l'application par AMQP
         }
