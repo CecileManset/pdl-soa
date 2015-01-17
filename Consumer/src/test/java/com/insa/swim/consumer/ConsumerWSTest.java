@@ -76,4 +76,17 @@ public class ConsumerWSTest {
 //            verify(instance, times(1)).sendPing("ping", i);
 //        }
 //    }
+
+    @Test
+    public void testSendRequest() {
+        String request = "1|1|3|4|6000|SendingDateConsumer|payloadConsumer";
+        String expResponse = "1|1|3|4|6000|SendingDateConsumer|ReceptionDateProvider|payloadProvider";
+        String response;
+
+        ConsumerWS instance = mock(ConsumerWS.class);
+        when(instance.sendRequest("1|1|3|4|6000|SendingDateConsumer|payloadConsumer", 1)).thenReturn("1|1|3|4|6000|SendingDateConsumer|ReceptionDateProvider|payloadProvider");
+
+        response = instance.sendRequest(request, 1);
+        assertEquals(expResponse, response);
+    }
 }

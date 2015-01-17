@@ -69,10 +69,10 @@ public class ProviderWS {
 
             // response = request - consumer payload
             for (int i = 0 ; i < parsedRequest.length-1 ; i++) {
-                response += parsedRequest[i] + "\\|";
+                response += parsedRequest[i] + "|";
             }
             // + provider info
-            response += receivingTime + "\\|" + new String(payloadProvider);
+            response += receivingTime + "|" + new String(payloadProvider);
         }
         else
             return "null request";
@@ -81,7 +81,4 @@ public class ProviderWS {
 
         return response;
     }
-
-    
-
 }
