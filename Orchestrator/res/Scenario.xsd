@@ -34,7 +34,15 @@
                           <xs:element name="request" maxOccurs="unbounded" minOccurs="0">
                             <xs:complexType>
                               <xs:sequence>
-                                <xs:element type="xs:byte" name="providerId"/>
+                                <xs:element name="providerSettings">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element type="xs:byte" name="providerId"/>
+                                      <xs:element type="xs:short" name="responseSize"/>
+                                      <xs:element type="xs:short" name="processingTime"/>
+                                    </xs:sequence>
+                                  </xs:complexType>
+                                </xs:element>
                                 <xs:element type="xs:short" name="size"/>
                                 <xs:element type="xs:short" name="sendingTime"/>
                                 <xs:element type="xs:string" name="periodic"/>
@@ -52,22 +60,9 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="producers">
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element name="producer" maxOccurs="unbounded" minOccurs="0">
-                <xs:complexType>
-                  <xs:sequence>
-                    <xs:element type="xs:string" name="name"/>
-                    <xs:element type="xs:byte" name="id"/>
-                    <xs:element type="xs:byte" name="processingTime"/>
-                  </xs:sequence>
-                </xs:complexType>
-              </xs:element>
-            </xs:sequence>
-          </xs:complexType>
-        </xs:element>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
 </xs:schema>
+
+

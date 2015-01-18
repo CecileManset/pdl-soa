@@ -4,7 +4,7 @@
         <id>1</id>
         <duration>PT0.500S</duration>
         <esb>
-            <name>talendESB</name>
+            <name>openESB</name>
             <version>1.0.0</version>
         </esb>
         <date>15/11/14</date>
@@ -16,7 +16,11 @@
             <id>1</id>
             <requests>
                 <request>
-                    <providerId>2</providerId>
+                    <providerSettings>
+                        <providerId>2</providerId>
+                        <responseSize>200</responseSize>
+                        <processingTime>500</processingTime>
+                    </providerSettings>
                     <size>256</size>
                     <sendingTime>400</sendingTime>
                     <periodic>true</periodic>
@@ -24,13 +28,21 @@
                     <numberRequests>10</numberRequests>
                 </request>
                 <request>
-                    <providerId>1</providerId>
+                    <providerSettings>
+                        <providerId>1</providerId>
+                        <responseSize>20</responseSize>
+                        <processingTime>1000</processingTime>
+                    </providerSettings>
                     <size>50</size>
                     <sendingTime>100</sendingTime>
                     <periodic>false</periodic>
                 </request>
                 <request>
-                    <providerId>3</providerId>
+                    <providerSettings>
+                        <providerId>3</providerId>
+                        <responseSize>60</responseSize>
+                        <processingTime>500</processingTime>
+                    </providerSettings>
                     <size>25</size>
                     <sendingTime>0</sendingTime>
                     <periodic>true</periodic>
@@ -44,7 +56,11 @@
             <id>2</id>
             <requests>
                 <request>
-                    <providerId>1</providerId>
+                    <providerSettings>
+                        <providerId>1</providerId>
+                        <responseSize>200</responseSize>
+                        <processingTime>100</processingTime>
+                    </providerSettings>
                     <size>50</size>
                     <sendingTime>0</sendingTime>
                     <periodic>true</periodic>
@@ -52,7 +68,11 @@
                     <numberRequests>10</numberRequests>
                 </request>
                 <request>
-                    <providerId>2</providerId>
+                    <providerSettings>
+                        <providerId>2</providerId>
+                        <responseSize>0</responseSize>
+                        <processingTime>300</processingTime>
+                    </providerSettings>
                     <size>25</size>
                     <sendingTime>300</sendingTime>
                     <periodic>false</periodic>
@@ -60,22 +80,7 @@
             </requests>
         </consumer>
     </consumers>
-    <producers>
-        <producer>
-            <name>producer1</name>
-            <id>1</id>
-            <processingTime>20</processingTime>
-        </producer>
-        <producer>
-            <name>producer2</name>
-            <id>2</id>
-            <processingTime>40</processingTime>
-        </producer>
-        <producer>
-            <name>producer3</name>
-            <id>3</id>
-            <processingTime>100</processingTime>
-        </producer>
-    </producers>
 </scenario>
+
+
 

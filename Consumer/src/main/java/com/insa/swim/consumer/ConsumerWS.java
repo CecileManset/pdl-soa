@@ -159,6 +159,8 @@ public class ConsumerWS {
             logger.debug("wait configuration...");
             String received = amqp.receiveConfigurationMessage();
             logger.debug("message config : " + received);
+            scenario = new Scenario();
+            scenario.init(received);
             logger.debug("wait start message...");
             String start = amqp.receiveStartMessage();
 
@@ -167,7 +169,7 @@ public class ConsumerWS {
 
             amqp.closeConnection();
         } catch (Exception ex) {
-            logger.error(ex.toString());
+            ex.printStackTrace();
             logger.error("error initialisation" + this.getClass());
         }
         return "done";
