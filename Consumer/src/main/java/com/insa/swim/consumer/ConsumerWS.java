@@ -209,4 +209,5 @@ public class ConsumerWS {
     public void setScenario(Scenario scenario) {
         this.scenario = scenario;
     }
+    
 }
