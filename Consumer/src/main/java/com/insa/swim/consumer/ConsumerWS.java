@@ -43,7 +43,11 @@ public class ConsumerWS {
     @WebServiceRef(wsdlLocation = "WEB-INF/wsdl/localhost_9080/CompositeApp1Service1/casaPort1.wsdl")
     private CompositeApp1Service1 service1;
     private static final Logger logger = LogManager.getLogger("Consumer");
-    private Scenario scenario = null;
+//    private Scenario scenario = null;
+     private Scenario scenario = new Scenario("INFO|0|name|0|10|CONSUMER|2|C2"
+                                                            + "|REQUEST|1|0021|4|0|0|0|2000|5"
+                                                            + "|REQUEST|3|0023|2|0|0|0|5000|10"
+                                                            + "|REQUEST|4|0024|10|0|0|0|10000|2");
 
 
     /**
@@ -163,13 +167,23 @@ public class ConsumerWS {
 //        return "done";
 //    }
 
-    // TODO
+    // format a request from the scenario to further be sent to the provider
     private String constructRequest(Request req) {
-        String request = new String();
+        String consumerID = Integer.toString(scenario.getConsumerId());
+        String providerID = Integer.toString(req.getProviderId());
+        String requestSize = Integer.toString(req.getSize());
+        String responseSize = Integer.toString(req.getResponseSize());
+        String processingTime = Integer.toString(req.getProcessingTime());
+        String sendingDate = Integer.toString(req.getSendingTime());
+        char[] payloadConsumer = new char[req.getSize()];
 
-        request = "1|1|3|4|6000|SendingDateConsumer|payloadConsumer";
+        // construct payload
+        for (int i = 0 ; i < payloadConsumer.length ; i++) {
+            payloadConsumer[i] = 'x';
+        }
 
-        return request;
+        // req format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|PayloadCons
+        return consumerID + "|" + providerID  + "|" + requestSize  + "|" + responseSize + "|" + processingTime + "|" + sendingDate + "|" + new String(payloadConsumer);
     }
 
     /**
@@ -205,6 +219,7 @@ public class ConsumerWS {
         public void run() {
             System.out.println("-------------------------------------------------------------------Request sent : " + request);
             String response = sendRequest(request.toString(), providerNumber);
+            System.out.println("-------------------------------------------------------------------Response : " + response);
             logger.debug("Response from P" + providerNumber + " to " + Thread.currentThread().getName() + " : " + response);
 
             while(true) {
