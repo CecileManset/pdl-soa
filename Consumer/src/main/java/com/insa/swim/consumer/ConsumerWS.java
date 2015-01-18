@@ -6,6 +6,7 @@ package com.insa.swim.consumer;
 
 import compositeapp1.CompositeApp1Service1;
 import com.insa.swim.consumer.scenario.Scenario;
+import com.insa.swim.consumer.scenario.Scenario.Request;
 import compositeapp1.CompositeApp1Service2;
 import compositeapp1.CompositeApp1Service3;
 import compositeapp1.CompositeApp1Service4;
@@ -23,10 +24,12 @@ import org.apache.logging.log4j.Logger;
 @WebService()
 public class ConsumerWS {
 
-    public static final int NB_PROVIDERS = 4;
+//    public static final int NB_PROVIDERS = 4;
     static protected ConsumerAMQPHandler amqp;
     // req format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|PayloadCons
-    private String request = "1|1|3|4|6000|SendingDateConsumer|payloadConsumer";
+//    private String[] requests = {"1|1|3|4|6000|SendingDateConsumer|payloadConsumer",
+//                                            "1|3|100|2|2000|SendingDateConsumer3|payloadConsumer3",
+//                                            "1|4|10|10|4000|SendingDateConsumer4|payloadConsumer4"};
 
     /*
      * These are the referenes of the services provided by the bus to join the controller
@@ -41,6 +44,7 @@ public class ConsumerWS {
     private CompositeApp1Service1 service1;
     private static final Logger logger = LogManager.getLogger("Consumer");
     private Scenario scenario = null;
+
 
     /**
      * Deprecated
@@ -140,6 +144,9 @@ public class ConsumerWS {
         }
         logger.debug("message received : " + response);
 
+        // étrange : affichage des requêtes s'arrête au pipe
+        // TODO : prendre les requêtes du scénario et les exécuter une par une + test
+
         return response;
     }
 
@@ -148,12 +155,21 @@ public class ConsumerWS {
      * @param conf
      * @return
      */
-    @WebMethod(operationName = "configConsumer")
-    public String configConsumer(
-            @WebParam(name = "conf") String conf) {
-        logger.debug("message received : " + conf);
-        scenario = new Scenario(conf);
-        return "done";
+//    @WebMethod(operationName = "configConsumer")
+//    public String configConsumer(
+//            @WebParam(name = "conf") String conf) {
+//        logger.debug("message received : " + conf);
+//        scenario = new Scenario(conf);
+//        return "done";
+//    }
+
+    // TODO
+    private String constructRequest(Request req) {
+        String request = new String();
+
+        request = "1|1|3|4|6000|SendingDateConsumer|payloadConsumer";
+
+        return request;
     }
 
     /**
@@ -162,10 +178,16 @@ public class ConsumerWS {
      */
     @WebMethod(operationName = "startSendingRequests")
     public void startSendingRequests() {
-        logger.debug("Consumer " + this.getClass() + " starts sending requests");
-        for (int i = 1; i <= NB_PROVIDERS; i++) {
+        int providerNumber;
+
+        for (Request req : scenario.getRequestList()) {
+            providerNumber = req.getProviderId();
+
+        
+            logger.debug("Consumer " + this.getClass() + " starts sending requests");
+
             // Create a thread that handles the request sending to provider i (send, wait for response and send it to app)
-            Thread thread = new Thread(new ConsumerThread(i), this.getClass().toString());
+            Thread thread = new Thread(new ConsumerThread(providerNumber, constructRequest(req)), this.getClass().toString());
             thread.start();         
         }
     }
@@ -173,9 +195,11 @@ public class ConsumerWS {
     // Thread class to handle sending requests in parallel
     private class ConsumerThread implements Runnable {
         int providerNumber; // Provider to send requests to
+        String request;
 
-        public ConsumerThread(int providerNumber) {
+        public ConsumerThread(int providerNumber, String request) {
             this.providerNumber = providerNumber;
+            this.request = request;
         }
 
         public void run() {
@@ -183,6 +207,8 @@ public class ConsumerWS {
             String response = sendRequest(request.toString(), providerNumber);
             logger.debug("Response from P" + providerNumber + " to " + Thread.currentThread().getName() + " : " + response);
 
+            while(true) {
+            }
             //TODO envoyer les résultats à l'application par AMQP
         }
     }
