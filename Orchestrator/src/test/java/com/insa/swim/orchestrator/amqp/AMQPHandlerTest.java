@@ -5,6 +5,9 @@
  */
 package com.insa.swim.orchestrator.amqp;
 
+import com.rabbitmq.client.ConsumerCancelledException;
+import com.rabbitmq.client.ShutdownSignalException;
+import java.io.IOException;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
@@ -35,9 +38,10 @@ public class AMQPHandlerTest {
 
     /**
      * Test of receiveResultMessage method, of class AMQPHandler.
+     * @throws java.lang.InterruptedException
      */
     @Test
-    public void testReceiveResultMessage() throws Exception {
+    public void testReceiveResultMessage() throws ShutdownSignalException, ConsumerCancelledException, InterruptedException {
         System.out.println("receiveResultMessage");
         AMQPHandler instance = Mockito.mock(AMQPHandler.class);
         Mockito.when(instance.receiveResultMessage()).thenReturn("result", "not a result");
@@ -55,9 +59,10 @@ public class AMQPHandlerTest {
 
     /**
      * Test of sendStart method, of class AMQPHandler.
+     * @throws java.io.IOException
      */
     @Test
-    public void testSendStart() throws Exception {
+    public void testSendStart() throws IOException {
         System.out.println("sendStart");
         AMQPHandler instance = Mockito.mock(AMQPHandler.class);
         instance.sendStart();
@@ -66,9 +71,10 @@ public class AMQPHandlerTest {
 
     /**
      * Test of sendConf method, of class AMQPHandler.
+     * @throws java.io.IOException
      */
     @Test
-    public void testSendConf() throws Exception {
+    public void testSendConf() throws IOException{
         System.out.println("sendConf");        
         String msgC1 = "confC1";
         String msgC2 = "confC2";
