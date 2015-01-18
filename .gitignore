@@ -1,3 +1,4 @@
 Consumer/target/*
 Provider/target/*
 Orchestrator/target/*
+/Consumer/nbproject/

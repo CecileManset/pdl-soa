@@ -27,35 +27,44 @@ public class Scenario {
     }
 
     public void init(String conf) {
-        // TODO parse conf to initialize the attributes
-        this.conf = conf;
-        requestList = new ArrayList<Request>();
+        try {
 
-        String[] requests = conf.split("\\|REQUEST\\|");
-        String[] infos = requests[0].split("\\|");
+            this.conf = conf;
+            requestList = new ArrayList<Request>();
 
-        id = Integer.parseInt(infos[1]);
-        name = infos[2];
-        date = infos[3];
-        duration = infos[4];
-        //infos[5] = CONSUMER
-        consumerId = Integer.parseInt(infos[6]);
-        consumerName = infos[7];
+            String[] requests = conf.split("\\|REQUEST\\|");
+            String[] infos = requests[0].split("\\|");
 
-        for (int i = 1; i < requests.length; i++) {
-            Request req = new Request();
-            String[] champs = requests[i].split("\\|");
+            id = Integer.parseInt(infos[1]);
 
-            req.providerId = Integer.parseInt(champs[0]);
-            req.sendingTime = Integer.parseInt(champs[1]);
-            req.size = Integer.parseInt(champs[2]);
-            req.periodic = Boolean.parseBoolean(champs[3]);
-            if (req.periodic) {
-                req.period = Integer.parseInt(champs[4]);
-                req.numberRequest = Integer.parseInt(champs[5]);
+            name = infos[2];
+
+            date = infos[3];
+            duration = infos[4];
+            //infos[5] = CONSUMER
+            consumerId = Integer.parseInt(infos[6]);
+            consumerName = infos[7];
+
+            for (int i = 1; i < requests.length; i++) {
+                Request req = new Request();
+                String[] champs = requests[i].split("\\|");
+
+                req.providerId = Integer.parseInt(champs[0]);
+                req.sendingTime = Integer.parseInt(champs[1]);
+                req.size = Integer.parseInt(champs[2]);
+                req.periodic = Boolean.parseBoolean(champs[3]);
+                if (req.periodic) {
+                    req.period = Integer.parseInt(champs[4]);
+                    req.numberRequest = Integer.parseInt(champs[5]);
+                }
+                req.processingTime = Integer.parseInt(champs[6]);
+                req.responseSize = Integer.parseInt(champs[7]);
+
+
+                requestList.add(req);
             }
-
-            requestList.add(req);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -131,8 +140,26 @@ public class Scenario {
         private boolean periodic;
         private int period;
         private int numberRequest;
+        private int processingTime;
+        private int responseSize;
 
         public Request() {
+        }
+
+        public int getProcessingTime() {
+            return processingTime;
+        }
+
+        public void setProcessingTime(int processingTime) {
+            this.processingTime = processingTime;
+        }
+
+        public int getResponseSize() {
+            return responseSize;
+        }
+
+        public void setResponseSize(int responseSize) {
+            this.responseSize = responseSize;
         }
 
         public int getNumberRequest() {

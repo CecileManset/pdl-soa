@@ -53,18 +53,18 @@ public class ConsumerWSTest {
         assertEquals(expResult, result);
     }
 
-    @Test
-    public void testConfigConsumer() {
-        System.out.println("configConsumer");
-        String conf = "INFORMATION|1|scenario1|15/11/14|PT0.500S|CONSUMER|1|consumer1|REQUEST|2|400|256|true|200|10|REQUEST|1|100|50|false|null|null|REQUEST|3|0|25|true|100|10|";
-        String expResult = "done";
-
-        ConsumerWS instance = mock(ConsumerWS.class);
-        when(instance.configConsumer("INFORMATION|1|scenario1|15/11/14|PT0.500S|CONSUMER|1|consumer1|REQUEST|2|400|256|true|200|10|REQUEST|1|100|50|false|null|null|REQUEST|3|0|25|true|100|10|")).thenReturn("done");
-
-        String result = instance.configConsumer(conf);
-        assertEquals(expResult, result);
-    }
+//    @Test
+//    public void testConfigConsumer() {
+//        System.out.println("configConsumer");
+//        String conf = "INFORMATION|1|scenario1|15/11/14|PT0.500S|CONSUMER|1|consumer1|REQUEST|2|400|256|true|200|10|REQUEST|1|100|50|false|null|null|REQUEST|3|0|25|true|100|10|";
+//        String expResult = "done";
+//
+//        ConsumerWS instance = mock(ConsumerWS.class);
+//        when(instance.configConsumer("INFORMATION|1|scenario1|15/11/14|PT0.500S|CONSUMER|1|consumer1|REQUEST|2|400|256|true|200|10|REQUEST|1|100|50|false|null|null|REQUEST|3|0|25|true|100|10|")).thenReturn("done");
+//
+//        String result = instance.configConsumer(conf);
+//        assertEquals(expResult, result);
+//    }
 
 //    @Test
 //    public void testStartSendingRequests() {
@@ -89,4 +89,5 @@ public class ConsumerWSTest {
         response = instance.sendRequest(request, 1);
         assertEquals(expResponse, response);
     }
+
 }

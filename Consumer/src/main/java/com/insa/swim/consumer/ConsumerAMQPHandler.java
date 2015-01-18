@@ -95,7 +95,7 @@ public class ConsumerAMQPHandler {
     public void sendMessage(String exchange, String message) throws IOException {
         // By default there is no routing key or property
         this.channel.basicPublish(exchange, "", null, message.getBytes());
-        System.out.println("Message sent : " + message);
+        //System.out.println("Message sent : " + message);
     }
 
     /**
@@ -122,6 +122,9 @@ public class ConsumerAMQPHandler {
     public String receiveConfigurationMessage() throws ShutdownSignalException, ConsumerCancelledException, InterruptedException {
         QueueingConsumer.Delivery delivery = this.configurationConsumer.nextDelivery();
         String message = new String(delivery.getBody());
+        logger.trace("Configuration received (non parsed) : " + message);
+        message = message.replace("+", "|");
+        logger.debug("Configuration received : " + message);
         return message;
     }
 

@@ -11,7 +11,7 @@ import javax.jws.WebParam;
  *
  * @author tp1_g2
  */
-@WebService(serviceName = "ConsumerC1")
+@WebService(serviceName = "ConsumerHello")
 public class ConsumerC1 {
 
     /**
