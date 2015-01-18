@@ -67,6 +67,7 @@ public class ConsumerWSTest {
     }
 
     // Deprecated : startSendingRequests doesn't return anything
+    /*
     @Test
     public void testStartSendingRequests() {
         System.out.println("startSendingRequests");
@@ -77,4 +78,5 @@ public class ConsumerWSTest {
             verify(instance, times(1)).sendPing("ping", i);
         }
     }
+     * */
 }
