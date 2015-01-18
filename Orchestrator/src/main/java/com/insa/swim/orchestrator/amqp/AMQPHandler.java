@@ -88,7 +88,14 @@ public class AMQPHandler {
     private void sendMessage(String exchange, String routingKey, String message) throws IOException {
         // By default there is no routing key or property
         this.channel.basicPublish(exchange, routingKey, null, message.getBytes());
-        System.out.println("Message sent : " + message);
+        /*
+        logger.trace("Message sent : " + message);
+        for (byte m : message.getBytes()) {
+            System.out.print(Byte.valueOf(m) + " ");
+        }
+        System.out.println();
+        logger.debug("Message bytes : " );
+        */
     }
 
     /**
@@ -102,7 +109,7 @@ public class AMQPHandler {
     public String receiveResultMessage() throws ShutdownSignalException, ConsumerCancelledException, InterruptedException {
         QueueingConsumer.Delivery delivery = this.resultsConsumer.nextDelivery();
         String message = new String(delivery.getBody());
-        System.out.println("Message received : " + message);
+        logger.debug("Result message received : " + message);
         return message;
     }
 
@@ -112,6 +119,7 @@ public class AMQPHandler {
     }
 
     public void sendConf(String consumer, String msg) throws IOException {
+        msg = msg.replace('|', '+');
         this.sendMessage(this.CONFIG_EXCHANGE_NAME, consumer, msg);
     }
 
