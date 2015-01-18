@@ -13,6 +13,7 @@ import com.rabbitmq.client.ConsumerCancelledException;
 import com.rabbitmq.client.QueueingConsumer;
 import com.rabbitmq.client.ShutdownSignalException;
 import java.io.IOException;
+import java.util.logging.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,7 +26,7 @@ public class AMQPHandler {
     private static final Logger logger = LogManager.getLogger(AMQPHandler.class);
 
     // Variables
-    private static final String host = "127.0.0.1";
+    private static final String host = "localhost";
     private Channel channel;
     private String[] consumers = {"C1", "C2"};
     private Connection connection = null;
@@ -53,10 +54,10 @@ public class AMQPHandler {
     
     public void closeConnection() {
         try {
-        this.channel.close();
-        this.connection.close();
-        } catch (Exception e) {
-            logger.error("Unable to close AMQP connection");
+            this.channel.close();
+            this.connection.close();
+        } catch (IOException ex) {
+            logger.error("[close connection] Unable to close AMQP connection \n" + ex.getMessage());
         }
     }
     
@@ -88,13 +89,12 @@ public class AMQPHandler {
     private void sendMessage(String exchange, String routingKey, String message) throws IOException {
         // By default there is no routing key or property
         this.channel.basicPublish(exchange, routingKey, null, message.getBytes());
-        System.out.println("Message sent : " + message);
     }
 
     /**
-     * This function waits (blocking way) a message on the result channel
+     * Waits (blocking way) a message on the result channel
      *
-     * @return
+     * @return received message
      * @throws ShutdownSignalException
      * @throws ConsumerCancelledException
      * @throws InterruptedException
@@ -102,17 +102,29 @@ public class AMQPHandler {
     public String receiveResultMessage() throws ShutdownSignalException, ConsumerCancelledException, InterruptedException {
         QueueingConsumer.Delivery delivery = this.resultsConsumer.nextDelivery();
         String message = new String(delivery.getBody());
-        System.out.println("Message received : " + message);
+        logger.debug("[result channel] Message received : " + message);
         return message;
     }
 
+    /**
+     * Sends a start message to all the consumers
+     * @throws IOException 
+     */
     public void sendStart() throws IOException {
-        String startMsg = ("this is the start message");
+        String startMsg = ("start");
         this.sendMessage(this.START_EXCHANGE_NAME, "", startMsg);
+        logger.debug("[start channel] Message sent : " + startMsg);
     }
 
+    /**
+     * Sends a configuration message for a consumer
+     * @param consumer consumer name
+     * @param msg message to send
+     * @throws IOException 
+     */
     public void sendConf(String consumer, String msg) throws IOException {
         this.sendMessage(this.CONFIG_EXCHANGE_NAME, consumer, msg);
+        logger.debug("[configuration channel] Message sent : " + msg);
     }
 
 }
