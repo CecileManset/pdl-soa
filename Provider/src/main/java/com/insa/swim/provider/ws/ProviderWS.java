@@ -46,9 +46,11 @@ public class ProviderWS {
         String response = new String();
         String[] parsedRequest;
         char[] payloadProvider;
+        Date receptionDate;
+        Date sendingDate;
 
         if (request != null) {
-            Date receivingTime = new Date();
+            receptionDate = new Date();
 
             logger.debug("message received by " + this.getClass() + ": " + request);
 
@@ -71,8 +73,9 @@ public class ProviderWS {
             for (int i = 0 ; i < parsedRequest.length-1 ; i++) {
                 response += parsedRequest[i] + "|";
             }
+            sendingDate = new Date();
             // + provider info
-            response += receivingTime + "|" + new String(payloadProvider);
+            response += Long.toString(receptionDate.getTime()) + "|" + Long.toString(sendingDate.getTime()) + "|" + new String(payloadProvider);
         }
         else
             return "null request";

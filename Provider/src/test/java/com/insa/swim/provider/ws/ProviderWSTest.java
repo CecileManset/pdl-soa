@@ -69,11 +69,12 @@ public class ProviderWSTest {
 //        assertEquals("1|1|6000|4|SendingTimeConsumer|payload|" + receivingDate + "|", instance.processRequest("1|1|6000|4|SendingTimeConsumer|payload"));
 
         ProviderWS instance = new ProviderWS();
-        String request = "1|1|3|4|6000|SendingDateConsumer|payloadConsumer";
+        String request = "1|1|3|4|6000|1111111|payloadConsumer";
         String response = instance.processRequest(request);
 
-        assertNotNull(response.split("\\|")[6]); // To change to a real assertion
-        assertEquals("----", response.split("\\|")[7]);
+        assertNotNull(response.split("\\|")[6]); // To change to a real assertion - reception date
+        assertNotNull(response.split("\\|")[7]); // To change to a real assertion - sending date
+        assertEquals("----", response.split("\\|")[8]);
 
     }
 
