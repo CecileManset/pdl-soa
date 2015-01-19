@@ -35,25 +35,25 @@ public class Result {
     private int processingTime;
 
     @XmlAttribute(name ="sendingDateConsumer", required = true)
-    private int sendingDateConsumer;
+    private long sendingDateConsumer;
     
     @XmlAttribute(name ="receptionDateProvider", required = true)
-    private int receptionDateProvider;
+    private long receptionDateProvider;
     
     @XmlAttribute(name ="sendingDateProvider", required = true)
-    private int sendingDateProvider;
+    private long sendingDateProvider;
     
     @XmlAttribute(name ="receptionDateConsumer", required = true)
-    private int receptionDateConsumer;
+    private long receptionDateConsumer;
 
     @XmlAttribute(name ="C2PTime", required = true)
-    private int C2PTime;
+    private long C2PTime;
 
     @XmlAttribute(name ="P2CTime", required = true)
-    private int P2CTime;
+    private long P2CTime;
 
     public Result(String resultString) {
-        resultString = "1|1|50|100|1000|1421678470|1421678570|1421678670|1421678770";
+//        resultString = "1|1|50|100|1000|1421678470|1421678570|1421678670|1421678770";
 //        int min = 1;
 //        int max = 5;
 //        int consumerId = min + (int) (Math.random() * (max - min) + 1);
@@ -69,19 +69,19 @@ public class Result {
         this.requestSize = Integer.parseInt(resultParsed[2]);
         this.responseSize = Integer.parseInt(resultParsed[3]);
         this.processingTime = Integer.parseInt(resultParsed[4]);
-        this.sendingDateConsumer = Integer.parseInt(resultParsed[5]);
-        this.receptionDateProvider = Integer.parseInt(resultParsed[6]);
-        this.sendingDateProvider = Integer.parseInt(resultParsed[7]);
-        this.receptionDateConsumer = Integer.parseInt(resultParsed[8]);
+        this.sendingDateConsumer = Long.parseLong(resultParsed[5]);
+        this.receptionDateProvider = Long.parseLong(resultParsed[6]);
+        this.sendingDateProvider = Long.parseLong(resultParsed[7]);
+        this.receptionDateConsumer = Long.parseLong(resultParsed[8]);
         this.C2PTime = this.receptionDateProvider - this.sendingDateConsumer;
         this.P2CTime = this.receptionDateConsumer - this.sendingDateProvider;
     }
 
-    public int getC2PTime() {
+    public long getC2PTime() {
         return C2PTime;
     }
 
-    public int getP2CTime() {
+    public long getP2CTime() {
         return P2CTime;
     }
 
@@ -105,19 +105,19 @@ public class Result {
         return processingTime;
     }
 
-    public int getSendingDateConsumer() {
+    public long getSendingDateConsumer() {
         return sendingDateConsumer;
     }
 
-    public int getReceptionDateProvider() {
+    public long getReceptionDateProvider() {
         return receptionDateProvider;
     }
 
-    public int getSendingDateProvider() {
+    public long getSendingDateProvider() {
         return sendingDateProvider;
     }
 
-    public int getReceptionDateConsumer() {
+    public long getReceptionDateConsumer() {
         return receptionDateConsumer;
     }
 
