@@ -7,9 +7,13 @@ package com.insa.swim.consumer;
 import compositeapp1.CompositeApp1Service1;
 import com.insa.swim.consumer.scenario.Scenario;
 import com.insa.swim.consumer.scenario.Scenario.Request;
+import com.rabbitmq.client.ConsumerCancelledException;
+import com.rabbitmq.client.ShutdownSignalException;
 import compositeapp1.CompositeApp1Service2;
 import compositeapp1.CompositeApp1Service3;
 import compositeapp1.CompositeApp1Service4;
+import java.io.IOException;
+import java.util.Date;
 import javax.jws.WebService;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -58,19 +62,14 @@ public class ConsumerWS {
      */
     @WebMethod(operationName = "sendPing")
     public String sendPing(@WebParam(name = "start") String txt) {
-        try { // Call Web Service Operation
+         // Call Web Service Operation
             compositeapp1.P1WebService port = service1.getCasaPort1();
             // TODO initialize WS operation arguments here
             java.lang.String ping = txt;
             // TODO process result here
             java.lang.String result = port.pingpong(ping);
             logger.debug("message received : " + result);
-            return result;
-        } catch (Exception ex) {
-            // TODO handle custom exceptions here
-            ex.printStackTrace();
-            return "Gros fail!";
-        }
+            return result;        
     }
 
     /**
@@ -81,33 +80,27 @@ public class ConsumerWS {
      */
     public String sendPing(String txt, int provider) {
         java.lang.String result = "BigFail";
-        try {
-            switch (provider) {
-                case 1:
-                    compositeapp1.P1WebService port1 = service1.getCasaPort1();
-                    result = port1.pingpong("ping");
-                    break;
-                case 2:
-                    compositeapp1.P2WebService port2 = service2.getCasaPort2();
-                    result = port2.pingpong("ping");
-                    break;
-                case 3:
-                    compositeapp1.P3WebService port3 = service3.getCasaPort3();
-                    result = port3.pingpong("ping");
-                    break;
-                case 4:
-                    compositeapp1.P4WebService port4 = service4.getCasaPort4();
-                    result = port4.pingpong("ping");
-                    break;
-                default:
-                    ;
-            }
-        } catch (Exception ex) {
-            logger.error("message received : " + result);
-            ex.printStackTrace();
+        switch (provider) {
+            case 1:
+                compositeapp1.P1WebService port1 = service1.getCasaPort1();
+                result = port1.pingpong("ping");
+                break;
+            case 2:
+                compositeapp1.P2WebService port2 = service2.getCasaPort2();
+                result = port2.pingpong("ping");
+                break;
+            case 3:
+                compositeapp1.P3WebService port3 = service3.getCasaPort3();
+                result = port3.pingpong("ping");
+                break;
+            case 4:
+                compositeapp1.P4WebService port4 = service4.getCasaPort4();
+                result = port4.pingpong("ping");
+                break;
+            default:
+                ;
         }
         logger.debug("message received : " + result);
-
         return result;
     }
 
@@ -188,7 +181,6 @@ public class ConsumerWS {
 
     /**
      * Test all the consumers with a ping request
-     * @return should return as many pong as providers
      */
     @WebMethod(operationName = "startSendingRequests")
     public void startSendingRequests() {
@@ -222,9 +214,29 @@ public class ConsumerWS {
             System.out.println("-------------------------------------------------------------------Response : " + response);
             logger.debug("Response from P" + providerNumber + " to " + Thread.currentThread().getName() + " : " + response);
 
-            while(true) {
-            }
             //TODO envoyer les résultats à l'application par AMQP
+            String startMsg = "ping";
+            String pingResponse = "";
+
+            pingResponse = sendPing(startMsg, providerNumber);
+            Date receptionDateConsumer = new Date();
+            logger.debug("Response from P" + providerNumber + " to " + Thread.currentThread().getName() + " : " + pingResponse);
+            
+
+            // envoyer les résultats à l'application par AMQP        
+            String[] responseParts = pingResponse.split("|");
+            String result = "";
+            int i;
+            for (i=0; i<8; i++){
+                result += responseParts[i] + "|";
+            }
+            result += "|" + receptionDateConsumer;
+            try {
+                logger.debug("result : " + result);
+                amqp.sendResult(result);
+            } catch (IOException ex) {
+                logger.error("[Consumer thread] Unable to send result to application" + ex.getMessage());
+            }
         }
     }
 
@@ -249,14 +261,23 @@ public class ConsumerWS {
             sendRequests();
 
             amqp.closeConnection();
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (IOException ex) {
             logger.error("error initialisation" + this.getClass());
+            ex.printStackTrace();
+        } catch (ShutdownSignalException ex) {
+            logger.error("error initialisation" + this.getClass());
+            ex.printStackTrace();
+        } catch (ConsumerCancelledException ex) {
+            logger.error("error initialisation" + this.getClass());
+            ex.printStackTrace();
+        } catch (InterruptedException ex) {
+            logger.error("error initialisation" + this.getClass());
+            ex.printStackTrace();
         }
         return "done";
     }
 
-    // TODO use multirhead
+    // TODO use multitrhead
     protected void sendRequests() {
         try {
             // STEP 3 : Send requests to providers and results to application
@@ -274,4 +295,5 @@ public class ConsumerWS {
     public void setScenario(Scenario scenario) {
         this.scenario = scenario;
     }
+    
 }
