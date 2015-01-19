@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+
 /**
  *
  * @author Christelle
@@ -18,39 +19,84 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name="Result")
 public class Result {
-    @XmlAttribute(name ="name", required = true)
-     private String name;
-    
-    @XmlAttribute(name ="time", required = true)
-    private String time;
-  
+    @XmlAttribute(name ="consumer", required = true)
+     private String consumer;
 
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
+    @XmlAttribute(name ="provider", required = true)
+    private String provider;
+
+    @XmlAttribute(name ="timestamp", required = true)
+     private int timestamp;
+
+    @XmlAttribute(name ="C2PTime", required = true)
+     private int C2PTime;
+
+    @XmlAttribute(name ="P2CTime", required = true)
+    private int P2CTime;
+
+    public Result(String resultString) {
+        int min = 1;
+        int max = 5;
+        int consumerId = min + (int) (Math.random() * (max - min) + 1);
+        this.consumer = "consumer" + consumerId;
+        int providerId = min + (int) (Math.random() * (max - min) + 1);
+        this.provider = "provider" + providerId;
+        this.C2PTime = providerId * consumerId * 12;
+        this.P2CTime = consumerId * 27;
     }
 
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
+    public int getC2PTime() {
+        return C2PTime;
     }
 
-    /**
-     * @return the time
-     */
-    public String getTime() {
-        return time;
+    public int getP2CTime() {
+        return P2CTime;
     }
 
-    /**
-     * @param time the time to set
-     */
-    public void setTime(String time) {
-        this.time = time;
+    public String getConsumer() {
+        return consumer;
     }
-    
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public int getTimestamp() {
+        return timestamp;
+    }
+
+    public void setC2PTime(int C2PTime) {
+        this.C2PTime = C2PTime;
+    }
+
+    public void setP2CTime(int P2CTime) {
+        this.P2CTime = P2CTime;
+    }
+
+    public void setConsumer(String consumer) {
+        this.consumer = consumer;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
+
+    public void setTimestamp(int timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public org.json.JSONObject toJSON() {
+        org.json.JSONObject resultJSON = new org.json.JSONObject();
+        resultJSON.put("consumer", consumer);
+        resultJSON.put("provider", provider);
+        resultJSON.put("C2PTime", C2PTime);
+        resultJSON.put("P2CTime", P2CTime);
+        resultJSON.put("timestamp", timestamp);
+        return resultJSON;
+    }
+
+    public String toString() {
+        return toJSON().toString();
+    }
+
 }
