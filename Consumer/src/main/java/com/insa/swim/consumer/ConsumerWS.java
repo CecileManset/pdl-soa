@@ -83,7 +83,7 @@ public class ConsumerWS {
         return result;
     }
 
-     /**
+    /**
      * This method tests the communication with a specifit provider throurgh the bus
      * @param request format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|PayloadCons
      * @param provider : id of the provider
@@ -94,7 +94,7 @@ public class ConsumerWS {
         String response = "No response from provider " + provider;
 
         try {
-             switch (provider) {
+            switch (provider) {
                 case 1:
                     compositeapp1.P1WebService port1 = service1.getCasaPort1();
                     response = port1.processRequest(request);
@@ -122,7 +122,7 @@ public class ConsumerWS {
         return response;
     }
 
-     /**
+    /**
      * This method formats a request from the scenario to be sent to the provider later
      * @param request from scenario
      * @return format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons(ms)|PayloadCons
@@ -140,7 +140,7 @@ public class ConsumerWS {
         Date now;
 
         // construct payload
-        for (int i = 0 ; i < payloadConsumer.length ; i++) {
+        for (int i = 0; i < payloadConsumer.length; i++) {
             payloadConsumer[i] = 'x';
         }
 
@@ -148,7 +148,7 @@ public class ConsumerWS {
         now = new Date();
         sendingDate = Long.toString(now.getTime());
 
-        request = consumerID + "|" + providerID  + "|" + requestSize  + "|" + responseSize + "|" + processingTime + "|" + sendingDate + "|" + new String(payloadConsumer);
+        request = consumerID + "|" + providerID + "|" + requestSize + "|" + responseSize + "|" + processingTime + "|" + sendingDate + "|" + new String(payloadConsumer);
         logger.debug("Constructed request : " + request.replace("|", ";"));
 
         // req format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|PayloadCons
@@ -164,7 +164,7 @@ public class ConsumerWS {
 
         for (Request req : scenario.getRequestList()) {
             providerNumber = req.getProviderId();
-        
+
             logger.debug("Consumer " + this.getClass() + " starts sending requests");
 
             // Create a thread that handles the request sending to provider i (send, wait for response and send it to app)
@@ -175,6 +175,7 @@ public class ConsumerWS {
 
     // Thread class to handle sending requests in parallel
     private class ConsumerThread implements Runnable {
+
         int providerNumber; // Provider to send requests to
         String request;
 
@@ -192,7 +193,7 @@ public class ConsumerWS {
             String[] responseParts = response.split("\\|");
             String result = "";
             int i;
-            for (i=0; i<responseParts.length-1; i++){
+            for (i = 0; i < responseParts.length - 1; i++) {
                 result += responseParts[i] + "|";
             }
             receptionDateConsumer = new Date();
@@ -229,11 +230,17 @@ public class ConsumerWS {
             logger.debug("message config : " + received);
             scenario = new Scenario();
             scenario.init(received);
-            logger.debug("wait start message...");
-            String start = amqp.receiveStartMessage();
+            if (scenario.isInitialized()) {
+                logger.debug("wait start message...");
+                String start = amqp.receiveStartMessage();
 
-            logger.debug("message start : " + start);
-            startSendingRequests();
+                logger.debug("message start : " + start);
+                startSendingRequests();
+            }
+            else {
+                logger.error("impossible to create the scenario. The XML may be wrong");
+                amqp.sendResult("bad xml format");
+            }
 
             //amqp.closeConnection();
         } catch (IOException ex) {
