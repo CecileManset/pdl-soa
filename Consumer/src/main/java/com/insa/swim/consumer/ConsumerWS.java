@@ -167,7 +167,7 @@ public class ConsumerWS {
             logger.debug("message start : " + start);
             sendRequests();
 
-            amqp.closeConnection();
+            //amqp.closeConnection();
         } catch (Exception ex) {
             ex.printStackTrace();
             logger.error("error initialisation" + this.getClass());
