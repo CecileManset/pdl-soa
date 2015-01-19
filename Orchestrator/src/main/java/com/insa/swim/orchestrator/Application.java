@@ -26,6 +26,6 @@ public class Application {
         Application app = new Application();
         app.start();
 
-        logger.error("Hello World!");
+        logger.debug("Hello World!");
     }
 }

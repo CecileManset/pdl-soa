@@ -5,6 +5,8 @@ import com.insa.swim.orchestrator.configuration.WebServicesConfiguration;
 import com.insa.swim.orchestrator.xml.IXmlReader;
 import com.insa.swim.orchestrator.xml.Scenario;
 import com.insa.swim.orchestrator.xml.XmlParser;
+import com.rabbitmq.client.ConsumerCancelledException;
+import com.rabbitmq.client.ShutdownSignalException;
 import java.io.IOException;
 import java.util.logging.Level;
 import org.apache.logging.log4j.LogManager;
@@ -55,7 +57,13 @@ public class Controller {
             
             amqp.closeConnection();
 
-        } catch (Exception ex) {
+        } catch (IOException ex) {
+            LOGGER.error(this.getClass() + " " + ex.getMessage());
+        } catch (ShutdownSignalException ex) {
+            LOGGER.error(this.getClass() + " " + ex.getMessage());
+        } catch (ConsumerCancelledException ex) {
+            LOGGER.error(this.getClass() + " " + ex.getMessage());
+        } catch (InterruptedException ex) {
             LOGGER.error(this.getClass() + " " + ex.getMessage());
         }
 
