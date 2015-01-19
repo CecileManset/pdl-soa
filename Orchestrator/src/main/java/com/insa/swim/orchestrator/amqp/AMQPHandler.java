@@ -24,7 +24,9 @@ public class AMQPHandler {
     private static final Logger logger = LogManager.getLogger(AMQPHandler.class);
 
     // Variables
-    private static final String host = "localhost";
+    private static final String host = "localhost"; //replace by vm address
+    /*private static final String username = "test";
+    private static final String password = "test";*/
     private Channel channel;
     private Connection connection = null;
     // Configuration settings
@@ -47,7 +49,10 @@ public class AMQPHandler {
      */
     public AMQPHandler() throws IOException {
         ConnectionFactory factory = new ConnectionFactory();
+        /**factory.setUsername(username);
+        factory.setPassword(password);
         factory.setHost(host);
+        logger.debug("host " + host + "username " + username + "password " + password);*/
         this.connection = factory.newConnection();
         this.channel = this.connection.createChannel();
         this.configureChannel();

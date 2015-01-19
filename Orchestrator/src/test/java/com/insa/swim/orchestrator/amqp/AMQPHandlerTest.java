@@ -12,6 +12,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import static org.mockito.Mockito.times;
 import org.mockito.runners.MockitoJUnitRunner;
 
 /**
@@ -48,12 +49,11 @@ public class AMQPHandlerTest {
         String expResult = "result";
         System.out.println("success case");
         String result = instance.receiveResultMessage();
-        Mockito.verify(instance.receiveResultMessage());
         assertEquals(expResult, result);
         
         System.out.println("failure case");
         result = instance.receiveResultMessage();
-        Mockito.verify(instance.receiveResultMessage());
+        Mockito.verify(instance, times(2)).receiveResultMessage();
         assertNotEquals(expResult, result);
     }
 
@@ -76,13 +76,11 @@ public class AMQPHandlerTest {
     @Test
     public void testSendConf() throws IOException{
         System.out.println("sendConf");        
-        String msgC1 = "confC1";
-        String msgC2 = "confC2";
+        String consumer = "C1";
+        String msg = "confC1";
         AMQPHandler instance = Mockito.mock(AMQPHandler.class);
-        instance.sendConf("C1", msgC1);
-        instance.sendConf("C2", msgC2);
-        Mockito.verify(instance).sendConf("C1", msgC1);
-        Mockito.verify(instance).sendConf("C2", msgC2);
+        instance.sendConf(consumer, msg);
+        Mockito.verify(instance).sendConf(consumer, msg);
     }
     
 }
