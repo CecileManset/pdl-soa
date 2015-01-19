@@ -190,7 +190,7 @@ public class ConsumerWS {
             logger.debug("Response from P" + providerNumber + " to " + Thread.currentThread().getName() + " : " + response.replace("|", ";"));
 
             // envoyer les résultats à l'application par AMQP        
-            String[] responseParts = response.split("\\|");
+            String[] responseParts = response.split("\\|", -1);
             String result = "";
             int i;
             for (i = 0; i < responseParts.length - 1; i++) {
