@@ -235,7 +235,7 @@ public class ConsumerWS {
             logger.debug("message start : " + start);
             startSendingRequests();
 
-            amqp.closeConnection();
+            //amqp.closeConnection();
         } catch (IOException ex) {
             logger.error("error initialisation" + this.getClass());
             ex.printStackTrace();
