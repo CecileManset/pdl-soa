@@ -1,17 +1,20 @@
 package com.insa.swim.orchestrator.configuration;
 
 import com.insa.swim.orchestrator.Controller;
-import static com.insa.swim.orchestrator.Controller.LOGGER;
 import com.insa.swim.orchestrator.amqp.AMQPHandler;
 import com.insa.swim.orchestrator.xml.Scenario;
 import java.io.IOException;
 import java.util.ArrayList;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
  * @author Alex
  */
 public class WebServicesConfiguration {
+
+    private static final Logger LOGGER = LogManager.getLogger(WebServicesConfiguration.class);
 
     private final int BUFF_SIZE = 300;
     private AMQPHandler amqp;

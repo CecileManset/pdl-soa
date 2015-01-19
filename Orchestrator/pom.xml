@@ -8,20 +8,27 @@
     </parent>
     <artifactId>Orchestrator</artifactId>
     <packaging>jar</packaging>
+    <name>Orchestrator</name>
+
     <dependencies>
         <dependency>
-        <groupId>com.rabbitmq</groupId>
-        <artifactId>amqp-client</artifactId>
-        <version>3.4.2</version>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.3.6</version>
         </dependency>
-        
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20140107</version>
+        </dependency>        
     </dependencies>
+    
     <properties>
         <maven.compiler.source>1.6</maven.compiler.source>
         <maven.compiler.target>1.6</maven.compiler.target>
     </properties>
     
-    <build>        
+    <build>
         <pluginManagement>
             <plugins>
                 <plugin>
