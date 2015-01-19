@@ -6,6 +6,7 @@ package com.insa.swim.consumer;
 
 import compositeapp1.CompositeApp1Service1;
 import com.insa.swim.consumer.scenario.Scenario;
+import com.insa.swim.consumer.scenario.Scenario.Request;
 import com.rabbitmq.client.ConsumerCancelledException;
 import com.rabbitmq.client.ShutdownSignalException;
 import compositeapp1.CompositeApp1Service2;
@@ -13,10 +14,8 @@ import compositeapp1.CompositeApp1Service3;
 import compositeapp1.CompositeApp1Service4;
 import java.io.IOException;
 import java.util.Date;
-import java.util.logging.Level;
 import javax.jws.WebService;
 import javax.jws.WebMethod;
-import javax.jws.WebParam;
 import javax.xml.ws.WebServiceRef;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,8 +27,11 @@ import org.apache.logging.log4j.Logger;
 @WebService()
 public class ConsumerWS {
 
-    public static final int NB_PROVIDERS = 4;
     static protected ConsumerAMQPHandler amqp;
+    // req format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|PayloadCons
+//    private String[] requests = {"1|1|3|4|6000|SendingDateConsumer|payloadConsumer",
+//                                            "1|3|100|2|2000|SendingDateConsumer3|payloadConsumer3",
+//                                            "1|4|10|10|4000|SendingDateConsumer4|payloadConsumer4"};
 
     /*
      * These are the referenes of the services provided by the bus to join the controller
@@ -44,24 +46,10 @@ public class ConsumerWS {
     private CompositeApp1Service1 service1;
     private static final Logger logger = LogManager.getLogger("Consumer");
     private Scenario scenario = null;
-
-    /**
-     * Deprecated
-     * This method tests the communication with the providers P1 throurgh the bus
-     * @param txt (ping)
-     * @return pong if param = ping, else erro, Gros fail if exception
-     */
-    @WebMethod(operationName = "sendPing")
-    public String sendPing(@WebParam(name = "start") String txt) {
-         // Call Web Service Operation
-            compositeapp1.P1WebService port = service1.getCasaPort1();
-            // TODO initialize WS operation arguments here
-            java.lang.String ping = txt;
-            // TODO process result here
-            java.lang.String result = port.pingpong(ping);
-            logger.debug("message received : " + result);
-            return result;        
-    }
+//     private Scenario scenario = new Scenario("INFO|0|name|0|10|CONSUMER|2|C2"
+//                                                            + "|REQUEST|1|0021|4|0|0|0|2000|5"
+//                                                            + "|REQUEST|3|0023|2|0|0|0|5000|10"
+//                                                            + "|REQUEST|4|0024|10|0|0|0|10000|2");
 
     /**
      * This method tests the communication with a specifit provider throurgh the bus
@@ -96,15 +84,75 @@ public class ConsumerWS {
     }
 
     /**
-     * Obsolete method to configure the consumer : use AMQP instead
-     * @param conf
-     * @return
+     * This method tests the communication with a specifit provider throurgh the bus
+     * @param request format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|PayloadCons
+     * @param provider : id of the provider
+     * @return response format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|ReceptionDateProv|PayloadProv
      */
-    @WebMethod(operationName = "configConsumer")
-    public String configConsumer(@WebParam(name = "conf") String conf) {
-        logger.debug("message received : " + conf);
-        scenario = new Scenario(conf);
-        return "done";
+    @WebMethod(operationName = "sendRequest")
+    public String sendRequest(String request, int provider) {
+        String response = "No response from provider " + provider;
+
+        try {
+            switch (provider) {
+                case 1:
+                    compositeapp1.P1WebService port1 = service1.getCasaPort1();
+                    response = port1.processRequest(request);
+                    break;
+                case 2:
+                    compositeapp1.P2WebService port2 = service2.getCasaPort2();
+                    response = port2.processRequest(request);
+                    break;
+                case 3:
+                    compositeapp1.P3WebService port3 = service3.getCasaPort3();
+                    response = port3.processRequest(request);
+                    break;
+                case 4:
+                    compositeapp1.P4WebService port4 = service4.getCasaPort4();
+                    response = port4.processRequest(request);
+                    break;
+                default:
+                    ;
+            }
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            logger.debug(ex.getStackTrace());
+        }
+
+        return response;
+    }
+
+    /**
+     * This method formats a request from the scenario to be sent to the provider later
+     * @param request from scenario
+     * @return format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons(ms)|PayloadCons
+     */
+    private String constructRequest(Request req) {
+        String consumerID = Integer.toString(scenario.getConsumerId());
+        String providerID = Integer.toString(req.getProviderId());
+        String requestSize = Integer.toString(req.getSize());
+        String responseSize = Integer.toString(req.getResponseSize());
+        String processingTime = Integer.toString(req.getProcessingTime());
+        String sendingDate = Integer.toString(req.getSendingTime()); // can be used as a starting point for the request
+        char[] payloadConsumer = new char[req.getSize()];
+        String request;
+
+        Date now;
+
+        // construct payload
+        for (int i = 0; i < payloadConsumer.length; i++) {
+            payloadConsumer[i] = 'x';
+        }
+
+        // timestamp to know when the consumer sends the request in milliseconds since January, 1st 1970
+        now = new Date();
+        sendingDate = Long.toString(now.getTime());
+
+        request = consumerID + "|" + providerID + "|" + requestSize + "|" + responseSize + "|" + processingTime + "|" + sendingDate + "|" + new String(payloadConsumer);
+        logger.debug("Constructed request : " + request.replace("|", ";"));
+
+        // req format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|PayloadCons
+        return request;
     }
 
     /**
@@ -112,39 +160,53 @@ public class ConsumerWS {
      */
     @WebMethod(operationName = "startSendingRequests")
     public void startSendingRequests() {
-        logger.debug("Consumer " + this.getClass() + " starts sending requests");
-        for (int i = 1; i <= NB_PROVIDERS; i++) {
+        int providerNumber;
+
+        for (Request req : scenario.getRequestList()) {
+            providerNumber = req.getProviderId();
+
+            logger.debug("Consumer " + this.getClass() + " starts sending requests");
+
             // Create a thread that handles the request sending to provider i (send, wait for response and send it to app)
-            Thread thread = new Thread(new ConsumerThread(i), this.getClass().toString());
-            thread.start();         
+            Thread thread = new Thread(new ConsumerThread(providerNumber, constructRequest(req)), this.getClass().toString());
+            thread.start();
         }
     }
 
     // Thread class to handle sending requests in parallel
     private class ConsumerThread implements Runnable {
-        int providerNumber; // Provider to send requests to
 
-        public ConsumerThread(int providerNumber) {
+        int providerNumber; // Provider to send requests to
+        String request;
+
+        public ConsumerThread(int providerNumber, String request) {
             this.providerNumber = providerNumber;
+            this.request = request;
         }
 
         public void run() {
-            String startMsg = "ping";
-            String pingResponse = "";
-
-            pingResponse = sendPing(startMsg, providerNumber);
-            Date receptionDateConsumer = new Date();
-            logger.debug("Response from P" + providerNumber + " to " + Thread.currentThread().getName() + " : " + pingResponse);
-            
+            Date receptionDateConsumer;
+            String response = sendRequest(request.toString(), providerNumber);
+            logger.debug("Response from P" + providerNumber + " to " + Thread.currentThread().getName() + " : " + response.replace("|", ";"));
 
             // envoyer les résultats à l'application par AMQP        
-            String[] responseParts = pingResponse.split("|");
+            String[] responseParts = response.split("\\|");
             String result = "";
             int i;
-            for (i=0; i<8; i++){
+            for (i = 0; i < responseParts.length - 1; i++) {
                 result += responseParts[i] + "|";
             }
-            result += "|" + receptionDateConsumer;
+            receptionDateConsumer = new Date();
+            // resp format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|ReceptionDateProv|SendingDateProv|ReceptionDateCons
+            result += Long.toString(receptionDateConsumer.getTime());
+
+            try {
+                logger.debug("Consumer " + Thread.currentThread().getName() + " sends result to app : " + result.replace("|", ";"));
+                amqp.sendResult(result);
+            } catch (IOException ex) {
+                logger.error("[Consumer thread] Unable to send result to application" + ex.getMessage());
+            }
+
             try {
                 logger.debug("result : " + result);
                 amqp.sendResult(result);
@@ -168,13 +230,19 @@ public class ConsumerWS {
             logger.debug("message config : " + received);
             scenario = new Scenario();
             scenario.init(received);
-            logger.debug("wait start message...");
-            String start = amqp.receiveStartMessage();
+            if (scenario.isInitialized()) {
+                logger.debug("wait start message...");
+                String start = amqp.receiveStartMessage();
 
-            logger.debug("message start : " + start);
-            sendRequests();
+                logger.debug("message start : " + start);
+                startSendingRequests();
+            }
+            else {
+                logger.error("impossible to create the scenario. The XML may be wrong");
+                amqp.sendResult("bad xml format");
+            }
 
-            amqp.closeConnection();
+            //amqp.closeConnection();
         } catch (IOException ex) {
             logger.error("error initialisation" + this.getClass());
             ex.printStackTrace();
@@ -191,17 +259,6 @@ public class ConsumerWS {
         return "done";
     }
 
-    // TODO use multitrhead
-    protected void sendRequests() {
-        try {
-            // STEP 3 : Send requests to providers and results to application
-            amqp.sendResult("this is a result from " + this.getClass());
-            System.out.println("end");
-        } catch (Exception ex) {
-            logger.debug("exception sendRequest");
-        }
-    }
-
     public Scenario getScenario() {
         return scenario;
     }
@@ -209,5 +266,4 @@ public class ConsumerWS {
     public void setScenario(Scenario scenario) {
         this.scenario = scenario;
     }
-    
 }
