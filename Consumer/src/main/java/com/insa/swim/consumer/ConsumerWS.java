@@ -118,7 +118,6 @@ public class ConsumerWS {
             logger.error(ex.getMessage());
             logger.debug(ex.getStackTrace());
         }
-        logger.debug("message received : " + response);
 
         return response;
     }
@@ -150,7 +149,7 @@ public class ConsumerWS {
         sendingDate = Long.toString(now.getTime());
 
         request = consumerID + "|" + providerID  + "|" + requestSize  + "|" + responseSize + "|" + processingTime + "|" + sendingDate + "|" + new String(payloadConsumer);
-        logger.debug("Constructed request : " + request);
+        logger.debug("Constructed request : " + request.replace("|", ";"));
 
         // req format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|PayloadCons
         return request;
@@ -187,7 +186,7 @@ public class ConsumerWS {
         public void run() {
             Date receptionDateConsumer;
             String response = sendRequest(request.toString(), providerNumber);
-            logger.debug("Response from P" + providerNumber + " to " + Thread.currentThread().getName() + " : " + response);
+            logger.debug("Response from P" + providerNumber + " to " + Thread.currentThread().getName() + " : " + response.replace("|", ";"));
 
             // envoyer les résultats à l'application par AMQP        
             String[] responseParts = response.split("\\|");
@@ -200,9 +199,8 @@ public class ConsumerWS {
             // resp format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|ReceptionDateProv|SendingDateProv|ReceptionDateCons
             result += Long.toString(receptionDateConsumer.getTime());
 
-
             try {
-                logger.debug("Consumer " + Thread.currentThread().getName() + " sends result to app : " + result);
+                logger.debug("Consumer " + Thread.currentThread().getName() + " sends result to app : " + result.replace("|", ";"));
                 amqp.sendResult(result);
             } catch (IOException ex) {
                 logger.error("[Consumer thread] Unable to send result to application" + ex.getMessage());

@@ -52,7 +52,7 @@ public class ProviderWS {
         if (request != null) {
             receptionDate = new Date();
 
-            logger.debug("message received by " + this.getClass() + ": " + request);
+            logger.debug("message received by " + this.getClass() + ": " + request.replace("|", ";"));
 
             parsedRequest = parseRequest(request);
             // TODO verify that the provider that receives the request is the intended one (attribut id?)
