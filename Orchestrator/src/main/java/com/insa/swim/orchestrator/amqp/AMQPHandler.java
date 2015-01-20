@@ -5,7 +5,6 @@
  */
 package com.insa.swim.orchestrator.amqp;
 
-import com.insa.swim.orchestrator.Application;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -25,9 +24,10 @@ public class AMQPHandler {
     private static final Logger logger = LogManager.getLogger(AMQPHandler.class);
 
     // Variables
-    private static final String host = "127.0.0.1";
+    private static final String host = "localhost"; //replace by vm address
+    /*private static final String username = "test";
+    private static final String password = "test";*/
     private Channel channel;
-    private String[] consumers = {"C1", "C2"};
     private Connection connection = null;
     // Configuration settings
     private final String CONFIG_EXCHANGE_NAME = "confExchange";
@@ -43,25 +43,35 @@ public class AMQPHandler {
     private String RESULT_QUEUE;
     private QueueingConsumer resultsConsumer;
 
+    /**
+     * Constructs an AMQPHandler
+     * @throws IOException 
+     */
     public AMQPHandler() throws IOException {
         ConnectionFactory factory = new ConnectionFactory();
+        /**factory.setUsername(username);
+        factory.setPassword(password);
         factory.setHost(host);
+        logger.debug("host " + host + "username " + username + "password " + password);*/
         this.connection = factory.newConnection();
         this.channel = this.connection.createChannel();
         this.configureChannel();
     }
     
+    /**
+     * Closes the channel and the connection
+     */
     public void closeConnection() {
         try {
-        this.channel.close();
-        this.connection.close();
-        } catch (Exception e) {
-            logger.error("Unable to close AMQP connection");
+            this.channel.close();
+            this.connection.close();
+        } catch (IOException e) {
+            logger.error("[close connection] Unable to close AMQP connection " + e.getMessage());
         }
     }
     
     /**
-     * This function configures the channel to send and receive the different
+     * Configures the channel to send and receive the different
      * types of messages
      *
      * @param channel
@@ -79,22 +89,30 @@ public class AMQPHandler {
     }
     
     /**
-     * This function publishes a message in a
+     * 
+     * Publishes a message in a channel
      *
-     * @param exchange
-     * @param message
+     * @param exchange exchange name
+     * @param message message to send
      * @throws IOException
      */
     private void sendMessage(String exchange, String routingKey, String message) throws IOException {
         // By default there is no routing key or property
         this.channel.basicPublish(exchange, routingKey, null, message.getBytes());
-        System.out.println("Message sent : " + message);
+        /*
+        logger.trace("Message sent : " + message);
+        for (byte m : message.getBytes()) {
+            System.out.print(Byte.valueOf(m) + " ");
+        }
+        System.out.println();
+        logger.debug("Message bytes : " );
+        */
     }
 
     /**
-     * This function waits (blocking way) a message on the result channel
+     * Waits (blocking way) that a message arrives in the result channel
      *
-     * @return
+     * @return received message
      * @throws ShutdownSignalException
      * @throws ConsumerCancelledException
      * @throws InterruptedException
@@ -102,17 +120,30 @@ public class AMQPHandler {
     public String receiveResultMessage() throws ShutdownSignalException, ConsumerCancelledException, InterruptedException {
         QueueingConsumer.Delivery delivery = this.resultsConsumer.nextDelivery();
         String message = new String(delivery.getBody());
-        System.out.println("Message received : " + message);
+        logger.debug("[result channel] Message received : " + message);
         return message;
     }
 
+    /**
+     * Sends a start message
+     * @throws IOException 
+     */
     public void sendStart() throws IOException {
-        String startMsg = ("this is the start message");
+        String startMsg = ("start");
         this.sendMessage(this.START_EXCHANGE_NAME, "", startMsg);
+        logger.debug("[start channel] Message sent : " + startMsg);
     }
 
+    /**
+     * Sends a configuration message to a specific consumer
+     * @param consumer destination
+     * @param msg message to send
+     * @throws IOException 
+     */
     public void sendConf(String consumer, String msg) throws IOException {
+        msg = msg.replace('|', '+');
         this.sendMessage(this.CONFIG_EXCHANGE_NAME, consumer, msg);
+        logger.debug("[configuration channel] Message sent to " + consumer + " : " + msg);
     }
 
 }

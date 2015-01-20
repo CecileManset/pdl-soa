@@ -12,7 +12,6 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConsumerCancelledException;
 import com.rabbitmq.client.QueueingConsumer;
 import com.rabbitmq.client.ShutdownSignalException;
-import java.util.logging.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -95,7 +94,7 @@ public class ConsumerAMQPHandler {
     public void sendMessage(String exchange, String message) throws IOException {
         // By default there is no routing key or property
         this.channel.basicPublish(exchange, "", null, message.getBytes());
-        System.out.println("Message sent : " + message);
+        //System.out.println("Message sent : " + message);
     }
 
     /**
@@ -122,6 +121,9 @@ public class ConsumerAMQPHandler {
     public String receiveConfigurationMessage() throws ShutdownSignalException, ConsumerCancelledException, InterruptedException {
         QueueingConsumer.Delivery delivery = this.configurationConsumer.nextDelivery();
         String message = new String(delivery.getBody());
+        logger.trace("Configuration received (non parsed) : " + message);
+        message = message.replace("+", "|");
+        logger.debug("Configuration received : " + message);
         return message;
     }
 

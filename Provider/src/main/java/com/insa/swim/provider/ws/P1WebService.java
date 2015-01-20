@@ -14,24 +14,5 @@ import javax.jws.WebParam;
  * @author tp1_g2
  */
 @WebService(serviceName = "P1WebService")
-public class P1WebService {
-
-    /**
-     * This is a sample web service operation
-     * @param ping
-     * @return pong
-     */
-    @WebMethod(operationName = "pingpong")
-    public String pingpong(@WebParam(name = "ping") String txt) {
-        try {
-            Thread.sleep(120000);
-        }
-        catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        if (txt.equals("ping")) {
-            return "pong";
-        }
-        else return "error";
-    }
+public class P1WebService extends ProviderWS {
 }

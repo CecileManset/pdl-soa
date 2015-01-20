@@ -1,12 +1,5 @@
 package com.insa.swim.orchestrator;
 
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.ConsumerCancelledException;
-import com.rabbitmq.client.QueueingConsumer;
-import com.rabbitmq.client.ShutdownSignalException;
-import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,10 +22,10 @@ public class Application {
     }
 
     public static void main(String[] args) {
-        logger.trace("Program starts");
+        logger.error("Program starts");
         Application app = new Application();
         app.start();
 
-        logger.error("Hello World!");
+        logger.debug("Program ends");
     }
 }

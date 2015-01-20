@@ -21,11 +21,27 @@
         <soap:body use="literal"/>
       </output>
     </operation>
+    <operation name="processRequest">
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
   </binding>
   <binding name="casaBinding2" type="ns1:P2WebService">
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
     <operation name="pingpong">
       <soap:operation/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="processRequest">
       <input>
         <soap:body use="literal"/>
       </input>
@@ -45,11 +61,27 @@
         <soap:body use="literal"/>
       </output>
     </operation>
+    <operation name="processRequest">
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
   </binding>
   <binding name="casaBinding4" type="ns3:P4WebService">
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
     <operation name="pingpong">
       <soap:operation/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="processRequest">
       <input>
         <soap:body use="literal"/>
       </input>
