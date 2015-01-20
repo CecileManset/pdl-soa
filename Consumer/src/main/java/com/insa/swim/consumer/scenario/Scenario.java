@@ -8,7 +8,7 @@ import java.util.ArrayList;
  */
 public class Scenario {
 
-    // TODO complete the attribute list
+    private boolean initialized = false;
     private String conf = null;
     private int id = -1;
     private String name = "";
@@ -63,6 +63,7 @@ public class Scenario {
 
                 requestList.add(req);
             }
+            initialized = true;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -130,6 +131,14 @@ public class Scenario {
 
     public void setRequestList(ArrayList<Request> requestList) {
         this.requestList = requestList;
+    }
+
+    public boolean isInitialized() {
+        return initialized;
+    }
+
+    public void setInitialized(boolean initialized) {
+        this.initialized = initialized;
     }
 
     public static class Request {
