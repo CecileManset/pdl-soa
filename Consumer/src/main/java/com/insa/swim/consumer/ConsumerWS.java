@@ -14,6 +14,13 @@ import compositeapp1.CompositeApp1Service3;
 import compositeapp1.CompositeApp1Service4;
 import java.io.IOException;
 import java.util.Date;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import javax.jws.WebService;
 import javax.jws.WebMethod;
 import javax.xml.ws.WebServiceRef;
@@ -45,11 +52,11 @@ public class ConsumerWS {
     @WebServiceRef(wsdlLocation = "WEB-INF/wsdl/localhost_9080/CompositeApp1Service1/casaPort1.wsdl")
     private CompositeApp1Service1 service1;
     private static final Logger logger = LogManager.getLogger("Consumer");
-    private Scenario scenario = null;
-//     private Scenario scenario = new Scenario("INFO|0|name|0|10|CONSUMER|2|C2"
-//                                                            + "|REQUEST|1|0021|4|0|0|0|2000|5"
-//                                                            + "|REQUEST|3|0023|2|0|0|0|5000|10"
-//                                                            + "|REQUEST|4|0024|10|true|100|5|10000|2");
+//    private Scenario scenario = null;
+     private Scenario scenario = new Scenario("INFO|0|name|0|10|CONSUMER|2|C2"
+                                                            + "|REQUEST|1|0021|4|0|0|0|2000|5"
+                                                            + "|REQUEST|3|0023|2|0|0|0|5000|10"
+                                                            + "|REQUEST|4|0024|10|false|100|5|10000|2");
 
     /**
      * This method tests the communication with a specifit provider throurgh the bus
@@ -171,6 +178,25 @@ public class ConsumerWS {
         }
     }
 
+
+            public class BlockingMethodCallable {
+                String req;
+                int providerNumber;
+
+                public BlockingMethodCallable(String req, int providerNumber) {
+                    this.req = req;
+                    this.providerNumber = providerNumber;
+                }
+
+            ExecutorService executor = Executors.newCachedThreadPool();
+            Callable<Object> task = new Callable<Object>() {
+                public Object call() {
+                    return sendRequest(req, providerNumber);
+                }
+            };
+
+            }
+
     // Thread class to handle sending requests in parallel
     private class ConsumerThread implements Runnable {
 
@@ -184,7 +210,8 @@ public class ConsumerWS {
             Date receptionDateConsumer;
             int nbRequests = 1;
             int period;
-            String response;
+            String response = "";
+            String result = "";
             int providerNumber = request.getProviderId();
 
             if (request.isPeriodic()) {
@@ -192,23 +219,40 @@ public class ConsumerWS {
                 period = request.getPeriod();
             }
 
+            ExecutorService executor = Executors.newCachedThreadPool();
+            BlockingMethodCallable blockingMethodCallable = new BlockingMethodCallable(constructRequest(request), providerNumber);
+            Future<Object> future = executor.submit(blockingMethodCallable.task);
             for (int reqNb = 0 ; reqNb < nbRequests ; reqNb++) {
-                response = sendRequest(constructRequest(request), providerNumber);
+
+                    try {
+                       response = (String)future.get(8, TimeUnit.SECONDS);
+                    } catch (TimeoutException ex) {
+                       response = "timeout";
+                    } catch (InterruptedException e) {
+                       // handle the interrupts
+                    } catch (ExecutionException e) {
+                       // handle other exceptions
+                    } finally {
+                       //future.cancel(); // may or may not desire this
+                    }
+
+                //response = sendRequest(constructRequest(request), providerNumber);
                 logger.debug("Response from P" + providerNumber + " to " + Thread.currentThread().getName() + " : " + response.replace("|", ";"));
 
 
             //TODO timeout
 
                 // envoyer les résultats à l'application par AMQP
-                String[] responseParts = response.split("\\|", -1);
-                String result = "";
-                int i;
-                for (i = 0; i < responseParts.length - 1; i++) {
-                    result += responseParts[i] + "|";
+                if (response.contains("|")) {
+                    String[] responseParts = response.split("\\|", -1);
+                    int i;
+                    for (i = 0; i < responseParts.length - 1; i++) {
+                        result += responseParts[i] + "|";
+                    }
+                    receptionDateConsumer = new Date();
+                    // resp format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|ReceptionDateProv|SendingDateProv|ReceptionDateCons
+                    result += Long.toString(receptionDateConsumer.getTime());
                 }
-                receptionDateConsumer = new Date();
-                // resp format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|ReceptionDateProv|SendingDateProv|ReceptionDateCons
-                result += Long.toString(receptionDateConsumer.getTime());
 
                 try {
                     logger.debug("Consumer " + Thread.currentThread().getName() + " sends result to app : " + result.replace("|", ";"));

@@ -26,12 +26,12 @@ public class ProviderWS {
     @WebMethod(operationName = "pingpong")
     public String pingpong(@WebParam(name = "ping") String txt) {
         logger.debug("message received by " + this.getClass() + ": " + txt);
-                try {
-            Thread.sleep(120000);
-        }
-        catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//                try {
+//            Thread.sleep(120000);
+//        }
+//        catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         if (txt != null && txt.equals("ping")) {
             return "pong";
         }
