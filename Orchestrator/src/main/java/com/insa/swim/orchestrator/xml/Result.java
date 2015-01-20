@@ -10,47 +10,49 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-
 /**
  *
  * @author Christelle
  */
-
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name="Result")
+@XmlRootElement(name = "result")
 public class Result {
-    @XmlAttribute(name ="consumer", required = true)
-     private String consumer;
 
-    @XmlAttribute(name ="provider", required = true)
+    @XmlAttribute(name = "consumer", required = true)
+    private String consumer;
+
+    @XmlAttribute(name = "provider", required = true)
     private String provider;
-    
-    @XmlAttribute(name ="requestSize", required = true)
+
+    @XmlAttribute(name = "requestSize", required = true)
     private int requestSize;
-    
-    @XmlAttribute(name ="responseSize", required = true)
+
+    @XmlAttribute(name = "responseSize", required = true)
     private int responseSize;
-    
-    @XmlAttribute(name ="processingTime", required = true)
+
+    @XmlAttribute(name = "processingTime", required = true)
     private int processingTime;
 
-    @XmlAttribute(name ="sendingDateConsumer", required = true)
+    @XmlAttribute(name = "sendingDateConsumer", required = true)
     private long sendingDateConsumer;
-    
-    @XmlAttribute(name ="receptionDateProvider", required = true)
+
+    @XmlAttribute(name = "receptionDateProvider", required = true)
     private long receptionDateProvider;
-    
-    @XmlAttribute(name ="sendingDateProvider", required = true)
+
+    @XmlAttribute(name = "sendingDateProvider", required = true)
     private long sendingDateProvider;
-    
-    @XmlAttribute(name ="receptionDateConsumer", required = true)
+
+    @XmlAttribute(name = "receptionDateConsumer", required = true)
     private long receptionDateConsumer;
 
-    @XmlAttribute(name ="C2PTime", required = true)
+    @XmlAttribute(name = "C2PTime", required = true)
     private long C2PTime;
 
-    @XmlAttribute(name ="P2CTime", required = true)
+    @XmlAttribute(name = "P2CTime", required = true)
     private long P2CTime;
+
+    public Result() {
+    }
 
     public Result(String resultString) {
 //        resultString = "1|1|50|100|1000|1421678470|1421678570|1421678670|1421678770";
@@ -62,7 +64,7 @@ public class Result {
 //        this.provider = "provider" + providerId;
 //        this.C2PTime = providerId * consumerId * 12;
 //        this.P2CTime = consumerId * 27;
-        
+
         String[] resultParsed = resultString.split("\\|");
         this.consumer = resultParsed[0];
         this.provider = resultParsed[1];
@@ -146,7 +148,7 @@ public class Result {
         resultJSON.put("sendingDateConsumer", sendingDateConsumer);
         resultJSON.put("receptionDateProvider", receptionDateProvider);
         resultJSON.put("sendingDateProvider", sendingDateProvider);
-        resultJSON.put("receptionDateConsumer", receptionDateConsumer);        
+        resultJSON.put("receptionDateConsumer", receptionDateConsumer);
         return resultJSON;
     }
 
