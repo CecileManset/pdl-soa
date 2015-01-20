@@ -185,33 +185,36 @@ public class ConsumerWS {
 
         public void run() {
             Date receptionDateConsumer;
+            String result = "No response from provider " + request.split("\\|")[1];
+
             String response = sendRequest(request.toString(), providerNumber);
             logger.debug("Response from P" + providerNumber + " to " + Thread.currentThread().getName() + " : " + response.replace("|", ";"));
 
-            // envoyer les résultats à l'application par AMQP        
-            String[] responseParts = response.split("\\|");
-            String result = "";
-            int i;
-            for (i=0; i<responseParts.length-1; i++){
-                result += responseParts[i] + "|";
-            }
-            receptionDateConsumer = new Date();
-            // resp format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|ReceptionDateProv|SendingDateProv|ReceptionDateCons
-            result += Long.toString(receptionDateConsumer.getTime());
-
-            try {
-                logger.debug("Consumer " + Thread.currentThread().getName() + " sends result to app : " + result.replace("|", ";"));
-                amqp.sendResult(result);
-            } catch (IOException ex) {
-                logger.error("[Consumer thread] Unable to send result to application" + ex.getMessage());
+            // envoyer les résultats à l'application par AMQP
+            if (response != null) {
+                String[] responseParts = response.split("\\|", -1);
+                int i;
+                for (i = 0; i < responseParts.length - 1; i++) {
+                    result += responseParts[i] + "|";
+                }
+                receptionDateConsumer = new Date();
+                // resp format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|ReceptionDateProv|SendingDateProv|ReceptionDateCons
+                result += Long.toString(receptionDateConsumer.getTime());
             }
 
-            try {
-                logger.debug("result : " + result);
-                amqp.sendResult(result);
-            } catch (IOException ex) {
-                logger.error("[Consumer thread] Unable to send result to application" + ex.getMessage());
-            }
+//            try {
+//                logger.debug("Consumer " + Thread.currentThread().getName() + " sends result to app : " + result.replace("|", ";"));
+//                amqp.sendResult(result);
+//            } catch (IOException ex) {
+//                logger.error("[Consumer thread] Unable to send result to application" + ex.getMessage());
+//            }
+//
+//            try {
+//                logger.debug("result : " + result);
+//                amqp.sendResult(result);
+//            } catch (IOException ex) {
+//                logger.error("[Consumer thread] Unable to send result to application" + ex.getMessage());
+//            }
         }
     }
 

@@ -87,4 +87,8 @@ public class ProviderWSTest {
 //        verify(Thread, times(1)).sleep(6000);
 //    }
 
+    // Test processRequest : bad provider
+
+    // Test parseRequest : request with more than 7 info
+
 }
