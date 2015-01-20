@@ -49,7 +49,7 @@ public class ConsumerWS {
 //     private Scenario scenario = new Scenario("INFO|0|name|0|10|CONSUMER|2|C2"
 //                                                            + "|REQUEST|1|0021|4|0|0|0|2000|5"
 //                                                            + "|REQUEST|3|0023|2|0|0|0|5000|10"
-//                                                            + "|REQUEST|4|0024|10|0|0|0|10000|2");
+//                                                            + "|REQUEST|4|0024|10|true|100|5|10000|2");
 
     /**
      * This method tests the communication with a specifit provider throurgh the bus
@@ -160,15 +160,12 @@ public class ConsumerWS {
      */
     @WebMethod(operationName = "startSendingRequests")
     public void startSendingRequests() {
-        int providerNumber;
 
         for (Request req : scenario.getRequestList()) {
-            providerNumber = req.getProviderId();
-
             logger.debug("Consumer " + this.getClass() + " starts sending requests");
 
             // Create a thread that handles the request sending to provider i (send, wait for response and send it to app)
-            Thread thread = new Thread(new ConsumerThread(providerNumber, constructRequest(req)), this.getClass().toString());
+            Thread thread = new Thread(new ConsumerThread(req), this.getClass().toString());
             thread.start();
         }
     }
@@ -176,42 +173,52 @@ public class ConsumerWS {
     // Thread class to handle sending requests in parallel
     private class ConsumerThread implements Runnable {
 
-        int providerNumber; // Provider to send requests to
-        String request;
+        private Request request;
 
-        public ConsumerThread(int providerNumber, String request) {
-            this.providerNumber = providerNumber;
+        public ConsumerThread(Request request) {
             this.request = request;
         }
 
         public void run() {
             Date receptionDateConsumer;
-            String response = sendRequest(request.toString(), providerNumber);
-            logger.debug("Response from P" + providerNumber + " to " + Thread.currentThread().getName() + " : " + response.replace("|", ";"));
+            int nbRequests = 1;
+            int period;
+            String response;
+            int providerNumber = request.getProviderId();
 
-            // envoyer les résultats à l'application par AMQP        
-            String[] responseParts = response.split("\\|");
-            String result = "";
-            int i;
-            for (i = 0; i < responseParts.length - 1; i++) {
-                result += responseParts[i] + "|";
-            }
-            receptionDateConsumer = new Date();
-            // resp format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|ReceptionDateProv|SendingDateProv|ReceptionDateCons
-            result += Long.toString(receptionDateConsumer.getTime());
-
-            try {
-                logger.debug("Consumer " + Thread.currentThread().getName() + " sends result to app : " + result.replace("|", ";"));
-                amqp.sendResult(result);
-            } catch (IOException ex) {
-                logger.error("[Consumer thread] Unable to send result to application" + ex.getMessage());
+            if (request.isPeriodic()) {
+                nbRequests = request.getNumberRequest();
+                period = request.getPeriod();
             }
 
-            try {
-                logger.debug("result : " + result);
-                amqp.sendResult(result);
-            } catch (IOException ex) {
-                logger.error("[Consumer thread] Unable to send result to application" + ex.getMessage());
+            for (int reqNb = 0 ; reqNb < nbRequests ; reqNb++) {
+                response = sendRequest(constructRequest(request), providerNumber);
+                logger.debug("Response from P" + providerNumber + " to " + Thread.currentThread().getName() + " : " + response.replace("|", ";"));
+
+                // envoyer les résultats à l'application par AMQP
+                String[] responseParts = response.split("\\|", -1);
+                String result = "";
+                int i;
+                for (i = 0; i < responseParts.length - 1; i++) {
+                    result += responseParts[i] + "|";
+                }
+                receptionDateConsumer = new Date();
+                // resp format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|ReceptionDateProv|SendingDateProv|ReceptionDateCons
+                result += Long.toString(receptionDateConsumer.getTime());
+
+                try {
+                    logger.debug("Consumer " + Thread.currentThread().getName() + " sends result to app : " + result.replace("|", ";"));
+                    amqp.sendResult(result);
+                } catch (IOException ex) {
+                    logger.error("[Consumer thread] Unable to send result to application" + ex.getMessage());
+                }
+    
+                try {
+                    logger.debug("result : " + result);
+                    amqp.sendResult(result);
+                } catch (IOException ex) {
+                    logger.error("[Consumer thread] Unable to send result to application" + ex.getMessage());
+                }
             }
         }
     }

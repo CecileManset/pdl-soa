@@ -37,7 +37,7 @@ public class ProviderWS {
     // Parse incoming request from consumer to retrieve the different parameters
     // req format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|PayloadCons
     private String[] parseRequest(String request) {
-        return request.split("\\|");
+        return request.split("\\|", -1);
     }
 
     // Process request according to the parameters sent and respond in consequence
