@@ -11,7 +11,7 @@ public class Application {
 
     private static final Logger logger = LogManager.getLogger(Application.class);
 
-    private Controller controller;
+    private final Controller controller;
 
     public Application() {
         controller = new Controller();

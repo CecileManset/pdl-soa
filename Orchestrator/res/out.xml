@@ -1,2 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Result name="custumer1" time="20"/>
+<results>
+    <kpi>
+        <meanTimeConsumerProvider>23.19047619047619</meanTimeConsumerProvider>
+        <meanTimeProviderConsumer>7.571428571428571</meanTimeProviderConsumer>
+        <numberLostMessages>11</numberLostMessages>
+        <requestsNumber>32</requestsNumber>
+    </kpi>
+    <result consumer="1" provider="3" requestSize="25" responseSize="60" processingTime="500" sendingDateConsumer="1421795640416" receptionDateProvider="1421795640432" sendingDateProvider="1421795640935" receptionDateConsumer="1421795640939" C2PTime="16" P2CTime="4"/>
+    <result consumer="1" provider="2" requestSize="256" responseSize="200" processingTime="500" sendingDateConsumer="1421795640414" receptionDateProvider="1421795640441" sendingDateProvider="1421795640941" receptionDateConsumer="1421795640951" C2PTime="27" P2CTime="10"/>
+    <result consumer="1" provider="1" requestSize="50" responseSize="20" processingTime="1000" sendingDateConsumer="1421795640410" receptionDateProvider="1421795640435" sendingDateProvider="1421795641436" receptionDateConsumer="1421795641439" C2PTime="25" P2CTime="3"/>
+    <result consumer="1" provider="3" requestSize="25" responseSize="60" processingTime="500" sendingDateConsumer="1421795640941" receptionDateProvider="1421795640972" sendingDateProvider="1421795641472" receptionDateConsumer="1421795641477" C2PTime="31" P2CTime="5"/>
+    <result consumer="1" provider="2" requestSize="256" responseSize="200" processingTime="500" sendingDateConsumer="1421795640952" receptionDateProvider="1421795640974" sendingDateProvider="1421795641475" receptionDateConsumer="1421795641480" C2PTime="22" P2CTime="5"/>
+    <result consumer="1" provider="3" requestSize="25" responseSize="60" processingTime="500" sendingDateConsumer="1421795641478" receptionDateProvider="1421795641502" sendingDateProvider="1421795642002" receptionDateConsumer="1421795642007" C2PTime="24" P2CTime="5"/>
+    <result consumer="1" provider="2" requestSize="256" responseSize="200" processingTime="500" sendingDateConsumer="1421795641485" receptionDateProvider="1421795641508" sendingDateProvider="1421795642008" receptionDateConsumer="1421795642014" C2PTime="23" P2CTime="6"/>
+    <result consumer="1" provider="3" requestSize="25" responseSize="60" processingTime="500" sendingDateConsumer="1421795642007" receptionDateProvider="1421795642027" sendingDateProvider="1421795642528" receptionDateConsumer="1421795642531" C2PTime="20" P2CTime="3"/>
+    <result consumer="1" provider="2" requestSize="256" responseSize="200" processingTime="500" sendingDateConsumer="1421795642015" receptionDateProvider="1421795642050" sendingDateProvider="1421795642550" receptionDateConsumer="1421795642555" C2PTime="35" P2CTime="5"/>
+    <result consumer="1" provider="3" requestSize="25" responseSize="60" processingTime="500" sendingDateConsumer="1421795642532" receptionDateProvider="1421795642541" sendingDateProvider="1421795643043" receptionDateConsumer="1421795643052" C2PTime="9" P2CTime="9"/>
+    <result consumer="1" provider="2" requestSize="256" responseSize="200" processingTime="500" sendingDateConsumer="1421795642555" receptionDateProvider="1421795642565" sendingDateProvider="1421795643079" receptionDateConsumer="1421795643090" C2PTime="10" P2CTime="11"/>
+    <result consumer="1" provider="3" requestSize="25" responseSize="60" processingTime="500" sendingDateConsumer="1421795643054" receptionDateProvider="1421795643092" sendingDateProvider="1421795643593" receptionDateConsumer="1421795643602" C2PTime="38" P2CTime="9"/>
+    <result consumer="1" provider="2" requestSize="256" responseSize="200" processingTime="500" sendingDateConsumer="1421795643090" receptionDateProvider="1421795643101" sendingDateProvider="1421795643602" receptionDateConsumer="1421795643622" C2PTime="11" P2CTime="20"/>
+    <result consumer="1" provider="3" requestSize="25" responseSize="60" processingTime="500" sendingDateConsumer="1421795643607" receptionDateProvider="1421795643645" sendingDateProvider="1421795644146" receptionDateConsumer="1421795644156" C2PTime="38" P2CTime="10"/>
+    <result consumer="1" provider="2" requestSize="256" responseSize="200" processingTime="500" sendingDateConsumer="1421795643624" receptionDateProvider="1421795643663" sendingDateProvider="1421795644164" receptionDateConsumer="1421795644181" C2PTime="39" P2CTime="17"/>
+    <result consumer="1" provider="3" requestSize="25" responseSize="60" processingTime="500" sendingDateConsumer="1421795644157" receptionDateProvider="1421795644194" sendingDateProvider="1421795644696" receptionDateConsumer="1421795644699" C2PTime="37" P2CTime="3"/>
+    <result consumer="1" provider="2" requestSize="256" responseSize="200" processingTime="500" sendingDateConsumer="1421795644183" receptionDateProvider="1421795644205" sendingDateProvider="1421795644705" receptionDateConsumer="1421795644711" C2PTime="22" P2CTime="6"/>
+    <result consumer="1" provider="3" requestSize="25" responseSize="60" processingTime="500" sendingDateConsumer="1421795644699" receptionDateProvider="1421795644708" sendingDateProvider="1421795645212" receptionDateConsumer="1421795645220" C2PTime="9" P2CTime="8"/>
+    <result consumer="1" provider="2" requestSize="256" responseSize="200" processingTime="500" sendingDateConsumer="1421795644711" receptionDateProvider="1421795644727" sendingDateProvider="1421795645236" receptionDateConsumer="1421795645245" C2PTime="16" P2CTime="9"/>
+    <result consumer="1" provider="3" requestSize="25" responseSize="60" processingTime="500" sendingDateConsumer="1421795645221" receptionDateProvider="1421795645244" sendingDateProvider="1421795645748" receptionDateConsumer="1421795645752" C2PTime="23" P2CTime="4"/>
+    <result consumer="1" provider="2" requestSize="256" responseSize="200" processingTime="500" sendingDateConsumer="1421795645247" receptionDateProvider="1421795645259" sendingDateProvider="1421795645760" receptionDateConsumer="1421795645767" C2PTime="12" P2CTime="7"/>
+</results>
