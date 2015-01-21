@@ -22,8 +22,34 @@
                         <processingTime>10</processingTime>
                     </providerSettings>
                     <size>100</size>
-                    <sendingTime>400</sendingTime>
-                    <periodic>false</periodic>
+                    <sendingTime>1000</sendingTime>
+                    <periodic>true</periodic>
+                    <period>10</period>
+                    <numberRequests>200</numberRequests>
+                </request>
+                <request>
+                    <providerSettings>
+                        <providerId>2</providerId>
+                        <responseSize>100</responseSize>
+                        <processingTime>10</processingTime>
+                    </providerSettings>
+                    <size>100</size>
+                    <sendingTime>1000</sendingTime>
+                    <periodic>true</periodic>
+                    <period>10</period>
+                    <numberRequests>200</numberRequests>
+                </request>
+                <request>
+                    <providerSettings>
+                        <providerId>2</providerId>
+                        <responseSize>100</responseSize>
+                        <processingTime>10</processingTime>
+                    </providerSettings>
+                    <size>100</size>
+                    <sendingTime>1000</sendingTime>
+                    <periodic>true</periodic>
+                    <period>10</period>
+                    <numberRequests>200</numberRequests>
                 </request>
             </requests>
         </consumer>
@@ -38,13 +64,36 @@
                         <processingTime>10</processingTime>
                     </providerSettings>
                     <size>100</size>
-                    <sendingTime>400</sendingTime>
-                    <periodic>false</periodic>
+                    <sendingTime>100</sendingTime>
+                    <periodic>true</periodic>
+                    <period>10</period>
+                    <numberRequests>500</numberRequests>
+                </request>
+                <request>
+                    <providerSettings>
+                        <providerId>2</providerId>
+                        <responseSize>100</responseSize>
+                        <processingTime>10</processingTime>
+                    </providerSettings>
+                    <size>100</size>
+                    <sendingTime>100</sendingTime>
+                    <periodic>true</periodic>
+                    <period>10</period>
+                    <numberRequests>500</numberRequests>
+                </request>
+                <request>
+                    <providerSettings>
+                        <providerId>2</providerId>
+                        <responseSize>100</responseSize>
+                        <processingTime>10</processingTime>
+                    </providerSettings>
+                    <size>100</size>
+                    <sendingTime>100</sendingTime>
+                    <periodic>true</periodic>
+                    <period>10</period>
+                    <numberRequests>500</numberRequests>
                 </request>
             </requests>
         </consumer>
     </consumers>
 </scenario>
-
-
-

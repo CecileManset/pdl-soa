@@ -163,6 +163,7 @@ public class Result {
         resultJSON.put("receptionDateProvider", receptionDateProvider);
         resultJSON.put("sendingDateProvider", sendingDateProvider);
         resultJSON.put("receptionDateConsumer", receptionDateConsumer);
+        resultJSON.put("error", error);
         return resultJSON;
     }
 
