@@ -19,7 +19,7 @@ import org.apache.logging.log4j.Logger;
 @WebService()
 public class ProviderWS {
 
-    private static final Logger logger = LogManager.getLogger("Provider");
+    private static final Logger LOGGER = LogManager.getLogger("Provider");
     private static final int PROCESSING_TIME_INDEX = 4;
     private static final int RESPONSE_SIZE_INDEX = 3;
 
@@ -30,12 +30,14 @@ public class ProviderWS {
      */
     @WebMethod(operationName = "pingpong")
     public String pingpong(@WebParam(name = "ping") String txt) {
-        logger.debug("message received by " + this.getClass() + ": " + txt);
+        LOGGER.debug("message received by " + this.getClass() + ": " + txt);
         
         if (txt != null && txt.equals("ping")) {
             return "pong";
         }
-        else return "error";
+        else {
+            return "error";
+        }
     }
 
      /**
@@ -66,7 +68,7 @@ public class ProviderWS {
         if (request != null) {
             receptionDate = new Date();
 
-            logger.debug("message received by " + this.getClass() + ": " + request.replace("|", ";"));
+            LOGGER.debug("message received by " + this.getClass() + ": " + request.replace("|", ";"));
 
             parsedRequest = parseRequest(request);
             // TODO verify that the provider that receives the request is the intended one (attribut id?)
@@ -91,10 +93,11 @@ public class ProviderWS {
             // + provider info
             response += Long.toString(receptionDate.getTime()) + "|" + Long.toString(sendingDate.getTime()) + "|" + new String(payloadProvider);
         }
-        else
+        else {
             return "null request";
+        }
 
-        logger.debug("message sent from " + this.getClass() + " to Consumer " + parsedRequest[0] + ": " + response);
+        LOGGER.debug("message sent from " + this.getClass() + " to Consumer " + parsedRequest[0] + ": " + response);
 
         return response;
     }
