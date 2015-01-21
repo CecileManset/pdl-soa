@@ -20,36 +20,20 @@ public class ResultTest {
     
     public ResultTest() {
     }
-    
-    @BeforeClass
-    public static void setUpClass() {
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
-    
-    @Before
-    public void setUp() {
-    }
-    
-    @After
-    public void tearDown() {
-    }
 
     @Test
     public void constructResultFromString() {
-        Result result = new Result("1|1|50|100|1000|1421678470|1421678570|1421678670|1421678770");
+        Result result = new Result("3|2|60|120|1500|1421678400|1421678650|1421679650|1421679770");
         assertEquals("false", result.getError());
-        assertEquals("1", result.getConsumer());
-        assertEquals("1", result.getProvider());
-        assertEquals(50, result.getRequestSize());
-        assertEquals(100, result.getResponseSize());
-        assertEquals(1000, result.getProcessingTime());
-        assertEquals(1421678470, result.getSendingDateConsumer());
-        assertEquals(1421678570, result.getReceptionDateProvider());
-        assertEquals(1421678670, result.getSendingDateProvider());
-        assertEquals(1421678770, result.getReceptionDateConsumer());
+        assertEquals("3", result.getConsumer());
+        assertEquals("2", result.getProvider());
+        assertEquals(60, result.getRequestSize());
+        assertEquals(120, result.getResponseSize());
+        assertEquals(1500, result.getProcessingTime());
+        assertEquals(1421678400, result.getSendingDateConsumer());
+        assertEquals(1421678650, result.getReceptionDateProvider());
+        assertEquals(1421679650, result.getSendingDateProvider());
+        assertEquals(1421679770, result.getReceptionDateConsumer());
     }
     
     @Test
@@ -63,22 +47,22 @@ public class ResultTest {
         assertEquals(1000, result.getProcessingTime());
         assertEquals(1421678470, result.getSendingDateConsumer());
         
-        result = new Result("FORMAT|1|1|50|100|1000|1421678470");
+        result = new Result("FORMAT|2|3|500|1000|200|1421678570");
         assertEquals("FORMAT", result.getError());
-        assertEquals("1", result.getConsumer());
-        assertEquals("1", result.getProvider());
-        assertEquals(50, result.getRequestSize());
-        assertEquals(100, result.getResponseSize());
-        assertEquals(1000, result.getProcessingTime());
-        assertEquals(1421678470, result.getSendingDateConsumer());
+        assertEquals("2", result.getConsumer());
+        assertEquals("3", result.getProvider());
+        assertEquals(500, result.getRequestSize());
+        assertEquals(1000, result.getResponseSize());
+        assertEquals(200, result.getProcessingTime());
+        assertEquals(1421678570, result.getSendingDateConsumer());
         
-        result = new Result("PROVIDER|1|1|50|100|1000|1421678470");
+        result = new Result("PROVIDER|1|5|80|300|1700|1421678487");
         assertEquals("PROVIDER", result.getError());
         assertEquals("1", result.getConsumer());
-        assertEquals("1", result.getProvider());
-        assertEquals(50, result.getRequestSize());
-        assertEquals(100, result.getResponseSize());
-        assertEquals(1000, result.getProcessingTime());
-        assertEquals(1421678470, result.getSendingDateConsumer());
+        assertEquals("5", result.getProvider());
+        assertEquals(80, result.getRequestSize());
+        assertEquals(300, result.getResponseSize());
+        assertEquals(1700, result.getProcessingTime());
+        assertEquals(1421678487, result.getSendingDateConsumer());
     }
 }
