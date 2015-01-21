@@ -37,8 +37,8 @@ public class ConsumerWS {
 
     protected static ConsumerAMQPHandler amqp;
     private static final Logger LOGGER = LogManager.getLogger("Consumer");
-//    private Scenario scenario = null;
-    private Scenario scenario = new Scenario("INFO|0|name|0|10|CONSUMER|2|C2" + "|REQUEST|1|0021|4|0|0|0|2000|5" + "|REQUEST|3|0023|2|true|1000|8|500|10" + "|REQUEST|4|0024|10|0|100|5|5500|2");
+    private Scenario scenario = null;
+//    private Scenario scenario = new Scenario("INFO|0|name|0|10|CONSUMER|2|C2" + "|REQUEST|1|0021|4|0|0|0|2000|5" + "|REQUEST|3|0023|2|true|1000|8|500|10" + "|REQUEST|4|0024|10|0|100|5|5500|2");
     private static final int THREAD_TIMEOUT = 5; // in seconds
     private static final int PROVIDER_ID_INDEX = 1;
     /*
@@ -272,25 +272,22 @@ public class ConsumerWS {
                         receptionDateConsumer = new Date();
                         // resp format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|ReceptionDateProv|SendingDateProv|ReceptionDateCons
                         result += Long.toString(receptionDateConsumer.getTime());
-                    }
-                    else {
+                    } else {
                         LOGGER.debug("Bad consumer (C" + scenario.getConsumerId() + ") received response : " + response + " to request " + request);
                         result = "CONSUMER|" + request;
                     }
-                } 
-                else {
+                } else {
                     result = "FORMAT|" + request;
                     LOGGER.debug("Consumer C" + scenario.getConsumerId() + " received a badly formatted response : " + response + " to request " + request);
+
+                    try {
+                        LOGGER.debug("Consumer C" + scenario.getConsumerId() + " sends result to app : " + result.replace("|", ";"));
+                        amqp.sendResult(result);
+                    } catch (IOException ex) {
+                        LOGGER.error("[Consumer thread] Unable to send result to application" + ex.getMessage());
+                    }
                 }
             }
-
-//            try {
-//                LOGGER.debug("Consumer C" + scenario.getConsumerId() + " sends result to app : " + result.replace("|", ";"));
-//                amqp.sendResult(result);
-//            }
-//            catch (IOException ex) {
-//                LOGGER.error("[Consumer thread] Unable to send result to application" + ex.getMessage());
-//            }
         }
     }
 
@@ -336,6 +333,22 @@ public class ConsumerWS {
             ex.printStackTrace();
         }
         return "done";
+    }
+
+    /**
+     * Must be invoked at the end
+     * @return "done"
+     */
+    @WebMethod(operationName = "closeConnection")
+    public String closeConnection() {
+        try {
+            amqp.closeConnection();
+            LOGGER.debug("connection closed");
+            return "done";
+        } catch (IOException ex) {
+            LOGGER.debug("impossible to close connection" + ex.getMessage());
+            return "error";
+        }
     }
 
     public Scenario getScenario() {

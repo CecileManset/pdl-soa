@@ -24,6 +24,7 @@ public class AMQPHandler {
     private static final Logger logger = LogManager.getLogger(AMQPHandler.class);
 
     // Variables
+    private static final long RECEPTION_TIMEOUT = 10000;
     private static final String host = "localhost"; //replace by vm address
     /*private static final String username = "test";
     private static final String password = "test";*/
@@ -118,7 +119,10 @@ public class AMQPHandler {
      * @throws InterruptedException
      */
     public String receiveResultMessage() throws ShutdownSignalException, ConsumerCancelledException, InterruptedException {
-        QueueingConsumer.Delivery delivery = this.resultsConsumer.nextDelivery();
+        QueueingConsumer.Delivery delivery = this.resultsConsumer.nextDelivery(RECEPTION_TIMEOUT);
+        if (delivery == null) {
+            throw new ConsumerCancelledException();
+        }
         String message = new String(delivery.getBody());
         logger.debug("[result channel] Message received : " + message);
         return message;

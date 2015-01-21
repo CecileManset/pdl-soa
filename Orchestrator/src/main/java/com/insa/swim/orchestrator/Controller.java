@@ -4,7 +4,9 @@ import com.insa.swim.orchestrator.amqp.AMQPHandler;
 import com.insa.swim.orchestrator.configuration.WebServicesConfiguration;
 import com.insa.swim.orchestrator.xml.IXmlReader;
 import com.insa.swim.orchestrator.xml.Result;
+import com.insa.swim.orchestrator.xml.Results;
 import com.insa.swim.orchestrator.xml.Scenario;
+import com.insa.swim.orchestrator.xml.XMLWriter;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -12,17 +14,49 @@ import com.insa.swim.orchestrator.xml.XmlParser;
 import com.rabbitmq.client.ConsumerCancelledException;
 import com.rabbitmq.client.ShutdownSignalException;
 import java.io.IOException;
+import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class Controller {
 
     public static final Logger LOGGER = LogManager.getLogger(Controller.class);
+    
+    private Scenario scenario;
 
     private Scenario parseXml() {
         IXmlReader xmlReader = new XmlParser();
-        Scenario scenario = xmlReader.parseXml();
-        return scenario;
+        Scenario sc = xmlReader.parseXml();
+        return sc;
+    }
+    
+    public Results computeResultsKpi(Results results) {
+        double meanTimeConsumerProvider = 0;
+        double meanTimeProviderConsumer = 0;
+        
+        List<Result> resultsNoError = results.getResultsNoError();
+        for (Result result : resultsNoError) {
+            meanTimeConsumerProvider += result.getC2PTime();
+            meanTimeProviderConsumer += result.getP2CTime();
+        }
+        meanTimeConsumerProvider /= resultsNoError.size();
+        meanTimeProviderConsumer /= resultsNoError.size();
+        
+        results.getKPI().setMeanTimeConsumerProvider(meanTimeConsumerProvider);
+        results.getKPI().setMeanTimeProviderConsumer(meanTimeProviderConsumer);
+        return results;
+    }
+
+    private void createXML(Results results) {
+        int requestNumber = scenario.getTotalOfRequest();
+        int lostMessages = requestNumber - results.getResultsNoError().size();
+        
+        results.getKPI().setRequestsNumber(requestNumber);
+        results.getKPI().setNumberLostMessages(lostMessages);
+        
+        results = computeResultsKpi(results);
+        XMLWriter xmlWriter = new XMLWriter();
+        xmlWriter.write(results);
     }
 
     private void configureWebServices(Scenario scenario, AMQPHandler amqp) {
@@ -42,22 +76,17 @@ public class Controller {
 
     public void start() {
         LOGGER.trace("Controller starts");
+        Results results = new Results();
 
         try {
-            Scenario scenario = parseXml();
+            scenario = parseXml();
             AMQPHandler amqp = new AMQPHandler();
 
             configureWebServices(scenario, amqp);
 
             amqp.sendStart();
-            
-            LOGGER.debug("Received : " + amqp.receiveResultMessage());
 
-
-
-//            LOGGER.debug("Received : " + amqp.receiveResultMessage());
-//            LOGGER.debug("Received : " + amqp.receiveResultMessage());
-
+            //LOGGER.debug("Received : " + amqp.receiveResultMessage());
             // creating the httpClient which will be used by the threads
             PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
             connectionManager.setMaxTotal(100);
@@ -70,12 +99,14 @@ public class Controller {
                 while (!stopCondition) {
                     PostToElasticSearchThread[] threads = new PostToElasticSearchThread[10];
                     for (int i = 0; i < threads.length; i++) {
-                        LOGGER.error("Waiting for results...");
+                        LOGGER.debug("Waiting for results...");
                         Result result = new Result(amqp.receiveResultMessage());
-                        LOGGER.error("Received a result: " + result.toString());
+                        LOGGER.debug("Received a result: " + result.toString());
+                        results.getResults().add(result);
+                        // TODO : move to avoid useless writing
                         threads[i] = new PostToElasticSearchThread(httpClient, result);
                         threads[i].start();
-                        LOGGER.error("Result sent to ElasticSearch");
+                        LOGGER.debug("Result sent to ElasticSearch");
 //                Result result = new Result();
 //                result.setConsumer("consumer" + i);
 //                result.setProvider("provider" + i);
@@ -88,7 +119,6 @@ public class Controller {
 //            for (int j = 0; j < threads.length; j++) {
 //                threads[j].start();
 //            }
-
                     // join the threads
                     for (int j = 0; j < threads.length; j++) {
                         try {
@@ -102,11 +132,13 @@ public class Controller {
             } finally {
                 try {
                     httpClient.close();
+                    LOGGER.debug("HTTP Client closed");
+                    amqp.closeConnection();
+                    LOGGER.debug("AMQP connection closed");
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
             }
-            amqp.closeConnection();
 
         } catch (IOException ex) {
             LOGGER.error(this.getClass() + " " + ex.getMessage());
@@ -118,9 +150,13 @@ public class Controller {
             LOGGER.error(this.getClass() + " " + ex.getMessage());
         }
 
-        Listener listener = startListener();
-        launchEsbTest();
-        listener.stop();
+        createXML(results);
+        LOGGER.debug("results published");
 
+        /*
+         Listener listener = startListener();
+         launchEsbTest();
+         listener.stop();
+         */
     }
 }
