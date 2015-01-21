@@ -29,15 +29,10 @@ public class Controller {
         Scenario sc = xmlReader.parseXml();
         return sc;
     }
-
-    private void createXML(Results results) {
+    
+    public Results computeResultsKpi(Results results) {
         double meanTimeConsumerProvider = 0;
         double meanTimeProviderConsumer = 0;
-        int requestNumber = scenario.getTotalOfRequest();
-        int lostMessages = requestNumber - results.getResultsNoError().size();
-        
-        results.getKPI().setRequestsNumber(requestNumber);
-        results.getKPI().setNumberLostMessages(lostMessages);
         
         List<Result> resultsNoError = results.getResultsNoError();
         for (Result result : resultsNoError) {
@@ -49,7 +44,17 @@ public class Controller {
         
         results.getKPI().setMeanTimeConsumerProvider(meanTimeConsumerProvider);
         results.getKPI().setMeanTimeProviderConsumer(meanTimeProviderConsumer);
+        return results;
+    }
 
+    private void createXML(Results results) {
+        int requestNumber = scenario.getTotalOfRequest();
+        int lostMessages = requestNumber - results.getResultsNoError().size();
+        
+        results.getKPI().setRequestsNumber(requestNumber);
+        results.getKPI().setNumberLostMessages(lostMessages);
+        
+        results = computeResultsKpi(results);
         XMLWriter xmlWriter = new XMLWriter();
         xmlWriter.write(results);
     }
