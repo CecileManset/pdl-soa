@@ -14,6 +14,7 @@ import com.insa.swim.orchestrator.xml.XmlParser;
 import com.rabbitmq.client.ConsumerCancelledException;
 import com.rabbitmq.client.ShutdownSignalException;
 import java.io.IOException;
+import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,26 +29,32 @@ public class Controller {
         Scenario sc = xmlReader.parseXml();
         return sc;
     }
-
-    private void createXML(Results results) {
+    
+    public Results computeResultsKpi(Results results) {
         double meanTimeConsumerProvider = 0;
         double meanTimeProviderConsumer = 0;
+        
+        List<Result> resultsNoError = results.getResultsNoError();
+        for (Result result : resultsNoError) {
+            meanTimeConsumerProvider += result.getC2PTime();
+            meanTimeProviderConsumer += result.getP2CTime();
+        }
+        meanTimeConsumerProvider /= resultsNoError.size();
+        meanTimeProviderConsumer /= resultsNoError.size();
+        
+        results.getKPI().setMeanTimeConsumerProvider(meanTimeConsumerProvider);
+        results.getKPI().setMeanTimeProviderConsumer(meanTimeProviderConsumer);
+        return results;
+    }
+
+    private void createXML(Results results) {
         int requestNumber = scenario.getTotalOfRequest();
-        int lostMessages = requestNumber - results.getResults().size();
+        int lostMessages = requestNumber - results.getResultsNoError().size();
         
         results.getKPI().setRequestsNumber(requestNumber);
         results.getKPI().setNumberLostMessages(lostMessages);
         
-        for (int i = 0; i < results.getResults().size(); i++) {
-            meanTimeConsumerProvider += results.getResults().get(i).getC2PTime();
-            meanTimeProviderConsumer += results.getResults().get(i).getP2CTime();
-        }
-        meanTimeConsumerProvider /= results.getResults().size();
-        meanTimeProviderConsumer /= results.getResults().size();
-        
-        results.getKPI().setMeanTimeConsumerProvider(meanTimeConsumerProvider);
-        results.getKPI().setMeanTimeProviderConsumer(meanTimeProviderConsumer);
-
+        results = computeResultsKpi(results);
         XMLWriter xmlWriter = new XMLWriter();
         xmlWriter.write(results);
     }
