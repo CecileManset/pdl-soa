@@ -22,6 +22,8 @@ public class ProviderWS {
     private static final Logger LOGGER = LogManager.getLogger("Provider");
     private static final int PROCESSING_TIME_INDEX = 4;
     private static final int RESPONSE_SIZE_INDEX = 3;
+    private static final int PROVIDER_ID_INDEX = 1;
+    private int providerNumber = Integer.parseInt(this.getClass().toString().split(".")[6].split("|")[1]);
 
      /**
      * Method used to test the consumer-provider communication
@@ -30,7 +32,7 @@ public class ProviderWS {
      */
     @WebMethod(operationName = "pingpong")
     public String pingpong(@WebParam(name = "ping") String txt) {
-        LOGGER.debug("message received by " + this.getClass() + ": " + txt);
+        LOGGER.debug("Message received by " + this.getClass() + ": " + txt);
         
         if (txt != null && txt.equals("ping")) {
             return "pong";
@@ -68,10 +70,11 @@ public class ProviderWS {
         if (request != null) {
             receptionDate = new Date();
 
-            LOGGER.debug("message received by " + this.getClass() + ": " + request.replace("|", ";"));
+            LOGGER.debug("Message received by " + this.getClass() + ": " + request.replace("|", ";"));
 
             parsedRequest = parseRequest(request);
-            // TODO verify that the provider that receives the request is the intended one (attribut id?)
+
+            if (providerNumber == Integer.parseInt(parsedRequest[PROVIDER_ID_INDEX])) {
             // Sleep to fake the request processing
             try {
                 Thread.sleep(Integer.parseInt(parsedRequest[PROCESSING_TIME_INDEX]));
@@ -92,12 +95,16 @@ public class ProviderWS {
             sendingDate = new Date();
             // + provider info
             response += Long.toString(receptionDate.getTime()) + "|" + Long.toString(sendingDate.getTime()) + "|" + new String(payloadProvider);
+            }
+            else {
+                return "Bad provider (P" + providerNumber + ") received request : " + request;
+            }
         }
         else {
-            return "null request";
+            return "Null request";
         }
 
-        LOGGER.debug("message sent from " + this.getClass() + " to Consumer " + parsedRequest[0] + ": " + response);
+        LOGGER.debug("Message sent from " + this.getClass() + " to Consumer " + parsedRequest[0] + ": " + response);
 
         return response;
     }
