@@ -5,7 +5,6 @@
 package com.insa.swim.provider.ws;
 
 import java.util.Date;
-import java.util.regex.PatternSyntaxException;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
@@ -24,6 +23,8 @@ public class ProviderWS {
     private static final int RESPONSE_SIZE_INDEX = 3;
     private static final int PROVIDER_ID_INDEX = 1;
     private static final int REQUEST_FIELDS_NB = 7;
+    private static final int PROVIDER_NUMBER_INDEX_IN_CLASSNAME = 2;
+    private static final int PROVIDER_NAME_INDEX_IN_CLASSNAME = 6;
     private int providerNumber = -1;
 
     /**
@@ -35,7 +36,7 @@ public class ProviderWS {
     public String pingpong(@WebParam(name = "ping") String txt) {
         LOGGER.debug("Message received by " + this.getClass() + ": " + txt);
 
-        if (txt != null && txt.equals("ping")) {
+        if ("ping".equals(txt)) {
             return "pong";
         } else {
             return "error";
@@ -80,7 +81,7 @@ public class ProviderWS {
         char[] payloadProvider;
         Date receptionDate;
         Date sendingDate;
-        int providerNumberFromName = Integer.parseInt(this.getClass().toString().split("\\.")[6].split("|")[2]);
+        int providerNumberFromName = Integer.parseInt(this.getClass().toString().split("\\.")[PROVIDER_NAME_INDEX_IN_CLASSNAME].split("|")[PROVIDER_NUMBER_INDEX_IN_CLASSNAME]);
 
         // if request = null, badly formatted request or pb with consumer-provider communication
         if (request != null) {
@@ -116,7 +117,7 @@ public class ProviderWS {
                     try {
                         Thread.sleep(Integer.parseInt(parsedRequest[PROCESSING_TIME_INDEX]));
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        LOGGER.debug("Provider P" + providerNumber + "processing interrupted", e);
                     }
 
                     payloadProvider = new char[Integer.parseInt(parsedRequest[RESPONSE_SIZE_INDEX])];
