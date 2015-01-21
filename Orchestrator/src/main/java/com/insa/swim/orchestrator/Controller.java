@@ -20,20 +20,21 @@ import org.apache.logging.log4j.Logger;
 
 public class Controller {
 
-    public static final Logger LOGGER = LogManager.getLogger(Controller.class);
-    
+    private static final Logger LOGGER = LogManager.getLogger(Controller.class);
+    private static final int NUMBER_THREADS_SENDING_RESULT = 10;
+    private static final int SIZE_CONNECTION_POOL = 100;
+
     private Scenario scenario;
 
     private Scenario parseXml() {
         IXmlReader xmlReader = new XmlParser();
-        Scenario sc = xmlReader.parseXml();
-        return sc;
+        return xmlReader.parseXml();
     }
-    
+
     public Results computeResultsKpi(Results results) {
         double meanTimeConsumerProvider = 0;
         double meanTimeProviderConsumer = 0;
-        
+
         List<Result> resultsNoError = results.getResultsNoError();
         for (Result result : resultsNoError) {
             meanTimeConsumerProvider += result.getC2PTime();
@@ -41,7 +42,7 @@ public class Controller {
         }
         meanTimeConsumerProvider /= resultsNoError.size();
         meanTimeProviderConsumer /= resultsNoError.size();
-        
+
         results.getKPI().setMeanTimeConsumerProvider(meanTimeConsumerProvider);
         results.getKPI().setMeanTimeProviderConsumer(meanTimeProviderConsumer);
         return results;
@@ -50,31 +51,69 @@ public class Controller {
     private void createXML(Results results) {
         int requestNumber = scenario.getTotalOfRequest();
         int lostMessages = requestNumber - results.getResultsNoError().size();
-        
+
         results.getKPI().setRequestsNumber(requestNumber);
         results.getKPI().setNumberLostMessages(lostMessages);
-        
-        results = computeResultsKpi(results);
+
+        Results res = computeResultsKpi(results);
         XMLWriter xmlWriter = new XMLWriter();
-        xmlWriter.write(results);
+        xmlWriter.write(res);
     }
 
     private void configureWebServices(Scenario scenario, AMQPHandler amqp) {
         WebServicesConfiguration config = new WebServicesConfiguration(amqp);
-        //LOGGER.debug("scenario : number requests " + scenario.getConsumers().getConsumer().get(0).getRequests().getRequest().get(0).getNumberRequests());
         config.configure(scenario);
     }
-    
+
     private void initConsumers(Scenario scenario) {
-        
+        // not enough time to init the consumers through a webservice 
     }
 
+    private Results collectResults(AMQPHandler amqp) throws ShutdownSignalException, ConsumerCancelledException, InterruptedException {
+        Results results = new Results();
+        // creating the httpClient which will be used by the threads
+        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+        connectionManager.setMaxTotal(SIZE_CONNECTION_POOL);
 
-//    private Listener startListener() {
-//        Listener listener = new Listener();
-//        listener.start();
-//        return listener;
-//    }
+        CloseableHttpClient httpClient = HttpClients.custom().setConnectionManager(connectionManager).build();
+
+        try {
+
+            boolean stopCondition = false;
+            while (!stopCondition) {
+                PostToElasticSearchThread[] threads = new PostToElasticSearchThread[NUMBER_THREADS_SENDING_RESULT];
+                for (int i = 0; i < threads.length; i++) {
+                    LOGGER.debug("Waiting for results...");
+                    Result result = new Result(amqp.receiveResultMessage());
+                    LOGGER.debug("Received a result: " + result.toString());
+                    results.getResults().add(result);
+                    threads[i] = new PostToElasticSearchThread(httpClient, result);
+                    threads[i].start();
+                    LOGGER.debug("Result sent to ElasticSearch");
+                }
+
+                // join the threads
+                for (PostToElasticSearchThread thread : threads) {
+                    try {
+                        thread.join();
+                    } catch (InterruptedException ex) {
+                        LOGGER.error("Error while waiting for the threads to join " + ex);
+                    }
+                }
+            }
+
+        } finally {
+            try {
+                httpClient.close();
+                LOGGER.debug("HTTP Client closed");
+                amqp.closeConnection();
+                LOGGER.debug("AMQP connection closed");
+            } catch (IOException ex) {
+                LOGGER.error("Could not close http client or AMQP " + ex);
+            }
+        }
+        return results;
+    }
 
     public void start() {
         LOGGER.trace("Controller starts");
@@ -89,77 +128,19 @@ public class Controller {
 
             amqp.sendStart();
 
-            //LOGGER.debug("Received : " + amqp.receiveResultMessage());
-            // creating the httpClient which will be used by the threads
-            PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
-            connectionManager.setMaxTotal(100);
-
-            CloseableHttpClient httpClient = HttpClients.custom().setConnectionManager(connectionManager).build();
-
-            try {
-
-                boolean stopCondition = false;
-                while (!stopCondition) {
-                    PostToElasticSearchThread[] threads = new PostToElasticSearchThread[10];
-                    for (int i = 0; i < threads.length; i++) {
-                        LOGGER.debug("Waiting for results...");
-                        Result result = new Result(amqp.receiveResultMessage());
-                        LOGGER.debug("Received a result: " + result.toString());
-                        results.getResults().add(result);
-                        // TODO : move to avoid useless writing
-                        threads[i] = new PostToElasticSearchThread(httpClient, result);
-                        threads[i].start();
-                        LOGGER.debug("Result sent to ElasticSearch");
-//                Result result = new Result();
-//                result.setConsumer("consumer" + i);
-//                result.setProvider("provider" + i);
-//                result.setC2PTime(i*i*12);
-//                result.setP2CTime(15478);
-//                threads[i] = new PostToElasticSearchThread(httpClient, result);
-                    }
-
-                    // start the threads
-//            for (int j = 0; j < threads.length; j++) {
-//                threads[j].start();
-//            }
-                    // join the threads
-                    for (int j = 0; j < threads.length; j++) {
-                        try {
-                            threads[j].join();
-                        } catch (InterruptedException ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                }
-
-            } finally {
-                try {
-                    httpClient.close();
-                    LOGGER.debug("HTTP Client closed");
-                    amqp.closeConnection();
-                    LOGGER.debug("AMQP connection closed");
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-            }
+            results = collectResults(amqp);
 
         } catch (IOException ex) {
-            LOGGER.error(this.getClass() + " " + ex.getMessage());
+            LOGGER.error("Error while collecting results " + ex);
         } catch (ShutdownSignalException ex) {
-            LOGGER.error(this.getClass() + " " + ex.getMessage());
+            LOGGER.error("Error while collecting results : shutdownsignal " + ex);
         } catch (ConsumerCancelledException ex) {
-            LOGGER.error(this.getClass() + " " + ex.getMessage());
+            LOGGER.error("Error while collecting results : Consumer cancelled " + ex);
         } catch (InterruptedException ex) {
-            LOGGER.error(this.getClass() + " " + ex.getMessage());
+            LOGGER.error("Error while collecting results : interrupted " + ex.getMessage());
         }
 
         createXML(results);
         LOGGER.debug("results published");
-
-        /*
-         Listener listener = startListener();
-         launchEsbTest();
-         listener.stop();
-         */
     }
 }
