@@ -40,7 +40,7 @@ public class ConsumerWS {
 //    private Scenario scenario = new Scenario("INFO|0|name|0|10|CONSUMER|2|C2" + "|REQUEST|1|0021|4|0|0|0|2000|5" + "|REQUEST|3|0023|2|true|1000|8|500|10" + "|REQUEST|4|0024|10|0|100|5|5500|2");
     // thread timeout in seconds
     private static final int THREAD_TIMEOUT = 5;
-    private static final int PROVIDER_ID_INDEX = 1;
+    private static final int CONSUMER_ID_INDEX = 0;
     private static final int PROVIDER1_ID = 1;
     private static final int PROVIDER2_ID = 2;
     private static final int PROVIDER3_ID = 3;
@@ -117,8 +117,7 @@ public class ConsumerWS {
                     response = port4.processRequest(request);
                     break;
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             LOGGER.error("Consumer C" + scenario.getConsumerId() + "bus problem when sending request", e);
         }
 
@@ -200,6 +199,7 @@ public class ConsumerWS {
         String req;
         int providerNumber;
         Callable<Object> task = new Callable<Object>() {
+
             @Override
             public Object call() {
                 return sendRequest(req, providerNumber);
@@ -234,7 +234,8 @@ public class ConsumerWS {
         public void run() {
             Date receptionDateConsumer;
             boolean timedOut = false;
-            String result = "No response from provider " + request.split("\\|")[1] + " : " + request;
+            //String result = "No response from provider " + request.split("\\|")[1] + " : " + request;
+            String result = "";
             String response = "";
 
             ExecutorService executor = Executors.newCachedThreadPool();
@@ -262,7 +263,7 @@ public class ConsumerWS {
                 if (response != null || !response.contains("|")) {
                     String[] responseParts = response.split("\\|", -1);
 
-                    if (Integer.parseInt(responseParts[PROVIDER_ID_INDEX]) == scenario.getConsumerId()) {
+                    if (Integer.parseInt(responseParts[CONSUMER_ID_INDEX]) == scenario.getConsumerId()) {
 
                         for (int i = 0; i < responseParts.length - 1; i++) {
                             result += responseParts[i] + "|";
@@ -278,14 +279,13 @@ public class ConsumerWS {
                 } else {
                     result = "FORMAT|" + request;
                     LOGGER.debug("Consumer C" + scenario.getConsumerId() + " received a badly formatted response : " + response + " to request " + request);
-
-                    try {
-                        LOGGER.debug("Consumer C" + scenario.getConsumerId() + " sends result to app : " + result.replace("|", ";"));
-                        amqp.sendResult(result);
-                    } catch (IOException e) {
-                        LOGGER.error("[Consumer thread] Unable to send result to application", e);
-                    }
                 }
+            }
+            try {
+                LOGGER.debug("Consumer C" + scenario.getConsumerId() + " sends result to app : " + result.replace("|", ";"));
+                amqp.sendResult(result);
+            } catch (IOException e) {
+                LOGGER.error("[Consumer thread] Unable to send result to application", e);
             }
         }
     }
