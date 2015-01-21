@@ -35,13 +35,18 @@ import org.apache.logging.log4j.Logger;
 @WebService()
 public class ConsumerWS {
 
-
     protected ConsumerAMQPHandler amqp;
     private static final Logger LOGGER = LogManager.getLogger("Consumer");
     private Scenario scenario = null;
 //    private Scenario scenario = new Scenario("INFO|0|name|0|10|CONSUMER|2|C2" + "|REQUEST|1|0021|4|0|0|0|2000|5" + "|REQUEST|3|0023|2|true|1000|8|500|10" + "|REQUEST|4|0024|10|0|100|5|5500|2");
-    private static final int THREAD_TIMEOUT = 5; // in seconds
+    // thread timeout in seconds
+    private static final int THREAD_TIMEOUT = 5;
     private static final int PROVIDER_ID_INDEX = 1;
+    private static final int PROVIDER1_ID = 1;
+    private static final int PROVIDER2_ID = 2;
+    private static final int PROVIDER3_ID = 3;
+    private static final int PROVIDER4_ID = 4;
+
     /*
      * These are the referenes of the services provided by the bus to join the controller
      * */
@@ -63,24 +68,22 @@ public class ConsumerWS {
     public String sendPing(String txt, int provider) {
         java.lang.String result = "BigFail";
         switch (provider) {
-            case 1:
+            case PROVIDER1_ID:
                 compositeapp1.P1WebService port1 = service1.getCasaPort1();
-                result = port1.pingpong("ping");
+                result = port1.pingpong(txt);
                 break;
-            case 2:
+            case PROVIDER2_ID:
                 compositeapp1.P2WebService port2 = service2.getCasaPort2();
-                result = port2.pingpong("ping");
+                result = port2.pingpong(txt);
                 break;
-            case 3:
+            case PROVIDER3_ID:
                 compositeapp1.P3WebService port3 = service3.getCasaPort3();
-                result = port3.pingpong("ping");
+                result = port3.pingpong(txt);
                 break;
-            case 4:
+            case PROVIDER4_ID:
                 compositeapp1.P4WebService port4 = service4.getCasaPort4();
-                result = port4.pingpong("ping");
+                result = port4.pingpong(txt);
                 break;
-            default:
-                ;
         }
         LOGGER.debug("message received : " + result);
         return result;
@@ -98,26 +101,25 @@ public class ConsumerWS {
 
         try {
             switch (provider) {
-                case 1:
+                case PROVIDER1_ID:
                     compositeapp1.P1WebService port1 = service1.getCasaPort1();
                     response = port1.processRequest(request);
                     break;
-                case 2:
+                case PROVIDER2_ID:
                     compositeapp1.P2WebService port2 = service2.getCasaPort2();
                     response = port2.processRequest(request);
                     break;
-                case 3:
+                case PROVIDER3_ID:
                     compositeapp1.P3WebService port3 = service3.getCasaPort3();
                     response = port3.processRequest(request);
                     break;
-                case 4:
+                case PROVIDER4_ID:
                     compositeapp1.P4WebService port4 = service4.getCasaPort4();
                     response = port4.processRequest(request);
                     break;
-                default:
-                    ;
             }
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             LOGGER.error(ex.getMessage());
             LOGGER.debug(ex.getStackTrace());
         }
@@ -136,7 +138,8 @@ public class ConsumerWS {
         String requestSize = Integer.toString(req.getSize());
         String responseSize = Integer.toString(req.getResponseSize());
         String processingTime = Integer.toString(req.getProcessingTime());
-        String sendingDate = Integer.toString(req.getSendingTime()); // can be used as a starting point for the request
+        // sendingDate can be used as a starting point for the request
+        String sendingDate = Integer.toString(req.getSendingTime());
         char[] payloadConsumer = new char[req.getSize()];
         String request;
         Date now;
@@ -198,18 +201,17 @@ public class ConsumerWS {
 
         String req;
         int providerNumber;
-
-        public BlockingMethodCallable(String req, int providerNumber) {
-            this.req = req;
-            this.providerNumber = providerNumber;
-        }
         Callable<Object> task = new Callable<Object>() {
-
             @Override
             public Object call() {
                 return sendRequest(req, providerNumber);
             }
         };
+
+        public BlockingMethodCallable(String req, int providerNumber) {
+            this.req = req;
+            this.providerNumber = providerNumber;
+        }
     }
 
     /**
@@ -322,16 +324,16 @@ public class ConsumerWS {
             }
         } catch (IOException ex) {
             LOGGER.error("error initialisation" + this.getClass());
-            ex.printStackTrace();
+            LOGGER.error(ex.getStackTrace());
         } catch (ShutdownSignalException ex) {
             LOGGER.error("error initialisation" + this.getClass());
             ex.printStackTrace();
         } catch (ConsumerCancelledException ex) {
             LOGGER.error("error initialisation" + this.getClass());
-            ex.printStackTrace();
+            LOGGER.error(ex.getStackTrace());
         } catch (InterruptedException ex) {
             LOGGER.error("error initialisation" + this.getClass());
-            ex.printStackTrace();
+            LOGGER.error(ex.getStackTrace());
         }
         return "done";
     }
