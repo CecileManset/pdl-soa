@@ -38,11 +38,9 @@ public class ConsumerWS {
     protected static ConsumerAMQPHandler amqp;
     private static final Logger LOGGER = LogManager.getLogger("Consumer");
 //    private Scenario scenario = null;
-    private Scenario scenario = new Scenario("INFO|0|name|0|10|CONSUMER|2|C2"
-                                                                + "|REQUEST|1|0021|4|0|0|0|2000|5"
-                                                                + "|REQUEST|3|0023|2|true|1000|8|500|10"
-                                                                + "|REQUEST|4|0024|10|0|100|5|5500|2");
+    private Scenario scenario = new Scenario("INFO|0|name|0|10|CONSUMER|2|C2" + "|REQUEST|1|0021|4|0|0|0|2000|5" + "|REQUEST|3|0023|2|true|1000|8|500|10" + "|REQUEST|4|0024|10|0|100|5|5500|2");
     private static final int THREAD_TIMEOUT = 5; // in seconds
+    private static final int PROVIDER_ID_INDEX = 1;
     /*
      * These are the referenes of the services provided by the bus to join the controller
      * */
@@ -152,7 +150,7 @@ public class ConsumerWS {
         sendingDate = Long.toString(now.getTime());
 
         request = consumerID + "|" + providerID + "|" + requestSize + "|" + responseSize + "|" + processingTime + "|" + sendingDate + "|" + new String(payloadConsumer);
-        LOGGER.debug("Constructed request : " + request.replace("|", ";"));
+        LOGGER.debug("Consumer C" + scenario.getConsumerId() + " constructed request : " + request.replace("|", ";"));
 
         // req format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|PayloadCons
         return request;
@@ -164,15 +162,16 @@ public class ConsumerWS {
     @WebMethod(operationName = "startSendingRequests")
     public void startSendingRequests() {
         int providerNumber;
-        int nbRequests = 1;
-        int period = 0;
+        int nbRequests;
+        int period;
 
         for (Request req : scenario.getRequestList()) {
+            nbRequests = 1;
+            period = 0;
             providerNumber = req.getProviderId();
 
-            LOGGER.debug("Consumer " + this.getClass() + " starts sending requests");
+            LOGGER.debug("Consumer C" + scenario.getConsumerId() + " starts sending requests");
 
-            // TODO Send back too many timeouts
             if (req.isPeriodic()) {
                 nbRequests = req.getNumberRequest();
                 period = req.getPeriod();
@@ -181,7 +180,6 @@ public class ConsumerWS {
             // Create a thread that handles the request sending to provider i (send, wait for response and send it to app)
             for (int nbReq = 0; nbReq < nbRequests; nbReq++) {
                 Thread thread = new Thread(new ConsumerThread(constructRequest(req), providerNumber), this.getClass().toString());
-                //            Thread thread = new Thread(new ConsumerThread(req), this.getClass().toString());
                 thread.start();
                 try {
                     Thread.sleep(period);
@@ -234,6 +232,7 @@ public class ConsumerWS {
         @Override
         public void run() {
             Date receptionDateConsumer;
+            boolean timedOut = false;
             String result = "No response from provider " + request.split("\\|")[1] + " : " + request;
             String response = "";
 
@@ -243,41 +242,50 @@ public class ConsumerWS {
 
             try {
                 response = (String) future.get(THREAD_TIMEOUT, TimeUnit.SECONDS);
-            }
-            catch (TimeoutException ex) {
-                response = "timeout";
-                result = "timeout";
-            }
-            catch (InterruptedException e) {
+            } catch (TimeoutException ex) {
+                result = "LOST|" + request;
+                LOGGER.debug("Consumer C" + scenario.getConsumerId() + " didn't receive message from provider P" + providerNumber + " to request : " + request.replace("|", ";"));
+                timedOut = true;
+            } catch (InterruptedException e) {
                 LOGGER.error(e.getMessage());
                 LOGGER.debug(e.getStackTrace());
-            }
-            catch (ExecutionException e) {
+            } catch (ExecutionException e) {
                 LOGGER.error(e.getMessage());
                 LOGGER.debug(e.getStackTrace());
-            }
-            finally {
+            } finally {
                 future.cancel(true);
             }
 
-            LOGGER.debug("Response from P" + providerNumber + " to " + Thread.currentThread().getName() + " : " + response.replace("|", ";"));
+            LOGGER.debug("Response from P" + providerNumber + " to Consumer C" + scenario.getConsumerId() + " : " + response.replace("|", ";"));
 
-            // send results to orchestrator with AMQP
-            if (response.contains("|")) {
-                String[] responseParts = response.split("\\|", -1);
-                int i;
+            if (!timedOut) {
+                // send results to orchestrator with AMQP
+                if (response != null || !response.contains("|")) {
+                    String[] responseParts = response.split("\\|", -1);
 
-                for (i = 0; i < responseParts.length - 1; i++) {
-                    result += responseParts[i] + "|";
+                    if (Integer.parseInt(responseParts[PROVIDER_ID_INDEX]) == scenario.getConsumerId()) {
+
+                        for (int i = 0; i < responseParts.length - 1; i++) {
+                            result += responseParts[i] + "|";
+                        }
+
+                        receptionDateConsumer = new Date();
+                        // resp format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|ReceptionDateProv|SendingDateProv|ReceptionDateCons
+                        result += Long.toString(receptionDateConsumer.getTime());
+                    }
+                    else {
+                        LOGGER.debug("Bad consumer (C" + scenario.getConsumerId() + ") received response : " + response + " to request " + request);
+                        result = "CONSUMER|" + request;
+                    }
+                } 
+                else {
+                    result = "FORMAT|" + request;
+                    LOGGER.debug("Consumer C" + scenario.getConsumerId() + " received a badly formatted response : " + response + " to request " + request);
                 }
-
-                receptionDateConsumer = new Date();
-                // resp format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|ReceptionDateProv|SendingDateProv|ReceptionDateCons
-                result += Long.toString(receptionDateConsumer.getTime());
             }
 
 //            try {
-//                LOGGER.debug("Consumer " + Thread.currentThread().getName() + " sends result to app : " + result.replace("|", ";"));
+//                LOGGER.debug("Consumer C" + scenario.getConsumerId() + " sends result to app : " + result.replace("|", ";"));
 //                amqp.sendResult(result);
 //            }
 //            catch (IOException ex) {
@@ -310,25 +318,20 @@ public class ConsumerWS {
 
                 LOGGER.debug("message start : " + start);
                 startSendingRequests();
-            }
-            else {
+            } else {
                 LOGGER.error("Impossible to create the scenario. The XML may be wrong");
                 amqp.sendResult("Bad xml format");
             }
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             LOGGER.error("error initialisation" + this.getClass());
             ex.printStackTrace();
-        }
-        catch (ShutdownSignalException ex) {
+        } catch (ShutdownSignalException ex) {
             LOGGER.error("error initialisation" + this.getClass());
             ex.printStackTrace();
-        }
-        catch (ConsumerCancelledException ex) {
+        } catch (ConsumerCancelledException ex) {
             LOGGER.error("error initialisation" + this.getClass());
             ex.printStackTrace();
-        }
-        catch (InterruptedException ex) {
+        } catch (InterruptedException ex) {
             LOGGER.error("error initialisation" + this.getClass());
             ex.printStackTrace();
         }

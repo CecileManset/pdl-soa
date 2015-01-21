@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.insa.swim.provider.ws;
+package com.insa.swim.provider.ws.p1;
 
+import com.insa.swim.provider.ws.*;
 import javax.jws.WebService;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;

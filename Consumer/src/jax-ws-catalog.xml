@@ -7,14 +7,16 @@
     <system systemId="http://localhost:9080/CompositeApp1Service3/casaPort3?wsdl" uri="wsdl/localhost_9080/CompositeApp1Service3/casaPort3.wsdl"/>
     <system systemId="http://localhost:9080/CompositeApp1Service1/casaPort1?wsdl" uri="wsdl/localhost_9080/CompositeApp1Service1/casaPort1.wsdl"/>
     <system systemId="http://pdlsoa-VirtualBox:9080/CompositeApp1-sun-http-binding/localhost_8080/Provider-1/P2WebService.wsdl" uri="wsdl/pdlsoa-VirtualBox_9080/CompositeApp1-sun-http-binding/localhost_8080/Provider-1/P2WebService.wsdl"/>
-    <system systemId="http://pdlsoa-VirtualBox:9080/CompositeApp1-sun-http-binding/localhost_8080/Provider-1/P1WebService.wsdl" uri="wsdl/pdlsoa-VirtualBox_9080/CompositeApp1-sun-http-binding/localhost_8080/Provider-1/P1WebService.wsdl"/>
     <system systemId="http://pdlsoa-VirtualBox:9080/CompositeApp1-sun-http-binding/localhost_8080/Provider-1/P4WebService.wsdl" uri="wsdl/pdlsoa-VirtualBox_9080/CompositeApp1-sun-http-binding/localhost_8080/Provider-1/P4WebService.wsdl"/>
+    <system systemId="http://pdlsoa-VirtualBox:9080/CompositeApp1-sun-http-binding/localhost_8080/Provider-1/P1WebService.wsdl" uri="wsdl/pdlsoa-VirtualBox_9080/CompositeApp1-sun-http-binding/localhost_8080/Provider-1/P1WebService.wsdl"/>
     <system systemId="http://pdlsoa-VirtualBox:9080/CompositeApp1-sun-http-binding/localhost_8080/Provider-1/P3WebService.wsdl" uri="wsdl/pdlsoa-VirtualBox_9080/CompositeApp1-sun-http-binding/localhost_8080/Provider-1/P3WebService.wsdl"/>
     <system systemId="http://localhost:8080/Provider-1/P2WebService?xsd=1" uri="wsdl/localhost_8080/Provider-1/P2WebService.xsd_1.xsd"/>
-    <system systemId="http://localhost:8080/Provider-1/P1WebService?xsd=1" uri="wsdl/localhost_8080/Provider-1/P1WebService.xsd_1.xsd"/>
     <system systemId="http://localhost:8080/Provider-1/P4WebService?xsd=1" uri="wsdl/localhost_8080/Provider-1/P4WebService.xsd_1.xsd"/>
+    <system systemId="http://localhost:8080/Provider-1/P1WebService?xsd=1" uri="wsdl/localhost_8080/Provider-1/P1WebService.xsd_1.xsd"/>
     <system systemId="http://localhost:8080/Provider-1/P3WebService?xsd=1" uri="wsdl/localhost_8080/Provider-1/P3WebService.xsd_1.xsd"/>
 </catalog>
+
+
 
 
 

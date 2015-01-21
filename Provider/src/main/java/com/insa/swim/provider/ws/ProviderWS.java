@@ -51,20 +51,21 @@ public class ProviderWS {
      */
     private String[] parseRequest(String request) {
         String[] parsedRequest = null;
-        try {
+
+        if (request.contains("|")) {
             parsedRequest = request.split("\\|", REQUEST_FIELDS_NB);
+
             if (parsedRequest[parsedRequest.length - 1].contains("|")) {
-                LOGGER.debug("Provider " + this.getClass().toString() + " received a badly formatted request");
-                parsedRequest = null; // TODO throw an exception
+                LOGGER.debug("Provider " + this.getClass().toString() + " received a badly formatted request : " + request);
+                parsedRequest = null;
             }
-        }
-        catch (PatternSyntaxException e) {
-            LOGGER.error(e.getMessage());
-            LOGGER.debug(e.getStackTrace());
+        } else {
+            LOGGER.debug("Provider " + this.getClass().toString() + " received a badly formatted request : " + request);
+            parsedRequest = null;
         }
         return parsedRequest;
     }
-    
+
     /**
      * Process request according to the parameters sent and respond in consequence, adding reception and sending timestamps
      * @param request : received from consumer
@@ -79,68 +80,72 @@ public class ProviderWS {
         char[] payloadProvider;
         Date receptionDate;
         Date sendingDate;
+        int providerNumberFromName = Integer.parseInt(this.getClass().toString().split("\\.")[6].split("|")[2]);
 
         // if request = null, badly formatted request or pb with consumer-provider communication
         if (request != null) {
             receptionDate = new Date();
-            System.out.println(this.getClass().toString());
-            int providerNumberFromName =  Integer.parseInt(this.getClass().toString().split("\\.")[6].split("|")[2]);
             boolean badProvider = false;
 
             LOGGER.debug("Message received by " + this.getClass() + ": " + request.replace("|", ";"));
 
             parsedRequest = parseRequest(request);
 
-            // initialise provider ID if first request received
-            if (providerNumber == -1) {
-                LOGGER.debug("Provider P" + providerNumberFromName + " initializing its ID");
-                providerNumber = Integer.parseInt(parsedRequest[PROVIDER_ID_INDEX]);
-                
-                // check that the provider was initialized with the right number
-                if (providerNumber != providerNumberFromName) {
-                    LOGGER.debug("Provider P" + providerNumberFromName + "initialization failed");
-                    providerNumber = -1;
-                    // else, it means that the message what not intended for this provider
-                    badProvider = true;
+            if (parsedRequest != null) {
+
+                // initialise provider ID if first request received
+                if (providerNumber == -1) {
+                    LOGGER.debug("Provider P" + providerNumberFromName + " initializing its ID");
+                    providerNumber = Integer.parseInt(parsedRequest[PROVIDER_ID_INDEX]);
+
+                    // check that the provider was initialized with the right number
+                    if (providerNumber != providerNumberFromName) {
+                        LOGGER.debug("Provider P" + providerNumberFromName + "initialization failed");
+                        providerNumber = -1;
+                        // else, it means that the message what not intended for this provider
+                        badProvider = true;
+                    } else {
+                        LOGGER.debug("Provider P" + providerNumberFromName + "initialization succeeded");
+                    }
                 }
-                else {
-                    LOGGER.debug("Provider P" + providerNumberFromName + "initialization succeeded");
+
+                // Verify that the right provider received the request
+                if (!badProvider && (providerNumber == Integer.parseInt(parsedRequest[PROVIDER_ID_INDEX]))) {
+
+                    // Sleep to fake the request processing
+                    try {
+                        Thread.sleep(Integer.parseInt(parsedRequest[PROCESSING_TIME_INDEX]));
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    payloadProvider = new char[Integer.parseInt(parsedRequest[RESPONSE_SIZE_INDEX])];
+                    for (int i = 0; i < payloadProvider.length; i++) {
+                        payloadProvider[i] = '-';
+                    }
+
+                    // response = request - consumer payload
+                    for (int i = 0; i < parsedRequest.length - 1; i++) {
+                        response += parsedRequest[i] + "|";
+                    }
+                    sendingDate = new Date();
+                    // + provider info
+                    response += Long.toString(receptionDate.getTime()) + "|" + Long.toString(sendingDate.getTime()) + "|" + new String(payloadProvider);
+                } else {
+                    response = "PROVIDER|" + request;
+                    LOGGER.debug("Bad provider (P" + providerNumberFromName + ") received request : " + request);
+                    return response;
                 }
+            } else {
+                LOGGER.debug("Provider P" + providerNumberFromName + " couldn't parse request : " + request);
+                return "REQUEST";
             }
-
-            // Verify that the right provider received the request
-            if (!badProvider && (providerNumber == Integer.parseInt(parsedRequest[PROVIDER_ID_INDEX]))) {
-
-                // Sleep to fake the request processing
-                try {
-                    Thread.sleep(Integer.parseInt(parsedRequest[PROCESSING_TIME_INDEX]));
-                }
-                catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                payloadProvider = new char[Integer.parseInt(parsedRequest[RESPONSE_SIZE_INDEX])];
-                for (int i = 0; i < payloadProvider.length; i++) {
-                    payloadProvider[i] = '-';
-                }
-
-                // response = request - consumer payload
-                for (int i = 0; i < parsedRequest.length - 1; i++) {
-                    response += parsedRequest[i] + "|";
-                }
-                sendingDate = new Date();
-                // + provider info
-                response += Long.toString(receptionDate.getTime()) + "|" + Long.toString(sendingDate.getTime()) + "|" + new String(payloadProvider);
-            }
-            else {
-                return "Bad provider (P" + providerNumberFromName + ") received request : " + request;
-            }
+        } else {
+            LOGGER.debug("Provider P" + providerNumberFromName + " returned null request");
+            return "REQUEST";
         }
-        else {
-            return "null request";
-        }
 
-        LOGGER.debug("Message sent from " + this.getClass() + " to Consumer " + parsedRequest[0] + ": " + response);
+        LOGGER.debug("Message sent from provider P" + providerNumberFromName + " to Consumer " + parsedRequest[0] + ": " + response);
 
         return response;
     }
