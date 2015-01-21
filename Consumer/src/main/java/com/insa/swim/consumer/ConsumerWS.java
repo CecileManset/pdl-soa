@@ -21,7 +21,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.Level;
 import javax.jws.WebService;
 import javax.jws.WebMethod;
 import javax.xml.ws.WebServiceRef;
@@ -119,9 +118,8 @@ public class ConsumerWS {
                     break;
             }
         }
-        catch (Exception ex) {
-            LOGGER.error(ex.getMessage());
-            LOGGER.debug(ex.getStackTrace());
+        catch (Exception e) {
+            LOGGER.error("Consumer C" + scenario.getConsumerId() + "bus problem when sending request", e);
         }
 
         return response;
@@ -187,8 +185,8 @@ public class ConsumerWS {
                 thread.start();
                 try {
                     Thread.sleep(period);
-                } catch (InterruptedException ex) {
-                    java.util.logging.Logger.getLogger(ConsumerWS.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (InterruptedException e) {
+                    LOGGER.debug("Consumer C" + scenario.getConsumerId() + "period sleep interrupted", e);
                 }
             }
         }
@@ -245,16 +243,14 @@ public class ConsumerWS {
 
             try {
                 response = (String) future.get(THREAD_TIMEOUT, TimeUnit.SECONDS);
-            } catch (TimeoutException ex) {
+            } catch (TimeoutException e) {
                 result = "LOST|" + request;
-                LOGGER.debug("Consumer C" + scenario.getConsumerId() + " didn't receive message from provider P" + providerNumber + " to request : " + request.replace("|", ";"));
+                LOGGER.debug("Consumer C" + scenario.getConsumerId() + " didn't receive message from provider P" + providerNumber + " to request : " + request.replace("|", ";"), e);
                 timedOut = true;
             } catch (InterruptedException e) {
-                LOGGER.error(e.getMessage());
-                LOGGER.debug(e.getStackTrace());
+                LOGGER.debug("Consumer C" + scenario.getConsumerId() + " thread timeout interrupted", e);
             } catch (ExecutionException e) {
-                LOGGER.error(e.getMessage());
-                LOGGER.debug(e.getStackTrace());
+                LOGGER.debug("Consumer C" + scenario.getConsumerId() + " thread timeout issue", e);
             } finally {
                 future.cancel(true);
             }
@@ -286,8 +282,8 @@ public class ConsumerWS {
                     try {
                         LOGGER.debug("Consumer C" + scenario.getConsumerId() + " sends result to app : " + result.replace("|", ";"));
                         amqp.sendResult(result);
-                    } catch (IOException ex) {
-                        LOGGER.error("[Consumer thread] Unable to send result to application" + ex.getMessage());
+                    } catch (IOException e) {
+                        LOGGER.error("[Consumer thread] Unable to send result to application", e);
                     }
                 }
             }
@@ -322,18 +318,14 @@ public class ConsumerWS {
                 LOGGER.error("Impossible to create the scenario. The XML may be wrong");
                 amqp.sendResult("Bad xml format");
             }
-        } catch (IOException ex) {
-            LOGGER.error("error initialisation" + this.getClass());
-            LOGGER.error(ex.getStackTrace());
-        } catch (ShutdownSignalException ex) {
-            LOGGER.error("error initialisation" + this.getClass());
-            ex.printStackTrace();
-        } catch (ConsumerCancelledException ex) {
-            LOGGER.error("error initialisation" + this.getClass());
-            LOGGER.error(ex.getStackTrace());
-        } catch (InterruptedException ex) {
-            LOGGER.error("error initialisation" + this.getClass());
-            LOGGER.error(ex.getStackTrace());
+        } catch (IOException e) {
+            LOGGER.error("error initialisation" + this.getClass(), e);
+        } catch (ShutdownSignalException e) {
+            LOGGER.error("error initialisation" + this.getClass(), e);
+        } catch (ConsumerCancelledException e) {
+            LOGGER.error("error initialisation" + this.getClass(), e);
+        } catch (InterruptedException e) {
+            LOGGER.error("error initialisation" + this.getClass(), e);
         }
         return "done";
     }
@@ -348,8 +340,8 @@ public class ConsumerWS {
             amqp.closeConnection();
             LOGGER.debug("connection closed");
             return "done";
-        } catch (IOException ex) {
-            LOGGER.debug("impossible to close connection" + ex.getMessage());
+        } catch (IOException e) {
+            LOGGER.debug("impossible to close connection", e);
             return "error";
         }
     }
