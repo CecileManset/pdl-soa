@@ -101,7 +101,8 @@ public class Controller {
                     }
                 }
             }
-
+        } catch (ConsumerCancelledException ex) {
+            LOGGER.debug("No more messages");
         } finally {
             try {
                 httpClient.close();
@@ -134,8 +135,6 @@ public class Controller {
             LOGGER.error("Error while collecting results " + ex);
         } catch (ShutdownSignalException ex) {
             LOGGER.error("Error while collecting results : shutdownsignal " + ex);
-        } catch (ConsumerCancelledException ex) {
-            LOGGER.error("Error while collecting results : Consumer cancelled " + ex);
         } catch (InterruptedException ex) {
             LOGGER.error("Error while collecting results : interrupted " + ex.getMessage());
         }
