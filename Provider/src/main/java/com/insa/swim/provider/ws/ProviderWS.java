@@ -23,30 +23,38 @@ public class ProviderWS {
     private static final int PROCESSING_TIME_INDEX = 4;
     private static final int RESPONSE_SIZE_INDEX = 3;
 
+     /**
+     * Method used to test the consumer-provider communication
+     * @param txt : payload of consumer request
+     * @return "pong" if txt="ping", else "error"
+     */
     @WebMethod(operationName = "pingpong")
     public String pingpong(@WebParam(name = "ping") String txt) {
         logger.debug("message received by " + this.getClass() + ": " + txt);
-//                try {
-//            Thread.sleep(120000);
-//        }
-//        catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+        
         if (txt != null && txt.equals("ping")) {
             return "pong";
         }
         else return "error";
     }
 
-    // TODO verify that the request is well constructed (6 info separated by |). Hard-coded ?
-
-    // Parse incoming request from consumer to retrieve the different parameters
-    // req format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|PayloadCons
+     /**
+     * Parse incoming request from consumer to retrieve the different parameters
+     * @param request : received from consumer
+     * req format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|PayloadCons
+     * @return array containing the different fields of the request
+     */
     private String[] parseRequest(String request) {
         return request.split("\\|", -1);
     }
 
-    // Process request according to the parameters sent and respond in consequence
+     /**
+     * Process request according to the parameters sent and respond in consequence, adding reception and sending timestamps
+     * @param request : received from consumer
+     *  req format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons(ms)|PayloadCons
+     * @return response to the consumer
+     * result = request - PayloadCons + ReceptionDateProv|RendingDateProv|PayloadProv
+     */
     @WebMethod(operationName = "processRequest")
     public String processRequest(@WebParam(name = "request") String request) {
         String response = new String();

@@ -56,7 +56,7 @@ public class ConsumerWS {
     private CompositeApp1Service1 service1;
 
     /**
-     * This method tests the communication with a specifit provider throurgh the bus
+     * This method tests the communication with a specifit provider through the bus
      * @param txt : ping
      * @param provider : number of the provider
      * @return pong if param = ping, else erro, Gros fail if exception
@@ -194,6 +194,9 @@ public class ConsumerWS {
         }
     }
 
+     /**
+     * Class used for consumer timeout, to know the number of lost messages
+     */
     public class BlockingMethodCallable {
 
         String req;
@@ -203,16 +206,17 @@ public class ConsumerWS {
             this.req = req;
             this.providerNumber = providerNumber;
         }
-        ExecutorService executor = Executors.newCachedThreadPool();
-        Callable<Object> task = new Callable<Object>() {
 
+        Callable<Object> task = new Callable<Object>() {
             public Object call() {
                 return sendRequest(req, providerNumber);
             }
         };
     }
 
-    // Thread class to handle sending requests in parallel
+     /**
+     * Thread class to handle sending requests in parallel
+     */
     private class ConsumerThread implements Runnable {
 
 //        private Request request;
@@ -228,6 +232,11 @@ public class ConsumerWS {
             this.providerNumber = providerNumber;
         }
 
+     /**
+     * Thread main : send a request to a given provider,
+      * wait for response during a certain amount of time
+      * and send the response to the Orchestrator
+     */
         public void run() {
             Date receptionDateConsumer;
 //            int nbRequests = 1;
@@ -286,14 +295,6 @@ public class ConsumerWS {
                 } catch (IOException ex) {
                     logger.error("[Consumer thread] Unable to send result to application" + ex.getMessage());
                 }
-//
-//                try {
-//                    logger.debug("result : " + result);
-//                    amqp.sendResult(result);
-//                } catch (IOException ex) {
-//                    logger.error("[Consumer thread] Unable to send result to application" + ex.getMessage());
-//                }
-//            }
         }
     }
 
