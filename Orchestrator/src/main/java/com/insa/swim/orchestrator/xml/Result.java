@@ -50,33 +50,40 @@ public class Result {
 
     @XmlAttribute(name = "P2CTime", required = true)
     private long P2CTime;
+    
+    @XmlAttribute(name = "error", required = true)
+    private String error;
 
     public Result() {
     }
 
     public Result(String resultString) {
-//        resultString = "1|1|50|100|1000|1421678470|1421678570|1421678670|1421678770";
-//        int min = 1;
-//        int max = 5;
-//        int consumerId = min + (int) (Math.random() * (max - min) + 1);
-//        this.consumer = "consumer" + consumerId;
-//        int providerId = min + (int) (Math.random() * (max - min) + 1);
-//        this.provider = "provider" + providerId;
-//        this.C2PTime = providerId * consumerId * 12;
-//        this.P2CTime = consumerId * 27;
 
-        String[] resultParsed = resultString.split("\\|");
-        this.consumer = resultParsed[0];
-        this.provider = resultParsed[1];
-        this.requestSize = Integer.parseInt(resultParsed[2]);
-        this.responseSize = Integer.parseInt(resultParsed[3]);
-        this.processingTime = Integer.parseInt(resultParsed[4]);
-        this.sendingDateConsumer = Long.parseLong(resultParsed[5]);
-        this.receptionDateProvider = Long.parseLong(resultParsed[6]);
-        this.sendingDateProvider = Long.parseLong(resultParsed[7]);
-        this.receptionDateConsumer = Long.parseLong(resultParsed[8]);
-        this.C2PTime = this.receptionDateProvider - this.sendingDateConsumer;
-        this.P2CTime = this.receptionDateConsumer - this.sendingDateProvider;
+        if (resultString.contains("LOST") || resultString.contains("FORMAT") || resultString.contains("PROVIDER")) {
+            String[] resultParsed = resultString.split("\\|");
+            this.error = resultParsed[0];
+            this.consumer = resultParsed[1];
+            this.provider = resultParsed[2];
+            this.requestSize = Integer.parseInt(resultParsed[3]);
+            this.responseSize = Integer.parseInt(resultParsed[4]);
+            this.processingTime = Integer.parseInt(resultParsed[5]);
+            this.sendingDateConsumer = Long.parseLong(resultParsed[6]);
+        }
+        else {
+            String[] resultParsed = resultString.split("\\|");
+            this.consumer = resultParsed[0];
+            this.provider = resultParsed[1];
+            this.requestSize = Integer.parseInt(resultParsed[2]);
+            this.responseSize = Integer.parseInt(resultParsed[3]);
+            this.processingTime = Integer.parseInt(resultParsed[4]);
+            this.sendingDateConsumer = Long.parseLong(resultParsed[5]);
+            this.receptionDateProvider = Long.parseLong(resultParsed[6]);
+            this.sendingDateProvider = Long.parseLong(resultParsed[7]);
+            this.receptionDateConsumer = Long.parseLong(resultParsed[8]);
+            this.C2PTime = this.receptionDateProvider - this.sendingDateConsumer;
+            this.P2CTime = this.receptionDateConsumer - this.sendingDateProvider;
+            this.error = "false";
+        }
     }
 
     public long getC2PTime() {
@@ -121,6 +128,10 @@ public class Result {
 
     public long getReceptionDateConsumer() {
         return receptionDateConsumer;
+    }
+
+    public String getError() {
+        return error;
     }
 
     public void setC2PTime(int C2PTime) {
