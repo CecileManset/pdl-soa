@@ -4,8 +4,6 @@
 // Toute modification apport�e � ce fichier sera perdue lors de la recompilation du sch�ma source. 
 // G�n�r� le : 2015.01.12 � 05:10:35 PM CET 
 //
-
-
 package com.insa.swim.orchestrator.xml;
 
 import java.util.ArrayList;
@@ -17,12 +15,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.Duration;
 
-
 /**
- * <p>Classe Java pour anonymous complex type.
- * 
- * <p>Le fragment de sch�ma suivant indique le contenu attendu figurant dans cette classe.
- * 
+ * <p>
+ * Classe Java pour anonymous complex type.
+ *
+ * <p>
+ * Le fragment de sch�ma suivant indique le contenu attendu figurant dans cette
+ * classe.
+ *
  * <pre>
  * &lt;complexType>
  *   &lt;complexContent>
@@ -119,8 +119,8 @@ import javax.xml.datatype.Duration;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -137,11 +137,9 @@ public class Scenario {
 
     /**
      * Obtient la valeur de la propri�t� information.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Scenario.Information }
-     *     
+     *
+     * @return possible object is {@link Scenario.Information }
+     *
      */
     public Scenario.Information getInformation() {
         return information;
@@ -149,11 +147,9 @@ public class Scenario {
 
     /**
      * D�finit la valeur de la propri�t� information.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Scenario.Information }
-     *     
+     *
+     * @param value allowed object is {@link Scenario.Information }
+     *
      */
     public void setInformation(Scenario.Information value) {
         this.information = value;
@@ -161,11 +157,9 @@ public class Scenario {
 
     /**
      * Obtient la valeur de la propri�t� consumers.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Scenario.Consumers }
-     *     
+     *
+     * @return possible object is {@link Scenario.Consumers }
+     *
      */
     public Scenario.Consumers getConsumers() {
         return consumers;
@@ -173,22 +167,37 @@ public class Scenario {
 
     /**
      * D�finit la valeur de la propri�t� consumers.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Scenario.Consumers }
-     *     
+     *
+     * @param value allowed object is {@link Scenario.Consumers }
+     *
      */
     public void setConsumers(Scenario.Consumers value) {
         this.consumers = value;
     }
 
+    public int getTotalOfRequest() {
+        int total = 0;
+        for (Consumers.Consumer c : consumers.getConsumer()) {
+            for (Consumers.Consumer.Requests.Request r : c.getRequests().getRequest()) {
+                if (r.periodic.equals("false")) {
+                    total++;
+                }
+                else {
+                    total += r.getNumberRequests();
+                }
+            }
+        }
+        return total;
+    }
 
     /**
-     * <p>Classe Java pour anonymous complex type.
-     * 
-     * <p>Le fragment de sch�ma suivant indique le contenu attendu figurant dans cette classe.
-     * 
+     * <p>
+     * Classe Java pour anonymous complex type.
+     *
+     * <p>
+     * Le fragment de sch�ma suivant indique le contenu attendu figurant dans
+     * cette classe.
+     *
      * <pre>
      * &lt;complexType>
      *   &lt;complexContent>
@@ -249,8 +258,8 @@ public class Scenario {
      *   &lt;/complexContent>
      * &lt;/complexType>
      * </pre>
-     * 
-     * 
+     *
+     *
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
@@ -262,25 +271,25 @@ public class Scenario {
 
         /**
          * Gets the value of the consumer property.
-         * 
+         *
          * <p>
-         * This accessor method returns a reference to the live list,
-         * not a snapshot. Therefore any modification you make to the
-         * returned list will be present inside the JAXB object.
-         * This is why there is not a <CODE>set</CODE> method for the consumer property.
-         * 
+         * This accessor method returns a reference to the live list, not a
+         * snapshot. Therefore any modification you make to the returned list
+         * will be present inside the JAXB object. This is why there is not a
+         * <CODE>set</CODE> method for the consumer property.
+         *
          * <p>
          * For example, to add a new item, do as follows:
          * <pre>
          *    getConsumer().add(newItem);
          * </pre>
-         * 
-         * 
+         *
+         *
          * <p>
          * Objects of the following type(s) are allowed in the list
          * {@link Scenario.Consumers.Consumer }
-         * 
-         * 
+         *
+         *
          */
         public List<Scenario.Consumers.Consumer> getConsumer() {
             if (consumer == null) {
@@ -288,16 +297,19 @@ public class Scenario {
             }
             return this.consumer;
         }
-        
-        public void setConsumer(List<Scenario.Consumers.Consumer> consumer){
+
+        public void setConsumer(List<Scenario.Consumers.Consumer> consumer) {
             this.consumer = consumer;
         }
 
         /**
-         * <p>Classe Java pour anonymous complex type.
-         * 
-         * <p>Le fragment de sch�ma suivant indique le contenu attendu figurant dans cette classe.
-         * 
+         * <p>
+         * Classe Java pour anonymous complex type.
+         *
+         * <p>
+         * Le fragment de sch�ma suivant indique le contenu attendu figurant
+         * dans cette classe.
+         *
          * <pre>
          * &lt;complexType>
          *   &lt;complexContent>
@@ -348,8 +360,8 @@ public class Scenario {
          *   &lt;/complexContent>
          * &lt;/complexType>
          * </pre>
-         * 
-         * 
+         *
+         *
          */
         @XmlAccessorType(XmlAccessType.FIELD)
         @XmlType(name = "", propOrder = {
@@ -367,11 +379,9 @@ public class Scenario {
 
             /**
              * Obtient la valeur de la propri�t� name.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
+             *
+             * @return possible object is {@link String }
+             *
              */
             public String getName() {
                 return name;
@@ -379,11 +389,9 @@ public class Scenario {
 
             /**
              * D�finit la valeur de la propri�t� name.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link String }
-             *     
+             *
+             * @param value allowed object is {@link String }
+             *
              */
             public void setName(String value) {
                 this.name = value;
@@ -391,7 +399,7 @@ public class Scenario {
 
             /**
              * Obtient la valeur de la propri�t� id.
-             * 
+             *
              */
             public byte getId() {
                 return id;
@@ -399,7 +407,7 @@ public class Scenario {
 
             /**
              * D�finit la valeur de la propri�t� id.
-             * 
+             *
              */
             public void setId(byte value) {
                 this.id = value;
@@ -407,11 +415,10 @@ public class Scenario {
 
             /**
              * Obtient la valeur de la propri�t� requests.
-             * 
-             * @return
-             *     possible object is
+             *
+             * @return possible object is
              *     {@link Scenario.Consumers.Consumer.Requests }
-             *     
+             *
              */
             public Scenario.Consumers.Consumer.Requests getRequests() {
                 return requests;
@@ -419,22 +426,23 @@ public class Scenario {
 
             /**
              * D�finit la valeur de la propri�t� requests.
-             * 
-             * @param value
-             *     allowed object is
+             *
+             * @param value allowed object is
              *     {@link Scenario.Consumers.Consumer.Requests }
-             *     
+             *
              */
             public void setRequests(Scenario.Consumers.Consumer.Requests value) {
                 this.requests = value;
             }
 
-
             /**
-             * <p>Classe Java pour anonymous complex type.
-             * 
-             * <p>Le fragment de sch�ma suivant indique le contenu attendu figurant dans cette classe.
-             * 
+             * <p>
+             * Classe Java pour anonymous complex type.
+             *
+             * <p>
+             * Le fragment de sch�ma suivant indique le contenu attendu figurant
+             * dans cette classe.
+             *
              * <pre>
              * &lt;complexType>
              *   &lt;complexContent>
@@ -473,8 +481,8 @@ public class Scenario {
              *   &lt;/complexContent>
              * &lt;/complexType>
              * </pre>
-             * 
-             * 
+             *
+             *
              */
             @XmlAccessorType(XmlAccessType.FIELD)
             @XmlType(name = "", propOrder = {
@@ -486,25 +494,26 @@ public class Scenario {
 
                 /**
                  * Gets the value of the request property.
-                 * 
+                 *
                  * <p>
                  * This accessor method returns a reference to the live list,
                  * not a snapshot. Therefore any modification you make to the
-                 * returned list will be present inside the JAXB object.
-                 * This is why there is not a <CODE>set</CODE> method for the request property.
-                 * 
+                 * returned list will be present inside the JAXB object. This is
+                 * why there is not a <CODE>set</CODE> method for the request
+                 * property.
+                 *
                  * <p>
                  * For example, to add a new item, do as follows:
                  * <pre>
                  *    getRequest().add(newItem);
                  * </pre>
-                 * 
-                 * 
+                 *
+                 *
                  * <p>
                  * Objects of the following type(s) are allowed in the list
                  * {@link Scenario.Consumers.Consumer.Requests.Request }
-                 * 
-                 * 
+                 *
+                 *
                  */
                 public List<Scenario.Consumers.Consumer.Requests.Request> getRequest() {
                     if (request == null) {
@@ -513,12 +522,14 @@ public class Scenario {
                     return this.request;
                 }
 
-
                 /**
-                 * <p>Classe Java pour anonymous complex type.
-                 * 
-                 * <p>Le fragment de sch�ma suivant indique le contenu attendu figurant dans cette classe.
-                 * 
+                 * <p>
+                 * Classe Java pour anonymous complex type.
+                 *
+                 * <p>
+                 * Le fragment de sch�ma suivant indique le contenu attendu
+                 * figurant dans cette classe.
+                 *
                  * <pre>
                  * &lt;complexType>
                  *   &lt;complexContent>
@@ -547,8 +558,8 @@ public class Scenario {
                  *   &lt;/complexContent>
                  * &lt;/complexType>
                  * </pre>
-                 * 
-                 * 
+                 *
+                 *
                  */
                 @XmlAccessorType(XmlAccessType.FIELD)
                 @XmlType(name = "", propOrder = {
@@ -572,11 +583,10 @@ public class Scenario {
 
                     /**
                      * Obtient la valeur de la propri�t� providerSettings.
-                     * 
-                     * @return
-                     *     possible object is
+                     *
+                     * @return possible object is
                      *     {@link Scenario.Consumers.Consumer.Requests.Request.ProviderSettings }
-                     *     
+                     *
                      */
                     public Scenario.Consumers.Consumer.Requests.Request.ProviderSettings getProviderSettings() {
                         return providerSettings;
@@ -584,11 +594,10 @@ public class Scenario {
 
                     /**
                      * D�finit la valeur de la propri�t� providerSettings.
-                     * 
-                     * @param value
-                     *     allowed object is
+                     *
+                     * @param value allowed object is
                      *     {@link Scenario.Consumers.Consumer.Requests.Request.ProviderSettings }
-                     *     
+                     *
                      */
                     public void setProviderSettings(Scenario.Consumers.Consumer.Requests.Request.ProviderSettings value) {
                         this.providerSettings = value;
@@ -596,7 +605,7 @@ public class Scenario {
 
                     /**
                      * Obtient la valeur de la propri�t� size.
-                     * 
+                     *
                      */
                     public short getSize() {
                         return size;
@@ -604,7 +613,7 @@ public class Scenario {
 
                     /**
                      * D�finit la valeur de la propri�t� size.
-                     * 
+                     *
                      */
                     public void setSize(short value) {
                         this.size = value;
@@ -612,7 +621,7 @@ public class Scenario {
 
                     /**
                      * Obtient la valeur de la propri�t� sendingTime.
-                     * 
+                     *
                      */
                     public short getSendingTime() {
                         return sendingTime;
@@ -620,7 +629,7 @@ public class Scenario {
 
                     /**
                      * D�finit la valeur de la propri�t� sendingTime.
-                     * 
+                     *
                      */
                     public void setSendingTime(short value) {
                         this.sendingTime = value;
@@ -628,11 +637,9 @@ public class Scenario {
 
                     /**
                      * Obtient la valeur de la propri�t� periodic.
-                     * 
-                     * @return
-                     *     possible object is
-                     *     {@link String }
-                     *     
+                     *
+                     * @return possible object is {@link String }
+                     *
                      */
                     public String getPeriodic() {
                         return periodic;
@@ -640,11 +647,9 @@ public class Scenario {
 
                     /**
                      * D�finit la valeur de la propri�t� periodic.
-                     * 
-                     * @param value
-                     *     allowed object is
-                     *     {@link String }
-                     *     
+                     *
+                     * @param value allowed object is {@link String }
+                     *
                      */
                     public void setPeriodic(String value) {
                         this.periodic = value;
@@ -652,11 +657,9 @@ public class Scenario {
 
                     /**
                      * Obtient la valeur de la propri�t� period.
-                     * 
-                     * @return
-                     *     possible object is
-                     *     {@link Short }
-                     *     
+                     *
+                     * @return possible object is {@link Short }
+                     *
                      */
                     public Short getPeriod() {
                         return period;
@@ -664,11 +667,9 @@ public class Scenario {
 
                     /**
                      * D�finit la valeur de la propri�t� period.
-                     * 
-                     * @param value
-                     *     allowed object is
-                     *     {@link Short }
-                     *     
+                     *
+                     * @param value allowed object is {@link Short }
+                     *
                      */
                     public void setPeriod(Short value) {
                         this.period = value;
@@ -676,11 +677,9 @@ public class Scenario {
 
                     /**
                      * Obtient la valeur de la propri�t� numberRequests.
-                     * 
-                     * @return
-                     *     possible object is
-                     *     {@link Byte }
-                     *     
+                     *
+                     * @return possible object is {@link Byte }
+                     *
                      */
                     public Byte getNumberRequests() {
                         return numberRequests;
@@ -688,22 +687,22 @@ public class Scenario {
 
                     /**
                      * D�finit la valeur de la propri�t� numberRequests.
-                     * 
-                     * @param value
-                     *     allowed object is
-                     *     {@link Byte }
-                     *     
+                     *
+                     * @param value allowed object is {@link Byte }
+                     *
                      */
                     public void setNumberRequests(Byte value) {
                         this.numberRequests = value;
                     }
 
-
                     /**
-                     * <p>Classe Java pour anonymous complex type.
-                     * 
-                     * <p>Le fragment de sch�ma suivant indique le contenu attendu figurant dans cette classe.
-                     * 
+                     * <p>
+                     * Classe Java pour anonymous complex type.
+                     *
+                     * <p>
+                     * Le fragment de sch�ma suivant indique le contenu attendu
+                     * figurant dans cette classe.
+                     *
                      * <pre>
                      * &lt;complexType>
                      *   &lt;complexContent>
@@ -717,8 +716,8 @@ public class Scenario {
                      *   &lt;/complexContent>
                      * &lt;/complexType>
                      * </pre>
-                     * 
-                     * 
+                     *
+                     *
                      */
                     @XmlAccessorType(XmlAccessType.FIELD)
                     @XmlType(name = "", propOrder = {
@@ -734,7 +733,7 @@ public class Scenario {
 
                         /**
                          * Obtient la valeur de la propri�t� providerId.
-                         * 
+                         *
                          */
                         public byte getProviderId() {
                             return providerId;
@@ -742,7 +741,7 @@ public class Scenario {
 
                         /**
                          * D�finit la valeur de la propri�t� providerId.
-                         * 
+                         *
                          */
                         public void setProviderId(byte value) {
                             this.providerId = value;
@@ -750,7 +749,7 @@ public class Scenario {
 
                         /**
                          * Obtient la valeur de la propri�t� responseSize.
-                         * 
+                         *
                          */
                         public short getResponseSize() {
                             return responseSize;
@@ -758,7 +757,7 @@ public class Scenario {
 
                         /**
                          * D�finit la valeur de la propri�t� responseSize.
-                         * 
+                         *
                          */
                         public void setResponseSize(short value) {
                             this.responseSize = value;
@@ -766,7 +765,7 @@ public class Scenario {
 
                         /**
                          * Obtient la valeur de la propri�t� processingTime.
-                         * 
+                         *
                          */
                         public short getProcessingTime() {
                             return processingTime;
@@ -774,7 +773,7 @@ public class Scenario {
 
                         /**
                          * D�finit la valeur de la propri�t� processingTime.
-                         * 
+                         *
                          */
                         public void setProcessingTime(short value) {
                             this.processingTime = value;
@@ -790,12 +789,14 @@ public class Scenario {
 
     }
 
-
     /**
-     * <p>Classe Java pour anonymous complex type.
-     * 
-     * <p>Le fragment de sch�ma suivant indique le contenu attendu figurant dans cette classe.
-     * 
+     * <p>
+     * Classe Java pour anonymous complex type.
+     *
+     * <p>
+     * Le fragment de sch�ma suivant indique le contenu attendu figurant dans
+     * cette classe.
+     *
      * <pre>
      * &lt;complexType>
      *   &lt;complexContent>
@@ -822,8 +823,8 @@ public class Scenario {
      *   &lt;/complexContent>
      * &lt;/complexType>
      * </pre>
-     * 
-     * 
+     *
+     *
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
@@ -847,11 +848,9 @@ public class Scenario {
 
         /**
          * Obtient la valeur de la propri�t� name.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *
+         * @return possible object is {@link String }
+         *
          */
         public String getName() {
             return name;
@@ -859,11 +858,9 @@ public class Scenario {
 
         /**
          * D�finit la valeur de la propri�t� name.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *
+         * @param value allowed object is {@link String }
+         *
          */
         public void setName(String value) {
             this.name = value;
@@ -871,7 +868,7 @@ public class Scenario {
 
         /**
          * Obtient la valeur de la propri�t� id.
-         * 
+         *
          */
         public byte getId() {
             return id;
@@ -879,7 +876,7 @@ public class Scenario {
 
         /**
          * D�finit la valeur de la propri�t� id.
-         * 
+         *
          */
         public void setId(byte value) {
             this.id = value;
@@ -887,11 +884,9 @@ public class Scenario {
 
         /**
          * Obtient la valeur de la propri�t� duration.
-         * 
-         * @return
-         *     possible object is
-         *     {@link Duration }
-         *     
+         *
+         * @return possible object is {@link Duration }
+         *
          */
         public Duration getDuration() {
             return duration;
@@ -899,11 +894,9 @@ public class Scenario {
 
         /**
          * D�finit la valeur de la propri�t� duration.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link Duration }
-         *     
+         *
+         * @param value allowed object is {@link Duration }
+         *
          */
         public void setDuration(Duration value) {
             this.duration = value;
@@ -911,11 +904,9 @@ public class Scenario {
 
         /**
          * Obtient la valeur de la propri�t� esb.
-         * 
-         * @return
-         *     possible object is
-         *     {@link Scenario.Information.Esb }
-         *     
+         *
+         * @return possible object is {@link Scenario.Information.Esb }
+         *
          */
         public Scenario.Information.Esb getEsb() {
             return esb;
@@ -923,11 +914,9 @@ public class Scenario {
 
         /**
          * D�finit la valeur de la propri�t� esb.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link Scenario.Information.Esb }
-         *     
+         *
+         * @param value allowed object is {@link Scenario.Information.Esb }
+         *
          */
         public void setEsb(Scenario.Information.Esb value) {
             this.esb = value;
@@ -935,11 +924,9 @@ public class Scenario {
 
         /**
          * Obtient la valeur de la propri�t� date.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *
+         * @return possible object is {@link String }
+         *
          */
         public String getDate() {
             return date;
@@ -947,22 +934,22 @@ public class Scenario {
 
         /**
          * D�finit la valeur de la propri�t� date.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *
+         * @param value allowed object is {@link String }
+         *
          */
         public void setDate(String value) {
             this.date = value;
         }
 
-
         /**
-         * <p>Classe Java pour anonymous complex type.
-         * 
-         * <p>Le fragment de sch�ma suivant indique le contenu attendu figurant dans cette classe.
-         * 
+         * <p>
+         * Classe Java pour anonymous complex type.
+         *
+         * <p>
+         * Le fragment de sch�ma suivant indique le contenu attendu figurant
+         * dans cette classe.
+         *
          * <pre>
          * &lt;complexType>
          *   &lt;complexContent>
@@ -975,8 +962,8 @@ public class Scenario {
          *   &lt;/complexContent>
          * &lt;/complexType>
          * </pre>
-         * 
-         * 
+         *
+         *
          */
         @XmlAccessorType(XmlAccessType.FIELD)
         @XmlType(name = "", propOrder = {
@@ -992,11 +979,9 @@ public class Scenario {
 
             /**
              * Obtient la valeur de la propri�t� name.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
+             *
+             * @return possible object is {@link String }
+             *
              */
             public String getName() {
                 return name;
@@ -1004,11 +989,9 @@ public class Scenario {
 
             /**
              * D�finit la valeur de la propri�t� name.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link String }
-             *     
+             *
+             * @param value allowed object is {@link String }
+             *
              */
             public void setName(String value) {
                 this.name = value;
@@ -1016,11 +999,9 @@ public class Scenario {
 
             /**
              * Obtient la valeur de la propri�t� version.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
+             *
+             * @return possible object is {@link String }
+             *
              */
             public String getVersion() {
                 return version;
@@ -1028,11 +1009,9 @@ public class Scenario {
 
             /**
              * D�finit la valeur de la propri�t� version.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link String }
-             *     
+             *
+             * @param value allowed object is {@link String }
+             *
              */
             public void setVersion(String value) {
                 this.version = value;

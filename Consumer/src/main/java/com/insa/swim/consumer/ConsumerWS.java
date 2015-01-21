@@ -179,6 +179,7 @@ public class ConsumerWS {
             this.request = request;
         }
 
+        @Override
         public void run() {
             Date receptionDateConsumer;
             int nbRequests = 1;
@@ -208,13 +209,6 @@ public class ConsumerWS {
 
                 try {
                     logger.debug("Consumer " + Thread.currentThread().getName() + " sends result to app : " + result.replace("|", ";"));
-                    amqp.sendResult(result);
-                } catch (IOException ex) {
-                    logger.error("[Consumer thread] Unable to send result to application" + ex.getMessage());
-                }
-    
-                try {
-                    logger.debug("result : " + result);
                     amqp.sendResult(result);
                 } catch (IOException ex) {
                     logger.error("[Consumer thread] Unable to send result to application" + ex.getMessage());
@@ -264,6 +258,22 @@ public class ConsumerWS {
             ex.printStackTrace();
         }
         return "done";
+    }
+
+        /**
+     * Must be invoked at the end
+     * @return "done"
+     */
+    @WebMethod(operationName = "closeConnection")
+    public String closeConnection() {
+        try {
+            amqp.closeConnection();
+            logger.debug("connection closed");
+            return "done";
+        } catch (IOException ex) {
+            logger.debug("impossible to close connection" + ex.getMessage());
+            return "error";
+        }
     }
 
     public Scenario getScenario() {
