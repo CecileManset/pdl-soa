@@ -59,7 +59,10 @@ public class Result {
 
     public Result(String resultString) {
 
-        if (resultString.contains("LOST") || resultString.contains("FORMAT") || resultString.contains("PROVIDER")) {
+        if (resultString.contains("REQUEST")) {
+            this.error = "REQUEST";
+        }
+        else if (resultString.contains("LOST|") || resultString.contains("FORMAT|") || resultString.contains("PROVIDER|")) {
             String[] resultParsed = resultString.split("\\|");
             this.error = resultParsed[0];
             this.consumer = resultParsed[1];
