@@ -26,12 +26,25 @@ public class Results {
 
     protected KPI kpi;
     protected List<Result> result;
+    
+    public Results() {
+        result = new ArrayList<Result>();
+    }
 
     public List<Result> getResults() {
-        if (result == null) {
-            result = new ArrayList<Result>();
-        }
         return this.result;
+    }
+    
+    public List<Result> getResultsNoError() {
+        List<Result> results = new ArrayList<Result>();
+        if (this.result.size() > 0) {
+            for (Result r : this.result) {
+                if (r.getError().equalsIgnoreCase("false")) {
+                    results.add(r);
+                }
+            }
+        }
+        return results;
     }
 
     public void setResults(List<Result> results) {

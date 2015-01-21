@@ -55,16 +55,33 @@ public class ConsumerWSTest {
         assertEquals(expResult, result);
     }
 
+    // pb : teter constructRequest car met timestamp __
+
+    // Tests periodic request and constructRequest
 //    @Test
-//    public void testStartSendingRequests() {
-//        System.out.println("startSendingRequests");
+//    public void testStartSendingRequestsPeriodic() {
+//        System.out.println("startSendingRequestsPeriodic");
+//        String constructedRequest;
 //
 //        ConsumerWS instance = spy(new ConsumerWS());
+//        instance.setScenario(new Scenario("INFO|0|name|0|10|CONSUMER|2|C2"
+//                                                            + "|REQUEST|4|0024|10|true|100|5|10000|2"));
 //        instance.startSendingRequests();
-//        for (int i = 1; i <= ConsumerWS.NB_PROVIDERS; i++) {
-//            verify(instance, times(1)).sendPing("ping", i);
-//        }
+//        verify(instance, times(5)).sendRequest(constructedRequest, 4);
 //    }
+//    
+//    // Tests non periodic request and constructRequest
+//    @Test
+//    public void testStartSendingRequestsNonPeriodic() {
+//        System.out.println("startSendingRequestsNonPeriodic");
+//
+//        ConsumerWS instance = spy(new ConsumerWS());
+//        instance.setScenario(new Scenario("INFO|0|name|0|10|CONSUMER|2|C2"
+//                                                            + "|REQUEST|1|0021|4|0|0|0|2000|5"
+//                                                            + "|REQUEST|3|0023|2|0|0|0|5000|10"));
+//        instance.startSendingRequests(); 
+//    }
+
     @Test
     public void testSendRequest() {
         String request = "1|1|3|4|6000|1111111|payloadConsumer";

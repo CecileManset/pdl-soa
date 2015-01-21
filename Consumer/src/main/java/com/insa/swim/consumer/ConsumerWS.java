@@ -14,6 +14,14 @@ import compositeapp1.CompositeApp1Service3;
 import compositeapp1.CompositeApp1Service4;
 import java.io.IOException;
 import java.util.Date;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.logging.Level;
 import javax.jws.WebService;
 import javax.jws.WebMethod;
 import javax.xml.ws.WebServiceRef;
@@ -27,12 +35,13 @@ import org.apache.logging.log4j.Logger;
 @WebService()
 public class ConsumerWS {
 
-    protected ConsumerAMQPHandler amqp;
-    // req format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|PayloadCons
-//    private String[] requests = {"1|1|3|4|6000|SendingDateConsumer|payloadConsumer",
-//                                            "1|3|100|2|2000|SendingDateConsumer3|payloadConsumer3",
-//                                            "1|4|10|10|4000|SendingDateConsumer4|payloadConsumer4"};
 
+    protected ConsumerAMQPHandler amqp;
+    private static final Logger LOGGER = LogManager.getLogger("Consumer");
+    private Scenario scenario = null;
+//    private Scenario scenario = new Scenario("INFO|0|name|0|10|CONSUMER|2|C2" + "|REQUEST|1|0021|4|0|0|0|2000|5" + "|REQUEST|3|0023|2|true|1000|8|500|10" + "|REQUEST|4|0024|10|0|100|5|5500|2");
+    private static final int THREAD_TIMEOUT = 5; // in seconds
+    private static final int PROVIDER_ID_INDEX = 1;
     /*
      * These are the referenes of the services provided by the bus to join the controller
      * */
@@ -44,15 +53,9 @@ public class ConsumerWS {
     private CompositeApp1Service2 service2;
     @WebServiceRef(wsdlLocation = "WEB-INF/wsdl/localhost_9080/CompositeApp1Service1/casaPort1.wsdl")
     private CompositeApp1Service1 service1;
-    private static final Logger logger = LogManager.getLogger("Consumer");
-    private Scenario scenario = null;
-//     private Scenario scenario = new Scenario("INFO|0|name|0|10|CONSUMER|2|C2"
-//                                                            + "|REQUEST|1|0021|4|0|0|0|2000|5"
-//                                                            + "|REQUEST|3|0023|2|0|0|0|5000|10"
-//                                                            + "|REQUEST|4|0024|10|true|100|5|10000|2");
 
     /**
-     * This method tests the communication with a specifit provider throurgh the bus
+     * This method tests the communication with a specifit provider through the bus
      * @param txt : ping
      * @param provider : number of the provider
      * @return pong if param = ping, else erro, Gros fail if exception
@@ -79,7 +82,7 @@ public class ConsumerWS {
             default:
                 ;
         }
-        logger.debug("message received : " + result);
+        LOGGER.debug("message received : " + result);
         return result;
     }
 
@@ -115,8 +118,8 @@ public class ConsumerWS {
                     ;
             }
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
-            logger.debug(ex.getStackTrace());
+            LOGGER.error(ex.getMessage());
+            LOGGER.debug(ex.getStackTrace());
         }
 
         return response;
@@ -136,7 +139,6 @@ public class ConsumerWS {
         String sendingDate = Integer.toString(req.getSendingTime()); // can be used as a starting point for the request
         char[] payloadConsumer = new char[req.getSize()];
         String request;
-
         Date now;
 
         // construct payload
@@ -149,69 +151,142 @@ public class ConsumerWS {
         sendingDate = Long.toString(now.getTime());
 
         request = consumerID + "|" + providerID + "|" + requestSize + "|" + responseSize + "|" + processingTime + "|" + sendingDate + "|" + new String(payloadConsumer);
-        logger.debug("Constructed request : " + request.replace("|", ";"));
+        LOGGER.debug("Consumer C" + scenario.getConsumerId() + " constructed request : " + request.replace("|", ";"));
 
         // req format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|PayloadCons
         return request;
     }
 
     /**
-     * Test all the consumers with a ping request
+     * Starts one thread per request to handle the sending and receiving
      */
     @WebMethod(operationName = "startSendingRequests")
     public void startSendingRequests() {
+        int providerNumber;
+        int nbRequests;
+        int period;
 
         for (Request req : scenario.getRequestList()) {
-            logger.debug("Consumer " + this.getClass() + " starts sending requests");
+            nbRequests = 1;
+            period = 0;
+            providerNumber = req.getProviderId();
+
+            LOGGER.debug("Consumer C" + scenario.getConsumerId() + " starts sending requests");
+
+            if (req.isPeriodic()) {
+                nbRequests = req.getNumberRequest();
+                period = req.getPeriod();
+            }
 
             // Create a thread that handles the request sending to provider i (send, wait for response and send it to app)
-            Thread thread = new Thread(new ConsumerThread(req), this.getClass().toString());
-            thread.start();
+            for (int nbReq = 0; nbReq < nbRequests; nbReq++) {
+                Thread thread = new Thread(new ConsumerThread(constructRequest(req), providerNumber), this.getClass().toString());
+                thread.start();
+                try {
+                    Thread.sleep(period);
+                } catch (InterruptedException ex) {
+                    java.util.logging.Logger.getLogger(ConsumerWS.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
     }
 
-    // Thread class to handle sending requests in parallel
+    /**
+     * Class used for consumer timeout, to know the number of lost messages
+     */
+    public class BlockingMethodCallable {
+
+        String req;
+        int providerNumber;
+
+        public BlockingMethodCallable(String req, int providerNumber) {
+            this.req = req;
+            this.providerNumber = providerNumber;
+        }
+        Callable<Object> task = new Callable<Object>() {
+
+            @Override
+            public Object call() {
+                return sendRequest(req, providerNumber);
+            }
+        };
+    }
+
+    /**
+     * Thread class to handle sending requests in parallel
+     */
     private class ConsumerThread implements Runnable {
 
-        private Request request;
+        String request;
+        int providerNumber;
 
-        public ConsumerThread(Request request) {
+        public ConsumerThread(String request, int providerNumber) {
             this.request = request;
+            this.providerNumber = providerNumber;
         }
 
+        /**
+         * Thread main : send a request to a given provider,
+         * wait for response during a certain amount of time
+         * and send the response to the Orchestrator
+         */
         @Override
         public void run() {
             Date receptionDateConsumer;
-            int nbRequests = 1;
-            int period;
-            String response;
-            int providerNumber = request.getProviderId();
+            boolean timedOut = false;
+            String result = "No response from provider " + request.split("\\|")[1] + " : " + request;
+            String response = "";
 
-            if (request.isPeriodic()) {
-                nbRequests = request.getNumberRequest();
-                period = request.getPeriod();
+            ExecutorService executor = Executors.newCachedThreadPool();
+            BlockingMethodCallable blockingMethodCallable = new BlockingMethodCallable(request, providerNumber);
+            Future<Object> future = executor.submit(blockingMethodCallable.task);
+
+            try {
+                response = (String) future.get(THREAD_TIMEOUT, TimeUnit.SECONDS);
+            } catch (TimeoutException ex) {
+                result = "LOST|" + request;
+                LOGGER.debug("Consumer C" + scenario.getConsumerId() + " didn't receive message from provider P" + providerNumber + " to request : " + request.replace("|", ";"));
+                timedOut = true;
+            } catch (InterruptedException e) {
+                LOGGER.error(e.getMessage());
+                LOGGER.debug(e.getStackTrace());
+            } catch (ExecutionException e) {
+                LOGGER.error(e.getMessage());
+                LOGGER.debug(e.getStackTrace());
+            } finally {
+                future.cancel(true);
             }
 
-            for (int reqNb = 0 ; reqNb < nbRequests ; reqNb++) {
-                response = sendRequest(constructRequest(request), providerNumber);
-                logger.debug("Response from P" + providerNumber + " to " + Thread.currentThread().getName() + " : " + response.replace("|", ";"));
+            LOGGER.debug("Response from P" + providerNumber + " to Consumer C" + scenario.getConsumerId() + " : " + response.replace("|", ";"));
 
-                // envoyer les résultats à l'application par AMQP
-                String[] responseParts = response.split("\\|", -1);
-                String result = "";
-                int i;
-                for (i = 0; i < responseParts.length - 1; i++) {
-                    result += responseParts[i] + "|";
-                }
-                receptionDateConsumer = new Date();
-                // resp format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|ReceptionDateProv|SendingDateProv|ReceptionDateCons
-                result += Long.toString(receptionDateConsumer.getTime());
+            if (!timedOut) {
+                // send results to orchestrator with AMQP
+                if (response != null || !response.contains("|")) {
+                    String[] responseParts = response.split("\\|", -1);
 
-                try {
-                    logger.debug("Consumer " + Thread.currentThread().getName() + " sends result to app : " + result.replace("|", ";"));
-                    amqp.sendResult(result);
-                } catch (IOException ex) {
-                    logger.error("[Consumer thread] Unable to send result to application" + ex.getMessage());
+                    if (Integer.parseInt(responseParts[PROVIDER_ID_INDEX]) == scenario.getConsumerId()) {
+
+                        for (int i = 0; i < responseParts.length - 1; i++) {
+                            result += responseParts[i] + "|";
+                        }
+
+                        receptionDateConsumer = new Date();
+                        // resp format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|ReceptionDateProv|SendingDateProv|ReceptionDateCons
+                        result += Long.toString(receptionDateConsumer.getTime());
+                    } else {
+                        LOGGER.debug("Bad consumer (C" + scenario.getConsumerId() + ") received response : " + response + " to request " + request);
+                        result = "CONSUMER|" + request;
+                    }
+                } else {
+                    result = "FORMAT|" + request;
+                    LOGGER.debug("Consumer C" + scenario.getConsumerId() + " received a badly formatted response : " + response + " to request " + request);
+
+                    try {
+                        LOGGER.debug("Consumer C" + scenario.getConsumerId() + " sends result to app : " + result.replace("|", ";"));
+                        amqp.sendResult(result);
+                    } catch (IOException ex) {
+                        LOGGER.error("[Consumer thread] Unable to send result to application" + ex.getMessage());
+                    }
                 }
             }
         }
@@ -224,43 +299,44 @@ public class ConsumerWS {
      */
     @WebMethod(operationName = "initialiseConsumer")
     public String initialiseConsumer(String name) {
+        scenario = new Scenario();
+
         try {
             amqp = new ConsumerAMQPHandler(name);
-            logger.debug("wait configuration...");
+
+            LOGGER.debug("Wait for configuration...");
             String received = amqp.receiveConfigurationMessage();
-            logger.debug("message config : " + received);
-            scenario = new Scenario();
+            LOGGER.debug("Message config : " + received);
+
             scenario.init(received);
+
             if (scenario.isInitialized()) {
-                logger.debug("wait start message...");
+                LOGGER.debug("Wait for start message...");
                 String start = amqp.receiveStartMessage();
 
-                logger.debug("message start : " + start);
+                LOGGER.debug("message start : " + start);
                 startSendingRequests();
+            } else {
+                LOGGER.error("Impossible to create the scenario. The XML may be wrong");
+                amqp.sendResult("Bad xml format");
             }
-            else {
-                logger.error("impossible to create the scenario. The XML may be wrong");
-                amqp.sendResult("bad xml format");
-            }
-
-            //amqp.closeConnection();
         } catch (IOException ex) {
-            logger.error("error initialisation" + this.getClass());
+            LOGGER.error("error initialisation" + this.getClass());
             ex.printStackTrace();
         } catch (ShutdownSignalException ex) {
-            logger.error("error initialisation" + this.getClass());
+            LOGGER.error("error initialisation" + this.getClass());
             ex.printStackTrace();
         } catch (ConsumerCancelledException ex) {
-            logger.error("error initialisation" + this.getClass());
+            LOGGER.error("error initialisation" + this.getClass());
             ex.printStackTrace();
         } catch (InterruptedException ex) {
-            logger.error("error initialisation" + this.getClass());
+            LOGGER.error("error initialisation" + this.getClass());
             ex.printStackTrace();
         }
         return "done";
     }
 
-        /**
+    /**
      * Must be invoked at the end
      * @return "done"
      */
@@ -268,10 +344,10 @@ public class ConsumerWS {
     public String closeConnection() {
         try {
             amqp.closeConnection();
-            logger.debug("connection closed");
+            LOGGER.debug("connection closed");
             return "done";
         } catch (IOException ex) {
-            logger.debug("impossible to close connection" + ex.getMessage());
+            LOGGER.debug("impossible to close connection" + ex.getMessage());
             return "error";
         }
     }

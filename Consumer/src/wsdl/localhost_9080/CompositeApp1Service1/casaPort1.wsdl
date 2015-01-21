@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<definitions targetNamespace="CompositeApp1" xmlns:ns2="http://p3.ws.provider.swim.insa.com/" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://p2.ws.provider.swim.insa.com/" xmlns:ns="http://ws.provider.swim.insa.com/" xmlns:ns3="http://p4.ws.provider.swim.insa.com/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="CompositeApp1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+<definitions targetNamespace="CompositeApp1" xmlns:ns2="http://p3.ws.provider.swim.insa.com/" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://p2.ws.provider.swim.insa.com/" xmlns:ns="http://p1.ws.provider.swim.insa.com/" xmlns:ns3="http://p4.ws.provider.swim.insa.com/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="CompositeApp1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
   <import namespace="http://p2.ws.provider.swim.insa.com/" location="http://pdlsoa-VirtualBox:9080/CompositeApp1-sun-http-binding/localhost_8080/Provider-1/P2WebService.wsdl">
     </import>
-  <import namespace="http://ws.provider.swim.insa.com/" location="http://pdlsoa-VirtualBox:9080/CompositeApp1-sun-http-binding/localhost_8080/Provider-1/P1WebService.wsdl">
-    </import>
   <import namespace="http://p4.ws.provider.swim.insa.com/" location="http://pdlsoa-VirtualBox:9080/CompositeApp1-sun-http-binding/localhost_8080/Provider-1/P4WebService.wsdl">
+    </import>
+  <import namespace="http://p1.ws.provider.swim.insa.com/" location="http://pdlsoa-VirtualBox:9080/CompositeApp1-sun-http-binding/localhost_8080/Provider-1/P1WebService.wsdl">
     </import>
   <import namespace="http://p3.ws.provider.swim.insa.com/" location="http://pdlsoa-VirtualBox:9080/CompositeApp1-sun-http-binding/localhost_8080/Provider-1/P3WebService.wsdl">
     </import>
@@ -12,7 +12,7 @@
   </portType>
   <binding name="casaBinding1" type="ns:P1WebService">
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
-    <operation name="pingpong">
+    <operation name="processRequest">
       <soap:operation/>
       <input>
         <soap:body use="literal"/>
@@ -21,7 +21,8 @@
         <soap:body use="literal"/>
       </output>
     </operation>
-    <operation name="processRequest">
+    <operation name="pingpong">
+      <soap:operation/>
       <input>
         <soap:body use="literal"/>
       </input>
@@ -32,7 +33,7 @@
   </binding>
   <binding name="casaBinding2" type="ns1:P2WebService">
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
-    <operation name="pingpong">
+    <operation name="processRequest">
       <soap:operation/>
       <input>
         <soap:body use="literal"/>
@@ -41,7 +42,8 @@
         <soap:body use="literal"/>
       </output>
     </operation>
-    <operation name="processRequest">
+    <operation name="pingpong">
+      <soap:operation/>
       <input>
         <soap:body use="literal"/>
       </input>
@@ -52,7 +54,7 @@
   </binding>
   <binding name="casaBinding3" type="ns2:P3WebService">
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
-    <operation name="pingpong">
+    <operation name="processRequest">
       <soap:operation/>
       <input>
         <soap:body use="literal"/>
@@ -61,7 +63,8 @@
         <soap:body use="literal"/>
       </output>
     </operation>
-    <operation name="processRequest">
+    <operation name="pingpong">
+      <soap:operation/>
       <input>
         <soap:body use="literal"/>
       </input>
@@ -72,7 +75,7 @@
   </binding>
   <binding name="casaBinding4" type="ns3:P4WebService">
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
-    <operation name="pingpong">
+    <operation name="processRequest">
       <soap:operation/>
       <input>
         <soap:body use="literal"/>
@@ -81,7 +84,8 @@
         <soap:body use="literal"/>
       </output>
     </operation>
-    <operation name="processRequest">
+    <operation name="pingpong">
+      <soap:operation/>
       <input>
         <soap:body use="literal"/>
       </input>
