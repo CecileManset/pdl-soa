@@ -24,7 +24,7 @@ public class ProviderWS {
     private static final int RESPONSE_SIZE_INDEX = 3;
     private static final int PROVIDER_ID_INDEX = 1;
     private static final int REQUEST_FIELDS_NB = 7;
-    private int providerNumber = Integer.parseInt(this.getClass().toString().split(".")[6].split("|")[1]);
+    private int providerNumber = -1;
 
     /**
      * Method used to test consumer-provider communication
@@ -57,7 +57,8 @@ public class ProviderWS {
                 LOGGER.debug("Provider " + this.getClass().toString() + " received a badly formatted request");
                 parsedRequest = null; // TODO throw an exception
             }
-        } catch (PatternSyntaxException e) {
+        }
+        catch (PatternSyntaxException e) {
             LOGGER.error(e.getMessage());
             LOGGER.debug(e.getStackTrace());
         }
@@ -82,13 +83,33 @@ public class ProviderWS {
         // if request = null, badly formatted request or pb with consumer-provider communication
         if (request != null) {
             receptionDate = new Date();
+            System.out.println(this.getClass().toString());
+            int providerNumberFromName =  Integer.parseInt(this.getClass().toString().split("\\.")[6].split("|")[2]);
+            boolean badProvider = false;
 
             LOGGER.debug("Message received by " + this.getClass() + ": " + request.replace("|", ";"));
 
             parsedRequest = parseRequest(request);
 
+            // initialise provider ID if first request received
+            if (providerNumber == -1) {
+                LOGGER.debug("Provider P" + providerNumberFromName + " initializing its ID");
+                providerNumber = Integer.parseInt(parsedRequest[PROVIDER_ID_INDEX]);
+                
+                // check that the provider was initialized with the right number
+                if (providerNumber != providerNumberFromName) {
+                    LOGGER.debug("Provider P" + providerNumberFromName + "initialization failed");
+                    providerNumber = -1;
+                    // else, it means that the message what not intended for this provider
+                    badProvider = true;
+                }
+                else {
+                    LOGGER.debug("Provider P" + providerNumberFromName + "initialization succeeded");
+                }
+            }
+
             // Verify that the right provider received the request
-            if (providerNumber == Integer.parseInt(parsedRequest[PROVIDER_ID_INDEX])) {
+            if (!badProvider && (providerNumber == Integer.parseInt(parsedRequest[PROVIDER_ID_INDEX]))) {
 
                 // Sleep to fake the request processing
                 try {
@@ -110,11 +131,13 @@ public class ProviderWS {
                 sendingDate = new Date();
                 // + provider info
                 response += Long.toString(receptionDate.getTime()) + "|" + Long.toString(sendingDate.getTime()) + "|" + new String(payloadProvider);
-            } else {
-                return "Bad provider (P" + providerNumber + ") received request : " + request;
             }
-        } else {
-            return "Null request";
+            else {
+                return "Bad provider (P" + providerNumberFromName + ") received request : " + request;
+            }
+        }
+        else {
+            return "null request";
         }
 
         LOGGER.debug("Message sent from " + this.getClass() + " to Consumer " + parsedRequest[0] + ": " + response);

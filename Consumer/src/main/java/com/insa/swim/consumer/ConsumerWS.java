@@ -38,7 +38,10 @@ public class ConsumerWS {
     protected static ConsumerAMQPHandler amqp;
     private static final Logger LOGGER = LogManager.getLogger("Consumer");
 //    private Scenario scenario = null;
-    private Scenario scenario = new Scenario("INFO|0|name|0|10|CONSUMER|2|C2" + "|REQUEST|1|0021|4|0|0|0|2000|5" + "|REQUEST|3|0023|2|true|1000|8|500|10" + "|REQUEST|4|0024|10|0|100|5|5500|2");
+    private Scenario scenario = new Scenario("INFO|0|name|0|10|CONSUMER|2|C2"
+                                                                + "|REQUEST|1|0021|4|0|0|0|2000|5"
+                                                                + "|REQUEST|3|0023|2|true|1000|8|500|10"
+                                                                + "|REQUEST|4|0024|10|0|100|5|5500|2");
     private static final int THREAD_TIMEOUT = 5; // in seconds
     /*
      * These are the referenes of the services provided by the bus to join the controller
@@ -169,8 +172,7 @@ public class ConsumerWS {
 
             LOGGER.debug("Consumer " + this.getClass() + " starts sending requests");
 
-
-            // Send back too many timeouts
+            // TODO Send back too many timeouts
             if (req.isPeriodic()) {
                 nbRequests = req.getNumberRequest();
                 period = req.getPeriod();
@@ -274,13 +276,13 @@ public class ConsumerWS {
                 result += Long.toString(receptionDateConsumer.getTime());
             }
 
-            try {
-                LOGGER.debug("Consumer " + Thread.currentThread().getName() + " sends result to app : " + result.replace("|", ";"));
-                amqp.sendResult(result);
-            }
-            catch (IOException ex) {
-                LOGGER.error("[Consumer thread] Unable to send result to application" + ex.getMessage());
-            }
+//            try {
+//                LOGGER.debug("Consumer " + Thread.currentThread().getName() + " sends result to app : " + result.replace("|", ";"));
+//                amqp.sendResult(result);
+//            }
+//            catch (IOException ex) {
+//                LOGGER.error("[Consumer thread] Unable to send result to application" + ex.getMessage());
+//            }
         }
     }
 
