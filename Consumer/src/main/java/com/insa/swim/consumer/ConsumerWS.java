@@ -27,7 +27,7 @@ import org.apache.logging.log4j.Logger;
 @WebService()
 public class ConsumerWS {
 
-    static protected ConsumerAMQPHandler amqp;
+    protected ConsumerAMQPHandler amqp;
     // req format : ConsID|ProvID|ReqSize|RespSize|ProcessingTime|SendingDateCons|PayloadCons
 //    private String[] requests = {"1|1|3|4|6000|SendingDateConsumer|payloadConsumer",
 //                                            "1|3|100|2|2000|SendingDateConsumer3|payloadConsumer3",
