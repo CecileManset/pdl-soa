@@ -54,18 +54,20 @@ public class Controller {
 
     private void configureWebServices(Scenario scenario, AMQPHandler amqp) {
         WebServicesConfiguration config = new WebServicesConfiguration(amqp);
+        //LOGGER.debug("scenario : number requests " + scenario.getConsumers().getConsumer().get(0).getRequests().getRequest().get(0).getNumberRequests());
         config.configure(scenario);
     }
-
-    private void launchEsbTest() {
-        // TODO Auto-generated method stub
+    
+    private void initConsumers(Scenario scenario) {
+        
     }
 
-    private Listener startListener() {
-        Listener listener = new Listener();
-        listener.start();
-        return listener;
-    }
+
+//    private Listener startListener() {
+//        Listener listener = new Listener();
+//        listener.start();
+//        return listener;
+//    }
 
     public void start() {
         LOGGER.trace("Controller starts");
@@ -75,6 +77,7 @@ public class Controller {
             scenario = parseXml();
             AMQPHandler amqp = new AMQPHandler();
 
+            initConsumers(scenario);
             configureWebServices(scenario, amqp);
 
             amqp.sendStart();

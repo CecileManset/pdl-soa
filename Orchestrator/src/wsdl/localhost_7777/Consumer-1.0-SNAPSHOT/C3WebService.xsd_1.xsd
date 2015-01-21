@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!-- Published by JAX-WS RI at http://jax-ws.dev.java.net. RI's version is JAX-WS RI 2.1.3.3-hudson-757-SNAPSHOT. --><xs:schema xmlns:tns="http://ws.consumer.swim.insa.com/" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://ws.consumer.swim.insa.com/">
+
+<xs:element name="closeConnection" type="tns:closeConnection"></xs:element>
+
+<xs:element name="closeConnectionResponse" type="tns:closeConnectionResponse"></xs:element>
+
+<xs:element name="initialiseConsumer" type="tns:initialiseConsumer"></xs:element>
+
+<xs:element name="initialiseConsumerResponse" type="tns:initialiseConsumerResponse"></xs:element>
+
+<xs:element name="sendRequest" type="tns:sendRequest"></xs:element>
+
+<xs:element name="sendRequestResponse" type="tns:sendRequestResponse"></xs:element>
+
+<xs:element name="startSendingRequests" type="tns:startSendingRequests"></xs:element>
+
+<xs:element name="startSendingRequestsResponse" type="tns:startSendingRequestsResponse"></xs:element>
+
+<xs:complexType name="startSendingRequests">
+<xs:sequence></xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="startSendingRequestsResponse">
+<xs:sequence></xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="initialiseConsumer">
+<xs:sequence>
+<xs:element name="arg0" type="xs:string" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="initialiseConsumerResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:string" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="sendRequest">
+<xs:sequence>
+<xs:element name="arg0" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="arg1" type="xs:int"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="sendRequestResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:string" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="closeConnection">
+<xs:sequence></xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="closeConnectionResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:string" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+</xs:schema>

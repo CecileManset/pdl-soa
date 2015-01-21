@@ -18,28 +18,14 @@
                 <request>
                     <providerSettings>
                         <providerId>2</providerId>
-                        <responseSize>100</responseSize>
+                        <responseSize>1024</responseSize>
                         <processingTime>10</processingTime>
                     </providerSettings>
-                    <size>100</size>
+                    <size>1024</size>
                     <sendingTime>400</sendingTime>
-                    <periodic>false</periodic>
-                </request>
-            </requests>
-        </consumer>
-        <consumer>
-            <name>consumer2</name>
-            <id>2</id>
-            <requests>
-                <request>
-                    <providerSettings>
-                        <providerId>2</providerId>
-                        <responseSize>100</responseSize>
-                        <processingTime>10</processingTime>
-                    </providerSettings>
-                    <size>100</size>
-                    <sendingTime>400</sendingTime>
-                    <periodic>false</periodic>
+                    <periodic>true</periodic>
+                    <period>50</period>
+                    <numberRequests>200</numberRequests>
                 </request>
             </requests>
         </consumer>

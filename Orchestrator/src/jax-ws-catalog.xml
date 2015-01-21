@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
+    <system systemId="http://localhost:7777/Consumer-1.0-SNAPSHOT/C2WebService?WSDL" uri="wsdl/localhost_7777/Consumer-1.0-SNAPSHOT/C2WebService.wsdl"/>
+    <system systemId="http://localhost:7777/Consumer-1.0-SNAPSHOT/C2WebService?xsd=1" uri="wsdl/localhost_7777/Consumer-1.0-SNAPSHOT/C2WebService.xsd_1.xsd"/>
+    <system systemId="http://localhost:7777/Consumer-1.0-SNAPSHOT/C3WebService?WSDL" uri="wsdl/localhost_7777/Consumer-1.0-SNAPSHOT/C3WebService.wsdl"/>
+    <system systemId="http://localhost:7777/Consumer-1.0-SNAPSHOT/C3WebService?xsd=1" uri="wsdl/localhost_7777/Consumer-1.0-SNAPSHOT/C3WebService.xsd_1.xsd"/>
+</catalog>

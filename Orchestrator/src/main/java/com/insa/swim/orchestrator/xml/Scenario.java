@@ -579,7 +579,7 @@ public class Scenario {
                     @XmlElement(required = true)
                     protected String periodic;
                     protected Short period;
-                    protected Byte numberRequests;
+                    protected Integer numberRequests;
 
                     /**
                      * Obtient la valeur de la propri�t� providerSettings.
@@ -681,7 +681,7 @@ public class Scenario {
                      * @return possible object is {@link Byte }
                      *
                      */
-                    public Byte getNumberRequests() {
+                    public Integer getNumberRequests() {
                         return numberRequests;
                     }
 
@@ -691,7 +691,7 @@ public class Scenario {
                      * @param value allowed object is {@link Byte }
                      *
                      */
-                    public void setNumberRequests(Byte value) {
+                    public void setNumberRequests(Integer value) {
                         this.numberRequests = value;
                     }
 
