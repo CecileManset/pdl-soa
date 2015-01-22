@@ -74,6 +74,37 @@ public class ProviderWSTest {
         assertEquals(instance.getProviderNumber(), goodId);
     }
 
+    /**
+     * Test provider response when request was sent to the good provider
+     * Use a particular provider due to code specifities. All providers work the same for now
+     */
+    @Test
+    public void testProcessRequestGoodProvider() {
+        P1WebService instance = new P1WebService();
+        String requestToP1 = "0|1|4|6|10|1111111|xxxxxx";
+
+        assertTrue(!instance.processRequest(requestToP1).contains("PROVIDER|"));
+    }
+
+     /**
+     * Test provider response when request was sent to a bad provider
+     * Use a particular provider due to code specifities. All providers work the same for now
+     */
+    @Test
+    public void testProcessRequestBadProvider() {
+        P1WebService instance = new P1WebService();
+        String requestToP1 = "0|1|4|6|10|1111111|xxxxxx";
+        String requestToP3 = "0|3|4|6|10|1111111|xxxxxx";
+        int goodId = 1;
+
+        // initialize provider id
+        instance.processRequest(requestToP1);
+        assertEquals(instance.getProviderNumber(), goodId);
+
+        // Send a message to bad provider
+        assertEquals(instance.processRequest(requestToP3), "PROVIDER|" + requestToP3);
+    }
+
     // TODO verify receivingDate
     // TODO verify that response = request + date + payload
     @Test
