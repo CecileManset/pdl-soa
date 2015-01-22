@@ -127,17 +127,19 @@ public class ProviderWSTest {
 
     }
 
-    // TODO verify that Thread.sleep(6000) was called and executed
-//    @Test
-//    public void testProcessRequestGoodProcessingTime() {
-//        ProviderWS instance = spy(new ProviderWS());
-//
-//        instance.processRequest("1|1|6000|4|SendingTimeConsumer|payload");
-//        verify(Thread, times(1)).sleep(6000);
-//    }
+     /**
+     * Verify that processRequest sleeps the good amount of time
+     * Use a particular provider due to code specifities. All providers work the same for now
+     */
+    @Test
+    public void testProcessRequestGoodProcessingTime() {
+        P1WebService instance = new P1WebService();
+        int sleepingTime = 6000;
 
-    // Test processRequest : bad provider
+        long startTime = System.currentTimeMillis();
+        instance.processRequest("1|1|4|6|6000|111111|payload");
+        long endTime = System.currentTimeMillis();
 
-    // Test parseRequest : request with more than 7 info
-
+        assertTrue(endTime-startTime > sleepingTime);
+    }
 }
