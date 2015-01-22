@@ -150,4 +150,8 @@ public class ProviderWS {
 
         return response;
     }
+
+    public int getProviderNumber() {
+        return providerNumber;
+    }
 }

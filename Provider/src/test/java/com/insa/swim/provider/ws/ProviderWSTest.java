@@ -5,6 +5,7 @@
 
 package com.insa.swim.provider.ws;
 
+import com.insa.swim.provider.ws.p1.P1WebService;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -22,22 +23,6 @@ public class ProviderWSTest {
     public ProviderWSTest() {
     }
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
-
     /**
      * Test of pingpong method, of class ProviderWS.
      */
@@ -51,13 +36,43 @@ public class ProviderWSTest {
     }
 
 
-    // TODO mock class name
-//    @Test
-//    public void testProcessRequestNullEntry() {
-//        ProviderWS instance = new ProviderWS();
-//        assertEquals("null request", instance.processRequest(null));
-//    }
+     /**
+     * Test badly formatted requests (null, without pipes or with too many fields)
+     * Use a particular provider due to code specifities. All providers work the same for now
+     */
+    @Test
+    public void testProcessRequestBadEntry() {
+        P1WebService instance = new P1WebService();
+        assertEquals("REQUEST", instance.processRequest(null));
+        assertEquals("REQUEST", instance.processRequest(""));
+        assertEquals("REQUEST", instance.processRequest("coucou"));
+        assertEquals("REQUEST", instance.processRequest("0|1|4|6|10|1111111|xxxxxx|coucou"));
+    }
 
+     /**
+     * Test provider ID initialization with consumer request
+     * Use a particular provider due to code specifities. All providers work the same for now
+     */
+    @Test
+    public void testProcessRequestInitializeProviderId() {
+        P1WebService instance = new P1WebService();
+        String requestToP1 = "0|1|4|6|10|1111111|xxxxxx";
+        String requestToP3 = "0|3|4|6|10|1111111|xxxxxx";
+        int goodId = 1;
+        int badId = -1;
+
+        // Send a message to bad provider
+        instance.processRequest(requestToP3);
+        assertEquals(instance.getProviderNumber(), badId);
+
+        // Send a message to good provider for first time => initialization
+        instance.processRequest(requestToP1);
+        assertEquals(instance.getProviderNumber(), goodId);
+
+        // Send a message to bad provider => don't try to initialize again
+        instance.processRequest(requestToP1);
+        assertEquals(instance.getProviderNumber(), goodId);
+    }
 
     // TODO verify receivingDate
     // TODO verify that response = request + date + payload
