@@ -6,11 +6,20 @@
 package com.insa.swim.orchestrator.amqp;
 
 import com.rabbitmq.client.ConsumerCancelledException;
+import com.rabbitmq.client.QueueingConsumer;
 import com.rabbitmq.client.ShutdownSignalException;
 import java.io.IOException;
+import junit.framework.Assert;
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import static org.mockito.Matchers.anyInt;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import static org.mockito.Mockito.times;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -22,8 +31,28 @@ import org.mockito.runners.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class AMQPHandlerTest {
     
-    public AMQPHandlerTest() {
+    @Mock
+    private QueueingConsumer resultsConsumer;
+    @InjectMocks
+    private AMQPHandler amqp;
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
     }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+    }
+
+    @Before
+    public void setUp() throws Exception {
+    }
+
+    @After
+    public void tearDown() throws Exception {
+    }
+    
+    
 
     /**
      * Test of closeConnection method, of class AMQPHandler.
@@ -37,26 +66,21 @@ public class AMQPHandlerTest {
         System.out.println("end closeConnection");
     }
 
-    /**
-     * Test of receiveResultMessage method, of class AMQPHandler.
-     * @throws java.lang.InterruptedException
-     */
     @Test
-    public void testReceiveResultMessage() throws ShutdownSignalException, ConsumerCancelledException, InterruptedException {
-        System.out.println("receiveResultMessage");
-        AMQPHandler instance = Mockito.mock(AMQPHandler.class);
-        Mockito.when(instance.receiveResultMessage()).thenReturn("result", "not a result");
-        String expResult = "result";
-        System.out.println("success case");
-        String result = instance.receiveResultMessage();
-        assertEquals(expResult, result);
+    public void testReceiveResultMessage() throws InterruptedException{
+        //GIVEN
+        byte[] body = "success".getBytes();
+        QueueingConsumer.Delivery del = new QueueingConsumer.Delivery(null, null, body);
         
-        System.out.println("failure case");
-        result = instance.receiveResultMessage();
-        Mockito.verify(instance, times(2)).receiveResultMessage();
-        assertNotEquals(expResult, result);
+        //WHEN
+        Mockito.when(resultsConsumer.nextDelivery(anyInt())).thenReturn(del);
+        
+        //THEN
+        assertEquals("success", amqp.receiveResultMessage());
+        
     }
-
+    
+    
     /**
      * Test of sendStart method, of class AMQPHandler.
      * @throws java.io.IOException

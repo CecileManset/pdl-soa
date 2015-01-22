@@ -22,10 +22,6 @@ public class ControllerTest {
 
     private Controller controller;
 
-    public ControllerTest() {
-        controller = new Controller();
-    }
-
     @BeforeClass
     public static void setUpClass() {
     }
@@ -36,12 +32,18 @@ public class ControllerTest {
 
     @Before
     public void setUp() {
+        controller = new Controller();
     }
 
     @After
     public void tearDown() {
     }
 
+    @Test
+    public void testStart(){
+        
+    }
+    
     @Test
     public void computeResultsKpiTest() {
         Results results = new Results();
